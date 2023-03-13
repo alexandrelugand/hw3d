@@ -366,4 +366,4 @@ MigrationBackup/
 FodyWeavers.xsd
 
 #ImGUI config file
-imgui.ini
+/hw3d/imgui.ini
