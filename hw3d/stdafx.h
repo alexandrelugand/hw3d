@@ -21,6 +21,7 @@
 #include <iomanip>
 #include <set>
 #include <unordered_map>
+#include <optional>
 
 // Windows
 #pragma warning(disable:4265)
@@ -53,21 +54,33 @@ namespace Gdiplus
 #include <assimp/postprocess.h>
 
 // HW3D
+// Utilities
 #include "dxerr.h"
 #include "Hw3DMath.h"
 #include "Hw3DTimer.h"
 #include "Hw3DException.h"
+#include "ConditionalNoexcept.h"
+#include "WindowsThrowMacros.h"
+#include "GraphicsThrowMacros.h"
+
+// Managers
 #include "WindowsMessageMap.h"
 #include "GDIPlusManager.h"
 #include "ImguiManager.h"
 #include "DxgiInfoManager.h"
-#include "ConditionalNoexcept.h"
-#include "WindowsThrowMacros.h"
-#include "GraphicsThrowMacros.h"
+
+// I/O
 #include "Keyboard.h"
 #include "Mouse.h"
+
+// Renderer
 #include "Graphics.h"
+
+//Windowing
 #include "Window.h"
+#include "ModelWindow.h"
+
+// Bind
 #include "Bindable.h"
 #include "Drawable.h"
 #include "DrawableBase.h"
@@ -82,67 +95,25 @@ namespace Gdiplus
 #include "Topology.h"
 #include "TransformCbuf.h"
 #include "ColorCBuf.h"
-#include "VertexDescriptor.h"
-#include "IndexedTriangleList.h"
-#include "Camera.h"
-#include "PointLight.h"
 #include "Sampler.h"
-#include "Surface.h"
 #include "Texture.h"
 
-// Forward declarations
-class DxgiInfoManager;
-class GDIPlusManager;
-class ImguiManager;
+// Geometry
+#include "IndexedTriangleList.h"
 
-class Graphics;
-class Window;
+// Draw
+#include "Surface.h"
 
-class Bindable;
-class BindableBase;
-class Drawable;
-template <class T>
-class DrawableBase;
-class ColorDrawable;
-template <class T>
-class TestObject;
+// Dvtx
+#include "Color.h"
+#include "VertexLayout.h"
+#include "Vertex.h"
+#include "ConstVertex.h"
+#include "VertexBufferDescriptor.h"
 
-class Camera;
-class PointLight;
-
-class Keyboard;
-class Mouse;
-
-template <typename C>
-class ConstantBuffer;
-template <typename C>
-class VertexConstantBuffer;
-template <typename C>
-class PixelConstantBuffer;
-
-class VertexBuffer;
-class IndexBuffer;
-class InputLayout;
-class VertexShader;
-class PixelShader;
-class Topology;
-class TransformCBuf;
-class ColorCBuf;
-
-class VertexDescriptor;
-class Vertex;
-class ConstVertex;
-class VertexBufferDescriptor;
-
-template <class T>
-class IndexedTriangleList;
-
-class Sampler;
-class Surface;
-class Texture;
-
-// Namespaces
-using namespace Microsoft::WRL;
-using namespace DirectX;
-using namespace std::chrono;
-using namespace std::string_literals;
+// Entities
+#include "Camera.h"
+#include "PointLight.h"
+#include "Model.h"
+#include "Node.h"
+#include "Mesh.h"

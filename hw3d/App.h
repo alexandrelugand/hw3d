@@ -4,27 +4,22 @@ class App
 {
 public:
 	App();
+	~App() = default;
 
 	//Master frame / message loop
 	int Go();
 
 private:
-	Window wnd;
+	Windowing::Window wnd;
 	Hw3DTimer timer;
 	float speed_factor = 1.0f;
-	static constexpr size_t nDrawables = 180;
 
-	std::vector<std::unique_ptr<class Drawable>> drawables;
-	std::vector<class Box*> boxes;
+	Entities::Camera camera;
+	Entities::PointLight light;
 
-	Camera camera;
-	PointLight light;
-
-	std::optional<int> comboBoxIndex;
-	std::set<int> boxControlIds;
+	Entities::Model nano{wnd.Gfx(), "Models\\nano_hierarchy.gltf"};
 
 	void DoFrame();
+
 	void SpawnSimulationWindow() noexcept;
-	void SpawnBoxWindowManagerWindow() noexcept;
-	void SpawnBoxWindows() noexcept;
 };

@@ -1,5 +1,5 @@
 #pragma once
-using namespace Microsoft::WRL;
+#include "Forwards.h"
 
 class DxgiInfoManager
 {

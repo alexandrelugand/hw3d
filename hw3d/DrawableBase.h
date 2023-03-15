@@ -1,50 +1,53 @@
 #pragma once
 #include "IndexBuffer.h"
 
-template <class T>
-class DrawableBase : public Drawable
+namespace Draw
 {
-public:
-	static bool IsStaticInitialized() noexcept
+	template <class T>
+	class DrawableBase : public Drawable
 	{
-		return !staticBinds.empty();
-	}
-
-	static void AddStaticBind(std::unique_ptr<Bindable> bind) noexcpt
-	{
-		assert("*Must* use AddStaticIndexBuffer to bind index buffer" && typeid(*bind) != typeid(IndexBuffer));
-		staticBinds.push_back(std::move(bind));
-	}
-
-	void AddStaticIndexBuffer(std::unique_ptr<IndexBuffer> ibuf) noexcpt
-	{
-		assert(pIndexBuffer == nullptr);
-		pIndexBuffer = ibuf.get();
-		staticBinds.push_back(std::move(ibuf));
-	}
-
-	void SetIndexFromStatic() noexcpt
-	{
-		assert("Attempting to add index buffer a second time" && pIndexBuffer == nullptr);
-		for (const auto& b : staticBinds)
+	public:
+		static bool IsStaticInitialized() noexcept
 		{
-			if (const auto p = dynamic_cast<IndexBuffer*>(b.get()))
-			{
-				pIndexBuffer = p;
-				return;
-			}
+			return !staticBinds.empty();
 		}
-		assert("Failed to find index buffer in static binds" && pIndexBuffer != nullptr);
-	}
 
-private:
-	const std::vector<std::unique_ptr<Bindable>>& GetStaticBinds() const noexcept override
-	{
-		return staticBinds;
-	}
+		static void AddStaticBind(std::unique_ptr<Bind::Bindable> bind) noexcpt
+		{
+			assert("*Must* use AddStaticIndexBuffer to bind index buffer" && typeid(*bind) != typeid(Bind::IndexBuffer));
+			staticBinds.push_back(std::move(bind));
+		}
 
-	static std::vector<std::unique_ptr<Bindable>> staticBinds;
-};
+		void AddStaticIndexBuffer(std::unique_ptr<Bind::IndexBuffer> ibuf) noexcpt
+		{
+			assert(pIndexBuffer == nullptr);
+			pIndexBuffer = ibuf.get();
+			staticBinds.push_back(std::move(ibuf));
+		}
 
-template <class T>
-std::vector<std::unique_ptr<Bindable>> DrawableBase<T>::staticBinds;
+		void SetIndexFromStatic() noexcpt
+		{
+			assert("Attempting to add index buffer a second time" && pIndexBuffer == nullptr);
+			for (const auto& b : staticBinds)
+			{
+				if (const auto p = dynamic_cast<Bind::IndexBuffer*>(b.get()))
+				{
+					pIndexBuffer = p;
+					return;
+				}
+			}
+			assert("Failed to find index buffer in static binds" && pIndexBuffer != nullptr);
+		}
+
+	private:
+		const std::vector<std::unique_ptr<Bind::Bindable>>& GetStaticBinds() const noexcept override
+		{
+			return staticBinds;
+		}
+
+		static std::vector<std::unique_ptr<Bind::Bindable>> staticBinds;
+	};
+
+	template <class T>
+	std::vector<std::unique_ptr<Bind::Bindable>> DrawableBase<T>::staticBinds;
+}

@@ -1,23 +1,26 @@
 #pragma once
 
-class ColorDrawable : public DrawableBase<ColorDrawable>
+namespace Draw
 {
-public:
-	ColorDrawable(XMFLOAT3 color)
-		: color(color)
+	class ColorDrawable : public DrawableBase<ColorDrawable>
 	{
-	}
+	public:
+		ColorDrawable(XMFLOAT3 color)
+			: color(color)
+		{
+		}
 
-	const XMFLOAT3& GetColor() const noexcept
-	{
-		return color;
-	}
+		const XMFLOAT3& GetColor() const noexcept
+		{
+			return color;
+		}
 
-	void SetColor(const XMFLOAT3& col) noexcept
-	{
-		color = col;
-	}
+		void SetColor(const XMFLOAT3& col) noexcept
+		{
+			color = col;
+		}
 
-private:
-	XMFLOAT3 color;
-};
+	private:
+		XMFLOAT3 color;
+	};
+}

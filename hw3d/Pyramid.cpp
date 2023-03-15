@@ -2,72 +2,75 @@
 #include "Pyramid.h"
 #include "Cone.h"
 
-Pyramid::Pyramid(Graphics& gfx,
-                 std::mt19937& rng,
-                 std::uniform_real_distribution<float>& adist,
-                 std::uniform_real_distribution<float>& ddist,
-                 std::uniform_real_distribution<float>& odist,
-                 std::uniform_real_distribution<float>& rdist,
-                 std::uniform_int_distribution<int>& tdist)
-	: TestObject(gfx, rng, adist, ddist, odist, rdist)
+namespace Draw
 {
-	if (!IsStaticInitialized())
+	Pyramid::Pyramid(Graphics& gfx,
+	                 std::mt19937& rng,
+	                 std::uniform_real_distribution<float>& adist,
+	                 std::uniform_real_distribution<float>& ddist,
+	                 std::uniform_real_distribution<float>& odist,
+	                 std::uniform_real_distribution<float>& rdist,
+	                 std::uniform_int_distribution<int>& tdist)
+		: TestObject(gfx, rng, adist, ddist, odist, rdist)
 	{
-		auto pvs = std::make_unique<VertexShader>(gfx, L"BlendedPhongVS.cso");
-		auto pvsbc = pvs->GetBytecode();
-		AddStaticBind(std::move(pvs));
-
-		AddStaticBind(std::make_unique<PixelShader>(gfx, L"BlendedPhongPS.cso"));
-
-		const std::vector<D3D11_INPUT_ELEMENT_DESC> ied =
+		if (!IsStaticInitialized())
 		{
-			{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-			{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
-			{"COLOR", 0, DXGI_FORMAT_R8G8B8A8_UNORM, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0},
+			auto pvs = std::make_unique<Bind::VertexShader>(gfx, L"BlendedPhongVS.cso");
+			auto pvsbc = pvs->GetBytecode();
+			AddStaticBind(std::move(pvs));
+
+			AddStaticBind(std::make_unique<Bind::PixelShader>(gfx, L"BlendedPhongPS.cso"));
+
+			const std::vector<D3D11_INPUT_ELEMENT_DESC> ied =
+			{
+				{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
+				{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
+				{"COLOR", 0, DXGI_FORMAT_R8G8B8A8_UNORM, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0},
+			};
+			AddStaticBind(std::make_unique<Bind::InputLayout>(gfx, ied, pvsbc));
+
+			AddStaticBind(std::make_unique<Bind::Topology>(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
+
+			struct PSMaterialConstant
+			{
+				float specularIntensity = 0.6f;
+				float specularPower = 30.0f;
+				float padding[2];
+			} colorConst;
+			AddStaticBind(std::make_unique<Bind::PixelConstantBuffer<PSMaterialConstant>>(gfx, colorConst, 1u));
+		}
+
+		struct Vertex
+		{
+			XMFLOAT3 pos;
+			XMFLOAT3 n;
+			std::array<char, 4> color;
+			char padding;
 		};
-		AddStaticBind(std::make_unique<InputLayout>(gfx, ied, pvsbc));
 
-		AddStaticBind(std::make_unique<Topology>(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
+		const auto tesselation = tdist(rng);
+		auto model = Geometry::Cone::MakeTesselatedIndependentFaces<Vertex>(tesselation);
 
-		struct PSMaterialConstant
+		// set vertex colors for mesh
+		for (auto& v : model.vertices)
 		{
-			float specularIntensity = 0.6f;
-			float specularPower = 30.0f;
-			float padding[2];
-		} colorConst;
-		AddStaticBind(std::make_unique<PixelConstantBuffer<PSMaterialConstant>>(gfx, colorConst, 1u));
+			v.color = {static_cast<char>(10), static_cast<char>(10), static_cast<char>(255)};
+		}
+
+		for (int i = 0; i < tesselation; i++)
+		{
+			model.vertices[i * 3].color = {static_cast<char>(255), static_cast<char>(10), static_cast<char>(10)};
+		}
+
+		// deform mesh linearly
+		model.Transform(XMMatrixScaling(1.0f, 1.0f, 0.7f));
+
+		// add normals
+		model.SetNormalsIndependentFlat();
+
+		AddBind(std::make_unique<Bind::VertexBuffer>(gfx, model.vertices));
+		AddIndexBuffer(std::make_unique<Bind::IndexBuffer>(gfx, model.indices));
+
+		AddBind(std::make_unique<Bind::TransformCBuf>(gfx, *this));
 	}
-
-	struct Vertex
-	{
-		XMFLOAT3 pos;
-		XMFLOAT3 n;
-		std::array<char, 4> color;
-		char padding;
-	};
-
-	const auto tesselation = tdist(rng);
-	auto model = Cone::MakeTesselatedIndependentFaces<Vertex>(tesselation);
-
-	// set vertex colors for mesh
-	for (auto& v : model.vertices)
-	{
-		v.color = {static_cast<char>(10), static_cast<char>(10), static_cast<char>(255)};
-	}
-
-	for (int i = 0; i < tesselation; i++)
-	{
-		model.vertices[i * 3].color = {static_cast<char>(255), static_cast<char>(10), static_cast<char>(10)};
-	}
-
-	// deform mesh linearly
-	model.Transform(XMMatrixScaling(1.0f, 1.0f, 0.7f));
-
-	// add normals
-	model.SetNormalsIndependentFlat();
-
-	AddBind(std::make_unique<VertexBuffer>(gfx, model.vertices));
-	AddIndexBuffer(std::make_unique<IndexBuffer>(gfx, model.indices));
-
-	AddBind(std::make_unique<TransformCBuf>(gfx, *this));
 }

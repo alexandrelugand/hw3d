@@ -1,35 +1,38 @@
 #pragma once
-#include "TestObject.h"
+#include "Forwards.h"
 
-class Box : public TestObject<Box>
+namespace Draw
 {
-public:
-	Box(Graphics& gfx, std::mt19937& rng,
-	    std::uniform_real_distribution<float>& adist,
-	    std::uniform_real_distribution<float>& ddist,
-	    std::uniform_real_distribution<float>& odist,
-	    std::uniform_real_distribution<float>& rdist,
-	    std::uniform_real_distribution<float>& bdist,
-	    XMFLOAT3 material);
-
-	XMMATRIX GetTransform() const noexcept override;
-
-	// returns false if window is closed
-	bool SpawnControlWindow(int id, Graphics& gfx) noexcept;
-
-private:
-	void SyncMaterial(Graphics& gfx) noexcpt;
-
-	struct PSMaterialConstant
+	class Box : public TestObject<Box>
 	{
-		XMFLOAT3 color;
-		float specularIntensity = 0.6f;
-		float specularPower = 30.0f;
-		float padding[3];
-	} materialConstants;
+	public:
+		Box(Graphics& gfx, std::mt19937& rng,
+		    std::uniform_real_distribution<float>& adist,
+		    std::uniform_real_distribution<float>& ddist,
+		    std::uniform_real_distribution<float>& odist,
+		    std::uniform_real_distribution<float>& rdist,
+		    std::uniform_real_distribution<float>& bdist,
+		    XMFLOAT3 material);
 
-	using MaterialCbuf = PixelConstantBuffer<PSMaterialConstant>;
+		XMMATRIX GetTransform() const noexcept override;
 
-	// model transform
-	XMFLOAT3X3 mt;
-};
+		// returns false if window is closed
+		bool SpawnControlWindow(int id, Graphics& gfx) noexcept;
+
+	private:
+		void SyncMaterial(Graphics& gfx) noexcpt;
+
+		struct PSMaterialConstant
+		{
+			XMFLOAT3 color;
+			float specularIntensity = 0.6f;
+			float specularPower = 30.0f;
+			float padding[3];
+		} materialConstants;
+
+		using MaterialCbuf = Bind::PixelConstantBuffer<PSMaterialConstant>;
+
+		// model transform
+		XMFLOAT3X3 mt;
+	};
+}

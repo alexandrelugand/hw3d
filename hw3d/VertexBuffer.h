@@ -1,57 +1,60 @@
 #pragma once
-#include "VertexDescriptor.h"
+#include "VertexBufferDescriptor.h"
 
 #pragma warning(disable : 4267)
 
-class VertexBuffer : public Bindable
+namespace Bind
 {
-public:
-	template <class V>
-	VertexBuffer(Graphics& gfx, const std::vector<V>& vertices)
-		: stride(static_cast<UINT>(sizeof(V)))
+	class VertexBuffer : public Bindable
 	{
-		INFOMAN(gfx);
+	public:
+		template <class V>
+		VertexBuffer(Graphics& gfx, const std::vector<V>& vertices)
+			: stride(static_cast<UINT>(sizeof(V)))
+		{
+			INFOMAN(gfx);
 
-		D3D11_BUFFER_DESC vbd{};
-		vbd.ByteWidth = sizeof(V) * vertices.size();
-		vbd.Usage = D3D11_USAGE_DEFAULT;
-		vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-		vbd.CPUAccessFlags = 0u;
-		vbd.MiscFlags = 0u;
-		vbd.StructureByteStride = sizeof(V);
+			D3D11_BUFFER_DESC vbd{};
+			vbd.ByteWidth = sizeof(V) * vertices.size();
+			vbd.Usage = D3D11_USAGE_DEFAULT;
+			vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+			vbd.CPUAccessFlags = 0u;
+			vbd.MiscFlags = 0u;
+			vbd.StructureByteStride = sizeof(V);
 
-		D3D11_SUBRESOURCE_DATA vsd{};
-		vsd.pSysMem = vertices.data();
+			D3D11_SUBRESOURCE_DATA vsd{};
+			vsd.pSysMem = vertices.data();
 
-		// Create vertex buffer
-		GFX_THROW_INFO(GetDevice(gfx)->CreateBuffer(&vbd, &vsd, &pVertexBuffer));
-	}
+			// Create vertex buffer
+			GFX_THROW_INFO(GetDevice(gfx)->CreateBuffer(&vbd, &vsd, &pVertexBuffer));
+		}
 
-	VertexBuffer(Graphics& gfx, const VertexBufferDescriptor& descriptor)
-		: stride(static_cast<UINT>(descriptor.GetDescriptor().Size()))
-	{
-		INFOMAN(gfx);
+		VertexBuffer(Graphics& gfx, const Dvtx::VertexBufferDescriptor& descriptor)
+			: stride(static_cast<UINT>(descriptor.GetDescriptor().Size()))
+		{
+			INFOMAN(gfx);
 
-		D3D11_BUFFER_DESC vbd{};
-		vbd.ByteWidth = descriptor.Size();
-		vbd.Usage = D3D11_USAGE_DEFAULT;
-		vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-		vbd.CPUAccessFlags = 0u;
-		vbd.MiscFlags = 0u;
-		vbd.StructureByteStride = stride;
+			D3D11_BUFFER_DESC vbd{};
+			vbd.ByteWidth = descriptor.Size();
+			vbd.Usage = D3D11_USAGE_DEFAULT;
+			vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+			vbd.CPUAccessFlags = 0u;
+			vbd.MiscFlags = 0u;
+			vbd.StructureByteStride = stride;
 
-		D3D11_SUBRESOURCE_DATA vsd{};
-		vsd.pSysMem = descriptor.GetData();
+			D3D11_SUBRESOURCE_DATA vsd{};
+			vsd.pSysMem = descriptor.GetData();
 
-		// Create vertex buffer
-		GFX_THROW_INFO(GetDevice(gfx)->CreateBuffer(&vbd, &vsd, &pVertexBuffer));
-	}
+			// Create vertex buffer
+			GFX_THROW_INFO(GetDevice(gfx)->CreateBuffer(&vbd, &vsd, &pVertexBuffer));
+		}
 
-	void Bind(Graphics& gfx) noexcpt override;
+		void Bind(Graphics& gfx) noexcpt override;
 
-private:
-	UINT stride;
-	ComPtr<ID3D11Buffer> pVertexBuffer;
-};
+	private:
+		UINT stride;
+		ComPtr<ID3D11Buffer> pVertexBuffer;
+	};
+}
 
 #pragma warning(default : 4267)

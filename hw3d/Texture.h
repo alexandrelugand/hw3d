@@ -1,11 +1,15 @@
 #pragma once
+#include "Forwards.h"
 
-class Texture : public Bindable
+namespace Bind
 {
-public:
-	Texture(Graphics& gfx, const class Surface& s);
-	void Bind(Graphics& gfx) noexcpt override;
+	class Texture : public Bindable
+	{
+	public:
+		Texture(Graphics& gfx, const Draw::Surface& s);
+		void Bind(Graphics& gfx) noexcpt override;
 
-protected:
-	ComPtr<ID3D11ShaderResourceView> pTextureView;
-};
+	protected:
+		ComPtr<ID3D11ShaderResourceView> pTextureView;
+	};
+}

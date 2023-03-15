@@ -1,10 +1,9 @@
 #pragma once
-using namespace Microsoft::WRL;
-using namespace DirectX;
+#include "Forwards.h"
 
 class Graphics
 {
-	friend class Bindable;
+	friend class Bind::Bindable;
 
 public:
 	class Exception : public Hw3DException
@@ -51,7 +50,7 @@ public:
 		std::string reason;
 	};
 
-	Graphics(HWND hWnd);
+	Graphics(HWND hWnd, unsigned int width, unsigned int height);
 	Graphics(const Graphics&) = delete;
 	Graphics& operator=(const Graphics&) = delete;
 	~Graphics() = default;

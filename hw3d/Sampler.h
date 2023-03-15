@@ -1,11 +1,14 @@
 #pragma once
 
-class Sampler : public Bindable
+namespace Bind
 {
-public:
-	Sampler(Graphics& gfx);
-	void Bind(Graphics& gfx) noexcpt override;
+	class Sampler : public Bindable
+	{
+	public:
+		Sampler(Graphics& gfx);
+		void Bind(Graphics& gfx) noexcpt override;
 
-protected:
-	ComPtr<ID3D11SamplerState> pSampler;
-};
+	protected:
+		ComPtr<ID3D11SamplerState> pSampler;
+	};
+}

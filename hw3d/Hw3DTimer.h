@@ -1,4 +1,5 @@
 #pragma once
+#include "Forwards.h"
 
 class Hw3DTimer
 {
@@ -9,5 +10,5 @@ public:
 	float Peek() const;
 
 private:
-	std::chrono::steady_clock::time_point last;
+	steady_clock::time_point last;
 };

@@ -1,30 +1,33 @@
 #include "stdafx.h"
 #include "Drawable.h"
 
-void Drawable::Draw(Graphics& gfx) const noexcpt
+namespace Draw
 {
-	for (auto& b : binds)
+	void Drawable::Draw(Graphics& gfx) const noexcpt
 	{
-		b->Bind(gfx);
+		for (auto& b : binds)
+		{
+			b->Bind(gfx);
+		}
+
+		for (auto& b : GetStaticBinds())
+		{
+			b->Bind(gfx);
+		}
+
+		gfx.DrawIndexed(pIndexBuffer->GetCount());
 	}
 
-	for (auto& b : GetStaticBinds())
+	void Drawable::AddBind(std::unique_ptr<Bind::Bindable> bind) noexcpt
 	{
-		b->Bind(gfx);
+		assert("*Must* use AddIndexBuffer to bind index buffer" && typeid(*bind) != typeid(Bind::IndexBuffer));
+		binds.push_back(std::move(bind));
 	}
 
-	gfx.DrawIndexed(pIndexBuffer->GetCount());
-}
-
-void Drawable::AddBind(std::unique_ptr<Bindable> bind) noexcpt
-{
-	assert("*Must* use AddIndexBuffer to bind index buffer" && typeid(*bind) != typeid(IndexBuffer));
-	binds.push_back(std::move(bind));
-}
-
-void Drawable::AddIndexBuffer(std::unique_ptr<IndexBuffer> indexBuffer) noexcpt
-{
-	assert("Attempting to add index buffer a second time" && pIndexBuffer == nullptr);
-	pIndexBuffer = indexBuffer.get();
-	binds.push_back(std::move(indexBuffer));
+	void Drawable::AddIndexBuffer(std::unique_ptr<Bind::IndexBuffer> indexBuffer) noexcpt
+	{
+		assert("Attempting to add index buffer a second time" && pIndexBuffer == nullptr);
+		pIndexBuffer = indexBuffer.get();
+		binds.push_back(std::move(indexBuffer));
+	}
 }
