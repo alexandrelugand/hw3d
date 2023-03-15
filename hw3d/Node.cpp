@@ -3,8 +3,8 @@
 
 namespace Entities
 {
-	Node::Node(const std::string& name, std::vector<Mesh*> meshPtrs, const XMMATRIX& transform_in) noexcpt
-		: name(name), meshPtrs(meshPtrs)
+	Node::Node(int id, const std::string& name, std::vector<Mesh*> meshPtrs, const XMMATRIX& transform_in) noexcpt
+		: name(name), id(id), meshPtrs(meshPtrs)
 	{
 		XMStoreFloat4x4(&transform, transform_in);
 		XMStoreFloat4x4(&appliedTransform, XMMatrixIdentity());
@@ -32,35 +32,32 @@ namespace Entities
 		XMStoreFloat4x4(&appliedTransform, transform);
 	}
 
-	void Node::ShowTree(int& nodeIndex, std::optional<int>& selectedIndex, Node*& pSelectedNode) const noexcept(!true)
+	void Node::ShowTree(Node*& pSelectedNode) const noexcept(!true)
 	{
-		// nodeIndex serves as the uid for gui tree nodes, incremented throughout recursion
-		const int currentNodeIndex = nodeIndex;
-		nodeIndex++;
+		// if there is no selected node, set selectedId to an impossible value
+		const int selectedId = (pSelectedNode == nullptr) ? -1 : pSelectedNode->GetId();
 
 		// build up flags for current node
 		const auto node_flags = ImGuiTreeNodeFlags_OpenOnArrow
 			| ImGuiTreeNodeFlags_OpenOnDoubleClick
-			| ((currentNodeIndex == selectedIndex.value_or(-1)) ? ImGuiTreeNodeFlags_Selected : 0)
+			| ((GetId() == selectedId) ? ImGuiTreeNodeFlags_Selected : 0)
 			| ((childPtrs.size() == 0) ? ImGuiTreeNodeFlags_Leaf : 0);
 
 		// render this node
-		const auto expanded = ImGui::TreeNodeEx(reinterpret_cast<void*>(static_cast<intptr_t>(currentNodeIndex)), node_flags, name.c_str());
+		const auto expanded = ImGui::TreeNodeEx(reinterpret_cast<void*>(static_cast<intptr_t>(GetId())), node_flags, name.c_str());
 
 		// detecting / setting selected node
 		if (ImGui::IsItemClicked())
 		{
-			selectedIndex = currentNodeIndex;
 			pSelectedNode = const_cast<Node*>(this);
 		}
 
 		// if tree node expanded, recursively render all children
 		if (expanded)
 		{
-			selectedIndex = ImGui::IsItemClicked() ? currentNodeIndex : selectedIndex;
 			for (const auto& pChild : childPtrs)
 			{
-				pChild->ShowTree(nodeIndex, selectedIndex, pSelectedNode);
+				pChild->ShowTree(pSelectedNode);
 			}
 			ImGui::TreePop();
 		}

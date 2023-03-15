@@ -48,7 +48,8 @@ namespace Entities
 			meshPtrs.push_back(ParseMesh(gfx, *pScene->mMeshes[i]));
 		}
 
-		pRoot = ParseNode(*pScene->mRootNode);
+		int nextId = 0;
+		pRoot = ParseNode(nextId, *pScene->mRootNode);
 	}
 
 	Model::~Model() noexcept
@@ -121,7 +122,7 @@ namespace Entities
 		return std::make_unique<Mesh>(gfx, std::move(bindablePtrs));
 	}
 
-	std::unique_ptr<Node> Model::ParseNode(const aiNode& node)
+	std::unique_ptr<Node> Model::ParseNode(int& nextId, const aiNode& node)
 	{
 		const auto transform = XMMatrixTranspose(
 			XMLoadFloat4x4(reinterpret_cast<const XMFLOAT4X4*>(&node.mTransformation))
@@ -135,10 +136,10 @@ namespace Entities
 			curMeshPtrs.push_back(meshPtrs.at(meshIdx).get());
 		}
 
-		auto pNode = std::make_unique<Node>(node.mName.C_Str(), std::move(curMeshPtrs), transform);
+		auto pNode = std::make_unique<Node>(nextId++, node.mName.C_Str(), std::move(curMeshPtrs), transform);
 		for (size_t i = 0; i < node.mNumChildren; i++)
 		{
-			pNode->AddChild(ParseNode(*node.mChildren[i]));
+			pNode->AddChild(ParseNode(nextId, *node.mChildren[i]));
 		}
 
 		return pNode;

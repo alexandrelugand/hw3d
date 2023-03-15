@@ -44,9 +44,36 @@ namespace Inputs
 		return {};
 	}
 
+	std::optional<Mouse::RawDelta> Mouse::ReadRawDelta() noexcept
+	{
+		if (rawDeltaBuffer.empty())
+		{
+			return std::nullopt;
+		}
+
+		const RawDelta d = rawDeltaBuffer.front();
+		rawDeltaBuffer.pop();
+		return d;
+	}
+
 	void Mouse::Flush() noexcept
 	{
 		buffer = std::queue<Event>();
+	}
+
+	void Mouse::EnableRaw() noexcept
+	{
+		rawEnabled = true;
+	}
+
+	void Mouse::DisableRaw() noexcept
+	{
+		rawEnabled = false;
+	}
+
+	bool Mouse::RawEnabled() const noexcept
+	{
+		return rawEnabled;
 	}
 
 	void Mouse::OnMouseMove(int newx, int newy) noexcept
@@ -70,6 +97,12 @@ namespace Inputs
 		isInWindow = true;
 		buffer.push(Event(Event::Type::Enter, *this));
 		TrimBuffer();
+	}
+
+	void Mouse::OnRawDelta(int dx, int dy) noexcept
+	{
+		rawDeltaBuffer.push({dx, dy});
+		TrimRawInputBuffer();
 	}
 
 	void Mouse::OnLeftPressed(int x, int y) noexcept
@@ -121,6 +154,14 @@ namespace Inputs
 		while (buffer.size() > bufferSize)
 		{
 			buffer.pop();
+		}
+	}
+
+	void Mouse::TrimRawInputBuffer() noexcept
+	{
+		while (rawDeltaBuffer.size() > bufferSize)
+		{
+			rawDeltaBuffer.pop();
 		}
 	}
 

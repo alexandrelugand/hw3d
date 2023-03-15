@@ -8,6 +8,11 @@ namespace Inputs
 		friend class Windowing::Window;
 
 	public:
+		struct RawDelta
+		{
+			int x, y;
+		};
+
 		class Event
 		{
 		public:
@@ -85,6 +90,7 @@ namespace Inputs
 		bool LeftIsPressed() const noexcept;
 		bool RightIsPressed() const noexcept;
 		std::optional<Event> Read() noexcept;
+		std::optional<RawDelta> ReadRawDelta() noexcept;
 
 		bool IsEmpty() const noexcept
 		{
@@ -92,11 +98,15 @@ namespace Inputs
 		}
 
 		void Flush() noexcept;
+		void EnableRaw() noexcept;
+		void DisableRaw() noexcept;
+		bool RawEnabled() const noexcept;
 
 	private:
 		void OnMouseMove(int x, int y) noexcept;
 		void OnMouseLeave() noexcept;
 		void OnMouseEnter() noexcept;
+		void OnRawDelta(int dx, int dy) noexcept;
 		void OnLeftPressed(int x, int y) noexcept;
 		void OnLeftReleased(int x, int y) noexcept;
 		void OnRightPressed(int x, int y) noexcept;
@@ -104,6 +114,7 @@ namespace Inputs
 		void OnWheelUp(int x, int y) noexcept;
 		void OnWheelDown(int x, int y) noexcept;
 		void TrimBuffer() noexcept;
+		void TrimRawInputBuffer() noexcept;
 		void OnWheelDelta(int x, int y, int delta) noexcept;
 
 		static constexpr unsigned int bufferSize = 16u;
@@ -113,6 +124,8 @@ namespace Inputs
 		bool rightIsPressed = false;
 		bool isInWindow = false;
 		int wheelDeltaCarry = 0;
+		bool rawEnabled = false;
 		std::queue<Event> buffer;
+		std::queue<RawDelta> rawDeltaBuffer;
 	};
 }

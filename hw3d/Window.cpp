@@ -91,6 +91,17 @@ namespace Windowing
 
 		// Create graphics object
 		pGfx = std::make_unique<Graphics>(hWnd, width, height);
+
+		// register mouse raw input device
+		RAWINPUTDEVICE rid;
+		rid.usUsagePage = 0x01; // mouse page
+		rid.usUsage = 0x02; // mouse usage
+		rid.dwFlags = 0;
+		rid.hwndTarget = nullptr;
+		if (RegisterRawInputDevices(&rid, 1, sizeof(rid)) == FALSE)
+		{
+			throw CHWND_LAST_EXCEPT();
+		}
 	}
 
 	Window::~Window()
@@ -106,6 +117,27 @@ namespace Windowing
 		{
 			throw CHWND_LAST_EXCEPT();
 		}
+	}
+
+	void Window::EnableCursor() noexcept
+	{
+		cursorEnabled = true;
+		ShowCursor();
+		EnableImGuiMouse();
+		FreeCursor();
+	}
+
+	void Window::DisableCursor() noexcept
+	{
+		cursorEnabled = false;
+		HideCursor();
+		DisableImGuiMouse();
+		ConfineCursor();
+	}
+
+	bool Window::CursorEnabled() const noexcept
+	{
+		return cursorEnabled;
 	}
 
 	std::optional<int> Window::ProcessMessages()
@@ -137,6 +169,39 @@ namespace Windowing
 			throw CHWND_NOGFX_EXCEPT();
 		}
 		return *pGfx;
+	}
+
+	void Window::ConfineCursor() noexcept
+	{
+		RECT rect;
+		GetClientRect(hWnd, &rect);
+		MapWindowPoints(hWnd, nullptr, reinterpret_cast<POINT*>(&rect), 2);
+		ClipCursor(&rect);
+	}
+
+	void Window::FreeCursor() noexcept
+	{
+		ClipCursor(nullptr);
+	}
+
+	void Window::ShowCursor() noexcept
+	{
+		while (::ShowCursor(TRUE) < 0);
+	}
+
+	void Window::HideCursor() noexcept
+	{
+		while (::ShowCursor(FALSE) >= 0);
+	}
+
+	void Window::EnableImGuiMouse() noexcept
+	{
+		ImGui::GetIO().ConfigFlags &= ~ImGuiConfigFlags_NoMouse;
+	}
+
+	void Window::DisableImGuiMouse() noexcept
+	{
+		ImGui::GetIO().ConfigFlags |= ImGuiConfigFlags_NoMouse;
 	}
 
 	LRESULT CALLBACK Window::HandleMsgSetup(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept
@@ -178,13 +243,35 @@ namespace Windowing
 		// we don't want the DefProc to handle this message because
 		// we want our destructor to destroy the window, so return 0 instead of break
 		case WM_CLOSE:
-			PostQuitMessage(0);
-			return 0;
+			{
+				PostQuitMessage(0);
+				return 0;
+			}
 
 		// clear keystate when window loses focus to prevent input getting "stuck"
 		case WM_KILLFOCUS:
-			kbd.ClearState();
-			break;
+			{
+				kbd.ClearState();
+				break;
+			}
+
+		case WM_ACTIVATE:
+			{
+				if (!cursorEnabled)
+				{
+					if (wParam & WA_ACTIVE)
+					{
+						ConfineCursor();
+						HideCursor();
+					}
+					else
+					{
+						FreeCursor();
+						ShowCursor();
+					}
+				}
+				break;
+			}
 
 		/*********** KEYBOARD MESSAGES ***********/
 		case WM_KEYDOWN:
@@ -199,18 +286,36 @@ namespace Windowing
 				kbd.OnKeyPressed(static_cast<unsigned char>(wParam));
 			}
 			break;
+
 		case WM_KEYUP:
 		case WM_SYSKEYUP:
-			kbd.OnKeyReleased(static_cast<unsigned char>(wParam));
-			break;
+			{
+				// stifle this mouse message if imgui wants to capture
+				if (imio.WantCaptureMouse)
+					break;
+
+				kbd.OnKeyReleased(static_cast<unsigned char>(wParam));
+				break;
+			}
+
 		case WM_CHAR:
-			kbd.OnChar(static_cast<unsigned char>(wParam));
-			break;
+			{
+				// stifle this mouse message if imgui wants to capture
+				if (imio.WantCaptureMouse)
+					break;
+
+				kbd.OnChar(static_cast<unsigned char>(wParam));
+				break;
+			}
 		/*********** END KEYBOARD MESSAGES ***********/
 
 		/************* MOUSE MESSAGES ****************/
 		case WM_MOUSEMOVE:
 			{
+				// stifle this mouse message if imgui wants to capture
+				if (imio.WantCaptureMouse)
+					break;
+
 				const POINTS pt = MAKEPOINTS(lParam);
 				// in client region -> log move, and log enter + capture mouse (if not previously in window)
 				if (pt.x >= 0 && pt.x < width && pt.y >= 0 && pt.y < height)
@@ -238,38 +343,113 @@ namespace Windowing
 				}
 				break;
 			}
+
 		case WM_LBUTTONDOWN:
 			{
+				SetForegroundWindow(hWnd);
+				if (!cursorEnabled)
+				{
+					ConfineCursor();
+					HideCursor();
+				}
+
+				// stifle this mouse message if imgui wants to capture
+				if (imio.WantCaptureMouse)
+					break;
+
 				const POINTS pt = MAKEPOINTS(lParam);
 				mouse.OnLeftPressed(pt.x, pt.y);
 				break;
 			}
+
 		case WM_RBUTTONDOWN:
 			{
+				// stifle this mouse message if imgui wants to capture
+				if (imio.WantCaptureMouse)
+					break;
+
 				const POINTS pt = MAKEPOINTS(lParam);
 				mouse.OnRightPressed(pt.x, pt.y);
 				break;
 			}
+
 		case WM_LBUTTONUP:
 			{
+				// stifle this mouse message if imgui wants to capture
+				if (imio.WantCaptureMouse)
+					break;
+
 				const POINTS pt = MAKEPOINTS(lParam);
 				mouse.OnLeftReleased(pt.x, pt.y);
 				break;
 			}
+
 		case WM_RBUTTONUP:
 			{
+				// stifle this mouse message if imgui wants to capture
+				if (imio.WantCaptureMouse)
+					break;
+
 				const POINTS pt = MAKEPOINTS(lParam);
 				mouse.OnRightReleased(pt.x, pt.y);
 				break;
 			}
+
 		case WM_MOUSEWHEEL:
 			{
+				// stifle this mouse message if imgui wants to capture
+				if (imio.WantCaptureMouse)
+					break;
+
 				const POINTS pt = MAKEPOINTS(lParam);
 				const int delta = GET_WHEEL_DELTA_WPARAM(wParam);
 				mouse.OnWheelDelta(pt.x, pt.y, delta);
 				break;
 			}
 		/************** END MOUSE MESSAGES **************/
+
+		/************* RAW MOUSE MESSAGES ***************/
+		case WM_INPUT:
+			{
+				if (!mouse.RawEnabled())
+					break;
+
+				UINT size;
+				// first get the size of the input data
+				if (GetRawInputData(
+					reinterpret_cast<HRAWINPUT>(lParam),
+					RID_INPUT,
+					nullptr,
+					&size,
+					sizeof(RAWINPUTHEADER)) == -1)
+				{
+					// bail msg processing if error
+					break;
+				}
+				rawBuffer.resize(size);
+				// read the input data
+				if (GetRawInputData(
+					reinterpret_cast<HRAWINPUT>(lParam),
+					RID_INPUT,
+					rawBuffer.data(),
+					&size,
+					sizeof(RAWINPUTHEADER)) != size)
+				{
+					// bail msg processing if error
+					break;
+				}
+
+				// process the raw input data
+				auto& ri = reinterpret_cast<const RAWINPUT&>(*rawBuffer.data());
+				if (ri.header.dwType == RIM_TYPEMOUSE &&
+					(ri.data.mouse.lLastX != 0 || ri.data.mouse.lLastY != 0))
+				{
+					mouse.OnRawDelta(ri.data.mouse.lLastX, ri.data.mouse.lLastY);
+				}
+
+				break;
+			}
+		/************ END RAW MOUSE MESSAGES ************/
 		}
 
 		return DefWindowProc(hWnd, msg, wParam, lParam);

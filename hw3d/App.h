@@ -13,6 +13,7 @@ private:
 	Windowing::Window wnd;
 	Hw3DTimer timer;
 	float speed_factor = 1.0f;
+	int x = 0, y = 0;
 
 	Entities::Camera camera;
 	Entities::PointLight light;

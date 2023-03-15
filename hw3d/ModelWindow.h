@@ -15,7 +15,6 @@ namespace Windowing
 		}
 
 	private:
-		std::optional<int> selectedIndex;
 		Entities::Node* pSelectedNode;
 
 		struct TransformParameters

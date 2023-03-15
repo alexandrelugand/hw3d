@@ -11,7 +11,6 @@ namespace Windowing
 		// need an int to track node indices and selected node
 		if (ImGui::Begin(windowName))
 		{
-			int nodeIndexTracker = 0;
 			ImGui::Columns(2, nullptr, true);
 			if (ImGui::Button("Reset all"))
 			{
@@ -20,16 +19,15 @@ namespace Windowing
 				{
 					val = {};
 				}
-				selectedIndex = -1;
 				pSelectedNode = nullptr;
 			}
 
-			root.ShowTree(nodeIndexTracker, selectedIndex, pSelectedNode);
+			root.ShowTree(pSelectedNode);
 
 			ImGui::NextColumn();
 			if (pSelectedNode != nullptr)
 			{
-				auto& transform = transforms[*selectedIndex];
+				auto& transform = transforms[pSelectedNode->GetId()];
 				ImGui::Text("Orientation");
 				ImGui::SliderAngle("Roll", &transform.roll, -180.0f, 180.0f);
 				ImGui::SliderAngle("Pitch", &transform.pitch, -180.0f, 180.0f);
@@ -49,7 +47,8 @@ namespace Windowing
 
 	XMMATRIX ModelWindow::GetTransform() const noexcpt
 	{
-		const auto& transform = transforms.at(*selectedIndex);
+		assert(pSelectedNode != nullptr);
+		const auto& transform = transforms.at(pSelectedNode->GetId());
 		return XMMatrixRotationRollPitchYaw(transform.pitch, transform.yaw, transform.roll) * XMMatrixTranslation(transform.x, -transform.y, -transform.z);
 	}
 }

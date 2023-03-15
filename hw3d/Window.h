@@ -62,10 +62,19 @@ namespace Windowing
 		Inputs::Mouse mouse;
 
 		void SetTitle(const std::string& title) const;
+		void EnableCursor() noexcept;
+		void DisableCursor() noexcept;
+		bool CursorEnabled() const noexcept;
 		static std::optional<int> ProcessMessages();
 		Graphics& Gfx() const;
 
 	private:
+		void ConfineCursor() noexcept;
+		void FreeCursor() noexcept;
+		void ShowCursor() noexcept;
+		void HideCursor() noexcept;
+		void EnableImGuiMouse() noexcept;
+		void DisableImGuiMouse() noexcept;
 		static LRESULT CALLBACK HandleMsgSetup(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept;
 		static LRESULT CALLBACK HandleMsgThunk(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept;
 		LRESULT HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept;
@@ -73,9 +82,11 @@ namespace Windowing
 		GDIPlusManager gdipm{};
 		ImguiManager imgui{};
 
+		bool cursorEnabled = true;
 		int width;
 		int height;
 		HWND hWnd;
 		std::unique_ptr<Graphics> pGfx;
+		std::vector<char> rawBuffer;
 	};
 }

@@ -27,7 +27,7 @@ namespace Entities
 
 	private:
 		std::unique_ptr<Mesh> ParseMesh(Graphics& gfx, const aiMesh& mesh);
-		std::unique_ptr<Node> ParseNode(const aiNode& node);
+		std::unique_ptr<Node> ParseNode(int& nextId, const aiNode& node);
 
 		std::unique_ptr<Node> pRoot;
 		std::vector<std::unique_ptr<Mesh>> meshPtrs;
