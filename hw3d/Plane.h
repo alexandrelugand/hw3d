@@ -14,22 +14,13 @@ namespace Geometry
 
 			const auto layout = Dvtx::VertexLayout{}
 			                    .Append(ElementType::Position3D)
+			                    .Append(ElementType::Normal)
 			                    .Append(ElementType::Texture2D);
 
 			constexpr float width = 2.0f;
 			constexpr float height = 2.0f;
 			const int nVertices_x = divisions_x + 1;
 			const int nVertices_y = divisions_y + 1;
-
-			std::vector<XMFLOAT3> vertices;
-
-			std::vector<XMFLOAT2> texcoords = {
-				{1.0f, 1.0f},
-				{0.0f, 1.0f},
-				{1.0f, 0.0f},
-				{0.0f, 0.0f},
-			};
-
 			Dvtx::VertexBufferDescriptor vbd{std::move(layout)};
 
 			{
@@ -37,20 +28,22 @@ namespace Geometry
 				const float side_y = height / 2.0f;
 				const float divisionSize_x = width / static_cast<float>(divisions_x);
 				const float divisionSize_y = height / static_cast<float>(divisions_y);
-				const auto bottomLeft = XMVectorSet(-side_x, -side_y, 0.0f, 0.0f);
+				const float divisionSize_x_tc = 1.0f / static_cast<float>(divisions_x);
+				const float divisionSize_y_tc = 1.0f / static_cast<float>(divisions_y);
 
 				for (int y = 0, i = 0; y < nVertices_y; y++)
 				{
-					const float y_pos = static_cast<float>(y) * divisionSize_y;
+					const float y_pos = static_cast<float>(y) * divisionSize_y - 1.0f;
+					const float y_pos_tc = 1.0f - static_cast<float>(y) * divisionSize_y_tc;
 					for (int x = 0; x < nVertices_x; x++, i++)
 					{
-						XMFLOAT3 calculatedPos;
-						const auto v = XMVectorAdd(
-							bottomLeft,
-							XMVectorSet(static_cast<float>(x) * divisionSize_x, y_pos, 0.0f, 0.0f)
+						const float x_pos = static_cast<float>(x) * divisionSize_x - 1.0f;
+						const float x_pos_tc = static_cast<float>(x) * divisionSize_x_tc;
+						vbd.EmplaceBack(
+							XMFLOAT3{x_pos, y_pos, 0.0f},
+							XMFLOAT3{0.0f, 0.0f, -1.0f},
+							XMFLOAT2{x_pos_tc, y_pos_tc}
 						);
-						XMStoreFloat3(&calculatedPos, v);
-						vertices.push_back(calculatedPos);
 					}
 				}
 			}
@@ -77,11 +70,6 @@ namespace Geometry
 						indices.push_back(indexArray[3]);
 					}
 				}
-			}
-
-			for (unsigned int i = 0; i < vertices.size(); i++)
-			{
-				vbd.EmplaceBack(vertices[i], texcoords[i % 4]);
 			}
 
 			return {std::move(vbd), std::move(indices)};

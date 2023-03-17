@@ -23,7 +23,7 @@ namespace Draw
 		AddBind(Bind::InputLayout::Resolve(gfx, model.vbd.GetLayout(), pvsbc));
 		AddBind(Bind::Topology::Resolve(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
 
-		AddBind(std::make_unique<Bind::TransformCBuf>(gfx, *this));
+		AddBind(std::make_shared<Bind::TransformCBuf>(gfx, *this));
 		AddBind(Bind::PixelConstantBuffer<PSMaterialConstant>::Resolve(gfx, materialConstants, 1u));
 	}
 

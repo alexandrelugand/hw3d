@@ -27,7 +27,7 @@ namespace Draw
 		AddBind(Bind::Texture::Resolve(gfx, "images\\alex.png"));
 		AddBind(Bind::Sampler::Resolve(gfx));
 
-		AddBind(std::make_unique<Bind::TransformCBuf>(gfx, *this));
+		AddBind(std::make_shared<Bind::TransformCBuf>(gfx, *this));
 	}
 
 	bool SkinnedBox::SpawnControlWindow() noexcept

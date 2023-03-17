@@ -5,20 +5,20 @@ namespace Draw
 	class Sheet : public DrawableObject<Sheet>
 	{
 	public:
-		Sheet(Graphics& gfx, XMFLOAT3 material);
+		Sheet(Graphics& gfx, float size);
 		bool SpawnControlWindow() noexcept;
 
 	private:
-		void SyncMaterial() noexcpt;
+		void SyncConstPS() noexcpt;
 
-		struct PSMaterialConstant
+		struct BumpMappingConstant
 		{
-			XMFLOAT3 color;
-			float specularIntensity = 0.6f;
-			float specularPower = 30.0f;
-			float padding[3];
-		} materialConstants;
+			float specularIntensity = 0.1f;
+			float specularPower = 20.0f;
+			BOOL normalMappingEnabled = TRUE;
+			float padding[1];
+		} pmc;
 
-		using MaterialCbuf = Bind::PixelConstantBuffer<PSMaterialConstant>;
+		using ConstPS = Bind::PixelConstantBuffer<BumpMappingConstant>;
 	};
 }

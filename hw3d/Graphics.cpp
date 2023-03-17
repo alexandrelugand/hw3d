@@ -129,6 +129,9 @@ void Graphics::InitRasterizerState()
 
 void Graphics::SetCullMode(const CullMode& cullMode) const
 {
+	if (wireframeEnabled)
+		return;
+
 	if (cullMode == Front)
 		pContext->RSSetState(m_cull_front_state.Get());
 	else if (cullMode == Back)
@@ -146,6 +149,11 @@ void Graphics::BeginFrame(float red, float green, float blue) const noexcept
 		ImGui_ImplWin32_NewFrame();
 		ImGui::NewFrame();
 	}
+
+	if (wireframeEnabled)
+		pContext->RSSetState(m_wire_frame_state.Get());
+	else
+		pContext->RSSetState(m_cull_front_state.Get());
 
 	const float color[] = {red, green, blue, 1.0f};
 	pContext->ClearRenderTargetView(pTarget.Get(), color);
@@ -213,6 +221,21 @@ void Graphics::DisableImGui() noexcept
 bool Graphics::IsImGuiEnabled() const noexcept
 {
 	return imguiEnabled;
+}
+
+void Graphics::EnableWireframe() noexcept
+{
+	wireframeEnabled = true;
+}
+
+void Graphics::DisableWireframe() noexcept
+{
+	wireframeEnabled = false;
+}
+
+bool Graphics::IsWireframeEnabled() const noexcept
+{
+	return wireframeEnabled;
 }
 
 // Graphics exception stuff

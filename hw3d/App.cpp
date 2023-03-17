@@ -38,6 +38,7 @@ void App::DoFrame()
 	light.Bind(gfx, gfx.GetCamera());
 
 	nano.Draw(gfx);
+	sheet.Draw(gfx);
 
 	light.Draw(gfx);
 
@@ -57,6 +58,18 @@ void App::DoFrame()
 			{
 				wnd.EnableCursor();
 				wnd.mouse.DisableRaw();
+			}
+		}
+
+		if (e->IsPress() && e->GetCode() == VK_F11)
+		{
+			if (gfx.IsWireframeEnabled())
+			{
+				gfx.DisableWireframe();
+			}
+			else
+			{
+				gfx.EnableWireframe();
 			}
 		}
 
@@ -119,6 +132,7 @@ void App::DoFrame()
 		camera.SpawnControlWindow();
 		light.SpawnControlWindow();
 		nano.ShowWindow();
+		sheet.SpawnControlWindow();
 	}
 
 	// Present
@@ -133,6 +147,8 @@ void App::SpawnSimulationWindow() noexcept
 		ImGui::Text("%.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 		ImGui::Text("Status: %s", speed_factor == 0.0f ? "PAUSED" : "RUNNING");
 		ImGui::Text("Cursor: %s", wnd.CursorEnabled() ? "ENABLED" : "DISABLED");
+		ImGui::Text("Wireframe: %s", wnd.Gfx().IsWireframeEnabled() ? "ENABLED" : "DISABLED");
+
 		if (ImGui::Button("Reset"))
 			speed_factor = 1.0f;
 

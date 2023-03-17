@@ -28,6 +28,7 @@ namespace Draw
 		}
 
 		void AddBind(std::shared_ptr<Bind::Bindable> bind) noexcpt;
+		CullMode cull = Front;
 
 	private:
 		const Bind::IndexBuffer* pIndexBuffer = nullptr;

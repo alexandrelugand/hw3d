@@ -14,7 +14,7 @@ namespace Draw
 
 		if (!cullFound)
 		{
-			gfx.SetCullMode(Front);
+			gfx.SetCullMode(cull);
 		}
 
 		gfx.DrawIndexed(pIndexBuffer->GetCount());

@@ -25,6 +25,7 @@ namespace Windowing
 			root.ShowTree(pSelectedNode);
 
 			ImGui::NextColumn();
+
 			if (pSelectedNode != nullptr)
 			{
 				auto& transform = transforms[pSelectedNode->GetId()];

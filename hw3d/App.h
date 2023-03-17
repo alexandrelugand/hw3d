@@ -17,6 +17,7 @@ private:
 	Entities::Camera camera;
 	Entities::PointLight light;
 	Entities::Model nano{wnd.Gfx(), "Models\\nano_textured\\nanosuit.obj"};
+	Draw::Sheet sheet{wnd.Gfx(), 3.0f};
 
 	void DoFrame();
 	void SpawnSimulationWindow() noexcept;

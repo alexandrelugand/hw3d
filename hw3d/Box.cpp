@@ -23,8 +23,8 @@ namespace Draw
 		AddBind(Bind::InputLayout::Resolve(gfx, model.vbd.GetLayout(), pvsbc));
 		AddBind(Bind::Topology::Resolve(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
 
-		AddBind(std::make_unique<Bind::TransformCBuf>(gfx, *this));
-		AddBind(std::make_unique<MaterialCbuf>(gfx, materialConstants, 1u));
+		AddBind(std::make_shared<Bind::TransformCBuf>(gfx, *this));
+		AddBind(std::make_shared<MaterialCbuf>(gfx, materialConstants, 1u));
 	}
 
 	bool Box::SpawnControlWindow() noexcept

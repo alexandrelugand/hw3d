@@ -79,9 +79,14 @@ public:
 	void DisableImGui() noexcept;
 	bool IsImGuiEnabled() const noexcept;
 
+	void EnableWireframe() noexcept;
+	void DisableWireframe() noexcept;
+	bool IsWireframeEnabled() const noexcept;
+
 private:
 	void InitRasterizerState();
 	bool imguiEnabled = true;
+	bool wireframeEnabled = false;
 	XMMATRIX projection{};
 	XMMATRIX camera{};
 

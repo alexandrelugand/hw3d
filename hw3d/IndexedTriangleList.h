@@ -1,5 +1,7 @@
 #pragma once
 
+using ElementType = Dvtx::VertexLayout::ElementType;
+
 namespace Geometry
 {
 	class IndexedTriangleList
@@ -14,7 +16,6 @@ namespace Geometry
 
 		void Transform(FXMMATRIX matrix)
 		{
-			using ElementType = Dvtx::VertexLayout::ElementType;
 			for (int i = 0; i < vbd.NumVertices(); i++)
 			{
 				auto& pos = vbd[i].Attr<ElementType::Position3D>();
@@ -41,7 +42,7 @@ namespace Geometry
 
 				const auto n = XMVector3Normalize(XMVector3Cross((p1 - p0), (p2 - p0)));
 
-				XMFLOAT3 n0, n1, n2{};
+				XMFLOAT3 n0{}, n1{}, n2{};
 				XMStoreFloat3(&n0, n);
 				normals.push_back(n0);
 				XMStoreFloat3(&n1, n);
@@ -52,6 +53,6 @@ namespace Geometry
 		}
 
 		Dvtx::VertexBufferDescriptor vbd;
-		std::vector<unsigned short> indices;
+		std::vector<unsigned short> indices{};
 	};
 }
