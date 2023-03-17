@@ -11,13 +11,16 @@ cbuffer LightCBuf
 
 cbuffer ObjectCBuf
 {
-    float3 color;
     float specularIntensity;
     float specularPower;
     float padding[2];
 }
 
-float4 main(float3 camPos : POSITION, float3 n : NORMAL) : SV_TARGET
+Texture2D tex;
+Texture2D spec;
+SamplerState splr;
+
+float4 main(float3 camPos : POSITION, float3 n : NORMAL, float2 tc: TEXCOORD) : SV_TARGET
 {
 	// fragment to light vector data
     const float3 vToL = lightPos - camPos;
@@ -35,8 +38,11 @@ float4 main(float3 camPos : POSITION, float3 n : NORMAL) : SV_TARGET
     const float3 r = w * 2.0f - vToL;
 
     // calculate specular intensity based on angle between viewing vector, narrow with power function
-    const float3 specular = att * (diffuseColor * diffuseIntensity) * specularIntensity * pow(max(0.0f, dot(normalize(-r), normalize(camPos))), specularPower);
+    const float4 specularSample = spec.Sample(splr, tc);
+    const float3 specularReflectionColor = specularSample.rgb;
+    const float specularPower = pow(2.0f, specularSample.a * 13.0f);
+    const float3 specular = att * (diffuseColor * diffuseIntensity) * pow(max(0.0f, dot(normalize(-r), normalize(camPos))), specularPower);
 
 	// final color
-    return float4(saturate(diffuse + ambient + specular) * color, 1.0f);
+    return float4(saturate((diffuse + ambient) * tex.Sample(splr, tc).rgb + specular * specularReflectionColor), 1.0f);
 }

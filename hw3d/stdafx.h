@@ -59,6 +59,8 @@ namespace Gdiplus
 
 // HW3D
 // Utilities
+#include "utf8.h"
+#include "uuid.h"
 #include "dxerr.h"
 #include "Hw3DMath.h"
 #include "Hw3DTimer.h"
@@ -86,10 +88,9 @@ namespace Gdiplus
 
 // Bind
 #include "Bindable.h"
+#include "Codex.h"
 #include "Drawable.h"
-#include "DrawableBase.h"
 #include "ColorDrawable.h"
-#include "TestObject.h"
 #include "ConstantBuffer.h"
 #include "VertexBuffer.h"
 #include "IndexBuffer.h"
@@ -99,14 +100,10 @@ namespace Gdiplus
 #include "Topology.h"
 #include "TransformCbuf.h"
 #include "ColorCBuf.h"
-#include "Sampler.h"
-#include "Texture.h"
-
-// Geometry
-#include "IndexedTriangleList.h"
-
-// Draw
 #include "Surface.h"
+#include "Texture.h"
+#include "Sampler.h"
+#include "Cull.h"
 
 // Dvtx
 #include "Color.h"
@@ -114,6 +111,19 @@ namespace Gdiplus
 #include "Vertex.h"
 #include "ConstVertex.h"
 #include "VertexBufferDescriptor.h"
+
+// Geometry
+#include "IndexedTriangleList.h"
+
+// Draw
+#include "DrawableObject.h"
+#include "Asset.h"
+#include "Box.h"
+#include "Cylinder.h"
+#include "Pyramid.h"
+#include "Sheet.h"
+#include "SkinnedBox.h"
+#include "SolidSphere.h"
 
 // Entities
 #include "Camera.h"

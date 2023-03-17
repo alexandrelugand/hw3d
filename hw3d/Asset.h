@@ -2,10 +2,10 @@
 
 namespace Draw
 {
-	class Sheet : public DrawableObject<Sheet>
+	class Asset : public DrawableObject<Asset>
 	{
 	public:
-		Sheet(Graphics& gfx, XMFLOAT3 material);
+		Asset(Graphics& gfx, XMFLOAT3 material, float scale);
 		bool SpawnControlWindow() noexcept;
 
 	private:

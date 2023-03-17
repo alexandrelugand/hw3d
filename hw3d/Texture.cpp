@@ -4,9 +4,13 @@
 
 namespace Bind
 {
-	Texture::Texture(Graphics& gfx, const Draw::Surface& s)
+	Texture::Texture(Graphics& gfx, const std::string& path, unsigned int slot)
+		: slot(slot), path(path)
 	{
 		INFOMAN(gfx);
+
+		// load surface
+		const auto s = Surface::FromFile(path);
 
 		// create texture resource
 		D3D11_TEXTURE2D_DESC textureDesc = {};
@@ -23,7 +27,7 @@ namespace Bind
 		textureDesc.MiscFlags = 0;
 		D3D11_SUBRESOURCE_DATA sd = {};
 		sd.pSysMem = s.GetBufferPtr();
-		sd.SysMemPitch = s.GetWidth() * sizeof(Draw::Surface::Color);
+		sd.SysMemPitch = s.GetWidth() * sizeof(Surface::Color);
 		ComPtr<ID3D11Texture2D> pTexture;
 		GFX_THROW_INFO(GetDevice(gfx)->CreateTexture2D(
 			&textureDesc, &sd, &pTexture
@@ -42,6 +46,21 @@ namespace Bind
 
 	void Texture::Bind(Graphics& gfx) noexcpt
 	{
-		GetContext(gfx)->PSSetShaderResources(0u, 1u, pTextureView.GetAddressOf());
+		GetContext(gfx)->PSSetShaderResources(slot, 1u, pTextureView.GetAddressOf());
+	}
+
+	std::shared_ptr<Texture> Texture::Resolve(Graphics& gfx, const std::string& path, UINT slot)
+	{
+		return Codex::Resolve<Texture>(gfx, path, slot);
+	}
+
+	std::string Texture::GenerateUID(const std::string& path, UINT slot)
+	{
+		return typeid(Texture).name() + "#"s + path + "#" + std::to_string(slot);
+	}
+
+	std::string Texture::GetUID() const noexcept
+	{
+		return GenerateUID(path, slot);
 	}
 }

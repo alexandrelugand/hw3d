@@ -82,6 +82,9 @@
     <Filter Include="Source Files\Entities">
       <UniqueIdentifier>{0178c61a-19f9-4ef2-b297-7a0e0a86893c}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Dvtx">
+      <UniqueIdentifier>{4ff9a9ce-3c70-4f00-a34b-2840ca4d9bab}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp">
@@ -126,9 +129,6 @@
     <ClCompile Include="Pyramid.cpp">
       <Filter>Source Files\Draw</Filter>
     </ClCompile>
-    <ClCompile Include="Melon.cpp">
-      <Filter>Source Files\Draw</Filter>
-    </ClCompile>
     <ClCompile Include="Texture.cpp">
       <Filter>Source Files\Bind</Filter>
     </ClCompile>
@@ -168,10 +168,7 @@
     <ClCompile Include="stdafx.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="AssTest.cpp">
-      <Filter>Source Files\Draw</Filter>
-    </ClCompile>
-    <ClCompile Include="Surface.cpp">
+    <ClCompile Include="Asset.cpp">
       <Filter>Source Files\Draw</Filter>
     </ClCompile>
     <ClCompile Include="DxgiInfoManager.cpp">
@@ -227,6 +224,21 @@
     </ClCompile>
     <ClCompile Include="ModelWindow.cpp">
       <Filter>Source Files\Windowing</Filter>
+    </ClCompile>
+    <ClCompile Include="Surface.cpp">
+      <Filter>Source Files\Bind</Filter>
+    </ClCompile>
+    <ClCompile Include="VertexLayout.cpp">
+      <Filter>Source Files\Dvtx</Filter>
+    </ClCompile>
+    <ClCompile Include="VertexBufferDescriptor.cpp">
+      <Filter>Source Files\Dvtx</Filter>
+    </ClCompile>
+    <ClCompile Include="Vertex.cpp">
+      <Filter>Source Files\Dvtx</Filter>
+    </ClCompile>
+    <ClCompile Include="Cull.cpp">
+      <Filter>Source Files\Bind</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -284,9 +296,6 @@
     <ClInclude Include="ColorCBuf.h">
       <Filter>Header Files\Bind</Filter>
     </ClInclude>
-    <ClInclude Include="DrawableBase.h">
-      <Filter>Header Files\Draw</Filter>
-    </ClInclude>
     <ClInclude Include="Cube.h">
       <Filter>Header Files\Geometry</Filter>
     </ClInclude>
@@ -308,9 +317,6 @@
     <ClInclude Include="Pyramid.h">
       <Filter>Header Files\Draw</Filter>
     </ClInclude>
-    <ClInclude Include="Melon.h">
-      <Filter>Header Files\Draw</Filter>
-    </ClInclude>
     <ClInclude Include="Texture.h">
       <Filter>Header Files\Bind</Filter>
     </ClInclude>
@@ -323,7 +329,7 @@
     <ClInclude Include="SolidSphere.h">
       <Filter>Header Files\Draw</Filter>
     </ClInclude>
-    <ClInclude Include="TestObject.h">
+    <ClInclude Include="DrawableObject.h">
       <Filter>Header Files\Draw</Filter>
     </ClInclude>
     <ClInclude Include="Cylinder.h">
@@ -359,7 +365,7 @@
     <ClInclude Include="stdafx.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="AssTest.h">
+    <ClInclude Include="Asset.h">
       <Filter>Header Files\Draw</Filter>
     </ClInclude>
     <ClInclude Include="VertexLayout.h">
@@ -382,9 +388,6 @@
     </ClInclude>
     <ClInclude Include="Model.h">
       <Filter>Header Files\Entities</Filter>
-    </ClInclude>
-    <ClInclude Include="Surface.h">
-      <Filter>Header Files\Draw</Filter>
     </ClInclude>
     <ClInclude Include="DxgiInfoManager.h">
       <Filter>Header Files\Managers</Filter>
@@ -439,6 +442,21 @@
     </ClInclude>
     <ClInclude Include="Forwards.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Surface.h">
+      <Filter>Header Files\Bind</Filter>
+    </ClInclude>
+    <ClInclude Include="Codex.h">
+      <Filter>Header Files\Bind</Filter>
+    </ClInclude>
+    <ClInclude Include="utf8.h">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="uuid.h">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Cull.h">
+      <Filter>Header Files\Bind</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -506,6 +524,9 @@
       <Filter>Shaders</Filter>
     </FxCompile>
     <FxCompile Include="TexturedPhongVS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="PhongPSSpecMap.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>

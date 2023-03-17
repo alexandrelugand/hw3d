@@ -1,14 +1,15 @@
 #include "stdafx.h"
 #include "Model.h"
+// ReSharper disable CppUnsignedZeroComparison
 
 namespace Entities
 {
-	ModelException::ModelException(int line, const char* file, std::string note) noexcept
+	Model::ModelException::ModelException(int line, const char* file, std::string note) noexcept
 		: Hw3DException(line, file), note(std::move(note))
 	{
 	}
 
-	const char* ModelException::what() const noexcept
+	const char* Model::ModelException::what() const noexcept
 	{
 		std::ostringstream oss;
 		oss << Hw3DException::what()
@@ -17,12 +18,12 @@ namespace Entities
 		return whatBuffer.c_str();
 	}
 
-	const char* ModelException::GetType() const noexcept
+	const char* Model::ModelException::GetType() const noexcept
 	{
 		return "HW3D Model exception";
 	}
 
-	const std::string& ModelException::GetNote() const noexcept
+	const std::string& Model::ModelException::GetNote() const noexcept
 	{
 		return note;
 	}
@@ -45,7 +46,7 @@ namespace Entities
 
 		for (size_t i = 0; i < pScene->mNumMeshes; i++)
 		{
-			meshPtrs.push_back(ParseMesh(gfx, *pScene->mMeshes[i]));
+			meshPtrs.push_back(ParseMesh(gfx, *pScene->mMeshes[i], pScene->mMaterials));
 		}
 
 		int nextId = 0;
@@ -70,12 +71,13 @@ namespace Entities
 		pWindow->Show(windowName, *this, *pRoot);
 	}
 
-	std::unique_ptr<Mesh> Model::ParseMesh(Graphics& gfx, const aiMesh& mesh)
+	std::unique_ptr<Mesh> Model::ParseMesh(Graphics& gfx, const aiMesh& mesh, const aiMaterial* const* pMaterial)
 	{
 		Dvtx::VertexBufferDescriptor vbd(
 			std::move(Dvtx::VertexLayout{}
 			          .Append(Dvtx::VertexLayout::Position3D)
 			          .Append(Dvtx::VertexLayout::Normal)
+			          .Append(Dvtx::VertexLayout::Texture2D)
 			)
 		);
 
@@ -83,7 +85,8 @@ namespace Entities
 		{
 			vbd.EmplaceBack(
 				*reinterpret_cast<XMFLOAT3*>(&mesh.mVertices[i]),
-				*reinterpret_cast<XMFLOAT3*>(&mesh.mNormals[i])
+				*reinterpret_cast<XMFLOAT3*>(&mesh.mNormals[i]),
+				*reinterpret_cast<XMFLOAT2*>(&mesh.mTextureCoords[0][i])
 			);
 		}
 
@@ -98,26 +101,57 @@ namespace Entities
 			indices.push_back(face.mIndices[2]);
 		}
 
-		std::vector<std::unique_ptr<Bind::Bindable>> bindablePtrs;
-		bindablePtrs.push_back(std::make_unique<Bind::VertexBuffer>(gfx, vbd));
-		bindablePtrs.push_back(std::make_unique<Bind::IndexBuffer>(gfx, indices));
+		std::vector<std::shared_ptr<Bind::Bindable>> bindablePtrs;
+		const auto base = "Models\\nano_textured\\"s;
 
-		auto pvs = std::make_unique<Bind::VertexShader>(gfx, L"PhongVS.cso");
+		bool hasSpecularMap = false;
+		float defaultShininess = 35.0f;
+
+		if (mesh.mMaterialIndex >= 0)
+		{
+			auto& material = *pMaterial[mesh.mMaterialIndex];
+			aiString texFileName;
+
+			if (material.GetTexture(aiTextureType_DIFFUSE, 0, &texFileName) == aiReturn_SUCCESS)
+			{
+				bindablePtrs.push_back(Bind::Texture::Resolve(gfx, base + texFileName.C_Str()));
+			}
+
+			if (material.GetTexture(aiTextureType_SPECULAR, 0, &texFileName) == aiReturn_SUCCESS)
+			{
+				bindablePtrs.push_back(Bind::Texture::Resolve(gfx, base + texFileName.C_Str(), 1u));
+				hasSpecularMap = true;
+			}
+			else
+			{
+				material.Get(AI_MATKEY_SHININESS, defaultShininess);
+			}
+
+			bindablePtrs.push_back(Bind::Sampler::Resolve(gfx));
+		}
+
+		auto meshTag = base + "%" + mesh.mName.C_Str();
+		bindablePtrs.push_back(Bind::VertexBuffer::Resolve(gfx, meshTag, vbd));
+		bindablePtrs.push_back(Bind::IndexBuffer::Resolve(gfx, meshTag, indices));
+
+		auto pvs = std::make_unique<Bind::VertexShader>(gfx, "PhongVS.cso");
 		auto pvsbc = pvs->GetBytecode();
 		bindablePtrs.push_back(std::move(pvs));
+		bindablePtrs.push_back(Bind::InputLayout::Resolve(gfx, vbd.GetLayout(), pvsbc));
 
-		bindablePtrs.push_back(std::make_unique<Bind::PixelShader>(gfx, L"PhongPS.cso"));
+		if (hasSpecularMap)
+			bindablePtrs.push_back(Bind::PixelShader::Resolve(gfx, "PhongPSSpecMap.cso"));
+		else
+			bindablePtrs.push_back(Bind::PixelShader::Resolve(gfx, "PhongPS.cso"));
 
 		struct PSMaterialConstant
 		{
-			XMFLOAT3 color = {0.6f, 0.6f, 0.8f};
-			float specularIntensity = 0.6f;
+			float specularIntensity = 1.6f;
 			float specularPower = 30.0f;
-			float padding[3];
+			float padding[2]{};
 		} pmc;
-		bindablePtrs.push_back(std::make_unique<Bind::PixelConstantBuffer<PSMaterialConstant>>(gfx, pmc, 1u));
-
-		bindablePtrs.push_back(std::make_unique<Bind::InputLayout>(gfx, vbd.GetDescriptor().GetLayout(), pvsbc));
+		pmc.specularPower = defaultShininess;
+		bindablePtrs.push_back(Bind::PixelConstantBuffer<PSMaterialConstant>::Resolve(gfx, pmc, 1u));
 
 		return std::make_unique<Mesh>(gfx, std::move(bindablePtrs));
 	}

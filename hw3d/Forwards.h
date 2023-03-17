@@ -19,6 +19,7 @@ namespace Windowing
 namespace Bind
 {
 	class Bindable;
+	class Codex;
 	class ColorCBuf;
 	template <typename C>
 	class ConstantBuffer;
@@ -29,6 +30,7 @@ namespace Bind
 	class IndexBuffer;
 	class InputLayout;
 	class PixelShader;
+	class Surface;
 	class Texture;
 	class Topology;
 	class TransformCBuf;
@@ -37,23 +39,20 @@ namespace Bind
 	class Sampler;
 }
 
-// Geometry
-namespace Geometry
-{
-	template <class T>
-	class IndexedTriangleList;
-}
-
 // Draw
 namespace Draw
 {
 	class Drawable;
 	template <class T>
-	class DrawableBase;
+	class DrawableObject;
 	class ColorDrawable;
-	template <class T>
-	class TestObject;
-	class Surface;
+	class Asset;
+	class Box;
+	class Cylinder;
+	class pyramid;
+	class Sheet;
+	class SkinnedBox;
+	class SolidSphere;
 }
 
 // Inputs

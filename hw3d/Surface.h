@@ -1,6 +1,6 @@
 #pragma once
 
-namespace Draw
+namespace Bind
 {
 	class Surface
 	{
@@ -115,9 +115,9 @@ namespace Draw
 		Surface& operator=(const Surface&) = delete;
 		~Surface();
 
-		void Clear(Color fillValue) noexcept;
-		void PutPixel(unsigned int x, unsigned int y, Color c) noexcept(!IS_DEBUG);
-		Color GetPixel(unsigned int x, unsigned int y) const noexcept(!IS_DEBUG);
+		void Clear(Color fillValue) const noexcept;
+		void PutPixel(unsigned int x, unsigned int y, Color c) noexcpt;
+		Color GetPixel(unsigned int x, unsigned int y) const noexcpt;
 		unsigned int GetWidth() const noexcept;
 		unsigned int GetHeight() const noexcept;
 		Color* GetBufferPtr() noexcept;
@@ -125,11 +125,11 @@ namespace Draw
 		const Color* GetBufferPtrConst() const noexcept;
 		static Surface FromFile(const std::string& name);
 		void Save(const std::string& filename) const;
-		void Copy(const Surface& src) noexcept(!IS_DEBUG);
+		void Copy(const Surface& src) noexcpt;
 
 	private:
 		Surface(unsigned int width, unsigned int height, std::unique_ptr<Color[]> pBufferParam) noexcept;
-		std::unique_ptr<Color[]> pBuffer;
+		std::unique_ptr<Color[]> pBuffer = nullptr;
 		unsigned int width;
 		unsigned int height;
 	};

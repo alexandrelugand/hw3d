@@ -1,21 +1,36 @@
 #pragma once
 
+using ElementType = Dvtx::VertexLayout::ElementType;
+
 namespace Geometry
 {
 	class Plane
 	{
 	public:
-		template <class V>
-		static IndexedTriangleList<V> MakeTesselated(int divisions_x, int divisions_y)
+		static IndexedTriangleList Make(int divisions_x, int divisions_y)
 		{
 			assert(divisions_x >= 1);
 			assert(divisions_y >= 1);
+
+			const auto layout = Dvtx::VertexLayout{}
+			                    .Append(ElementType::Position3D)
+			                    .Append(ElementType::Texture2D);
 
 			constexpr float width = 2.0f;
 			constexpr float height = 2.0f;
 			const int nVertices_x = divisions_x + 1;
 			const int nVertices_y = divisions_y + 1;
-			std::vector<V> vertices(nVertices_x * nVertices_y);
+
+			std::vector<XMFLOAT3> vertices;
+
+			std::vector<XMFLOAT2> texcoords = {
+				{1.0f, 1.0f},
+				{0.0f, 1.0f},
+				{1.0f, 0.0f},
+				{0.0f, 0.0f},
+			};
+
+			Dvtx::VertexBufferDescriptor vbd{std::move(layout)};
 
 			{
 				const float side_x = width / 2.0f;
@@ -29,11 +44,13 @@ namespace Geometry
 					const float y_pos = static_cast<float>(y) * divisionSize_y;
 					for (int x = 0; x < nVertices_x; x++, i++)
 					{
+						XMFLOAT3 calculatedPos;
 						const auto v = XMVectorAdd(
 							bottomLeft,
 							XMVectorSet(static_cast<float>(x) * divisionSize_x, y_pos, 0.0f, 0.0f)
 						);
-						XMStoreFloat3(&vertices[i].pos, v);
+						XMStoreFloat3(&calculatedPos, v);
+						vertices.push_back(calculatedPos);
 					}
 				}
 			}
@@ -62,13 +79,12 @@ namespace Geometry
 				}
 			}
 
-			return {std::move(vertices), std::move(indices)};
-		}
+			for (unsigned int i = 0; i < vertices.size(); i++)
+			{
+				vbd.EmplaceBack(vertices[i], texcoords[i % 4]);
+			}
 
-		template <class V>
-		static IndexedTriangleList<V> Make()
-		{
-			return MakeTesselated<V>(1, 1);
+			return {std::move(vbd), std::move(indices)};
 		}
 	};
 }

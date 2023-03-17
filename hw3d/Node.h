@@ -18,11 +18,11 @@ namespace Entities
 	private:
 		void AddChild(std::unique_ptr<Node> pChild) noexcpt;
 
-		std::string name;
-		int id;
-		std::vector<Mesh*> meshPtrs;
-		std::vector<std::unique_ptr<Node>> childPtrs;
-		XMFLOAT4X4 transform;
-		XMFLOAT4X4 appliedTransform;
+		std::string name{};
+		int id = 0;
+		std::vector<Mesh*> meshPtrs{};
+		std::vector<std::unique_ptr<Node>> childPtrs{};
+		XMFLOAT4X4 transform{};
+		XMFLOAT4X4 appliedTransform{};
 	};
 }

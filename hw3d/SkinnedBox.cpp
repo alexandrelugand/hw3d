@@ -4,62 +4,74 @@
 
 namespace Draw
 {
-	SkinnedBox::SkinnedBox(Graphics& gfx,
-	                       std::mt19937& rng,
-	                       std::uniform_real_distribution<float>& adist,
-	                       std::uniform_real_distribution<float>& ddist,
-	                       std::uniform_real_distribution<float>& odist,
-	                       std::uniform_real_distribution<float>& rdist)
-		: TestObject(gfx, rng, adist, ddist, odist, rdist)
+	SkinnedBox::SkinnedBox(Graphics& gfx)
+		: DrawableObject(gfx)
 	{
-		if (!IsStaticInitialized())
-		{
-			struct Vertex
-			{
-				XMFLOAT3 pos;
-				XMFLOAT3 n;
-				XMFLOAT2 tc;
-			};
-			auto model = Geometry::Cube::MakeIndependentTextured<Vertex>();
-			model.SetNormalsIndependentFlat();
+		const auto tag = "$skinnedbox." + Uuid::ToString(Uuid::New());
+		const auto model = Geometry::Cube::MakeIndependentTextured();
 
-			AddStaticBind(std::make_unique<Bind::VertexBuffer>(gfx, model.vertices));
+		AddBind(Bind::VertexBuffer::Resolve(gfx, tag, model.vbd));
+		AddBind(Bind::IndexBuffer::Resolve(gfx, tag, model.indices));
 
-			AddStaticBind(std::make_unique<Bind::Texture>(gfx, Surface::FromFile("images\\alex.png")));
+		auto pvs = Bind::VertexShader::Resolve(gfx, "TexturedPhongVS.cso");
+		auto pvsbc = pvs->GetBytecode();
+		AddBind(std::move(pvs));
 
-			AddStaticBind(std::make_unique<Bind::Sampler>(gfx));
+		AddBind(Bind::PixelShader::Resolve(gfx, "TexturedPhongPS.cso"));
 
-			auto pvs = std::make_unique<Bind::VertexShader>(gfx, L"TexturedPhongVS.cso");
-			auto pvsbc = pvs->GetBytecode();
-			AddStaticBind(std::move(pvs));
+		AddBind(std::make_unique<Bind::InputLayout>(gfx, model.vbd.GetLayout(), pvsbc));
+		AddBind(std::make_unique<Bind::Topology>(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
 
-			AddStaticBind(std::make_unique<Bind::PixelShader>(gfx, L"TexturedPhongPS.cso"));
+		AddBind(std::make_unique<MaterialCbuf>(gfx, materialConstants, 1u));
 
-			AddStaticIndexBuffer(std::make_unique<Bind::IndexBuffer>(gfx, model.indices));
-
-			const std::vector<D3D11_INPUT_ELEMENT_DESC> ied =
-			{
-				{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-				{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
-				{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0},
-			};
-			AddStaticBind(std::make_unique<Bind::InputLayout>(gfx, ied, pvsbc));
-
-			AddStaticBind(std::make_unique<Bind::Topology>(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
-
-			struct PSMaterialConstant
-			{
-				float specularIntensity = 0.6f;
-				float specularPower = 30.0f;
-				float padding[2];
-			} colorConst;
-			AddStaticBind(std::make_unique<Bind::PixelConstantBuffer<PSMaterialConstant>>(gfx, colorConst, 1u));
-		}
-		else
-		{
-			SetIndexFromStatic();
-		}
+		AddBind(Bind::Texture::Resolve(gfx, "images\\alex.png"));
+		AddBind(Bind::Sampler::Resolve(gfx));
 
 		AddBind(std::make_unique<Bind::TransformCBuf>(gfx, *this));
+	}
+
+	bool SkinnedBox::SpawnControlWindow() noexcept
+	{
+		bool dirty = false;
+		bool open = true;
+		if (ImGui::Begin("Skinned Box", &open))
+		{
+			ImGui::Text("Material Properties");
+			const auto sid = ImGui::SliderFloat("Specular Intensity", &materialConstants.specularIntensity, 0.05f, 4.0f, "%.2f", ImGuiSliderFlags_NoRoundToFormat);
+			const auto spd = ImGui::SliderFloat("Specular Power", &materialConstants.specularPower, 1.0f, 200.0f, "%.2f", ImGuiSliderFlags_NoRoundToFormat);
+			dirty = sid || spd;
+
+			ImGui::Text("Position");
+			ImGui::SliderFloat("X", &pos.x, -80.0f, 80.0f, "%.1f");
+			ImGui::SliderFloat("Y", &pos.y, -80.0f, 80.0f, "%.1f");
+			ImGui::SliderFloat("Z", &pos.z, -80.0f, 80.0f, "%.1f");
+
+			ImGui::Text("Rotation");
+			ImGui::SliderAngle("Theta", &theta, -180.0f, 180.0f);
+			ImGui::SliderAngle("Phi", &phi, -180.0f, 180.0f);
+
+			ImGui::Text("Orientation");
+			ImGui::SliderAngle("Roll", &roll, -180.0f, 180.0f);
+			ImGui::SliderAngle("Pitch", &pitch, -180.0f, 180.0f);
+			ImGui::SliderAngle("Yaw", &yaw, -180.0f, 180.0f);
+
+			if (ImGui::Button("Reset"))
+				Reset();
+		}
+		ImGui::End();
+
+		if (dirty)
+		{
+			SyncMaterial();
+		}
+
+		return open;
+	}
+
+	void SkinnedBox::SyncMaterial() noexcpt
+	{
+		const auto pConstPS = QueryBindable<MaterialCbuf>();
+		assert(pConstPS != nullptr);
+		pConstPS->Update(gfx, materialConstants);
 	}
 }

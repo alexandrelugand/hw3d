@@ -4,73 +4,72 @@
 
 namespace Draw
 {
-	Pyramid::Pyramid(Graphics& gfx,
-	                 std::mt19937& rng,
-	                 std::uniform_real_distribution<float>& adist,
-	                 std::uniform_real_distribution<float>& ddist,
-	                 std::uniform_real_distribution<float>& odist,
-	                 std::uniform_real_distribution<float>& rdist,
-	                 std::uniform_int_distribution<int>& tdist)
-		: TestObject(gfx, rng, adist, ddist, odist, rdist)
+	Pyramid::Pyramid(Graphics& gfx, XMFLOAT3 material)
+		: DrawableObject(gfx)
 	{
-		if (!IsStaticInitialized())
-		{
-			auto pvs = std::make_unique<Bind::VertexShader>(gfx, L"BlendedPhongVS.cso");
-			auto pvsbc = pvs->GetBytecode();
-			AddStaticBind(std::move(pvs));
+		const auto tag = "$pyramid." + Uuid::ToString(Uuid::New());
+		const auto model = Geometry::Cone::MakeTesselatedIndependentNormals(24);
+		materialConstants.color = material;
 
-			AddStaticBind(std::make_unique<Bind::PixelShader>(gfx, L"BlendedPhongPS.cso"));
+		AddBind(Bind::VertexBuffer::Resolve(gfx, tag, model.vbd));
+		AddBind(Bind::IndexBuffer::Resolve(gfx, tag, model.indices));
 
-			const std::vector<D3D11_INPUT_ELEMENT_DESC> ied =
-			{
-				{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-				{"NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
-				{"COLOR", 0, DXGI_FORMAT_R8G8B8A8_UNORM, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0},
-			};
-			AddStaticBind(std::make_unique<Bind::InputLayout>(gfx, ied, pvsbc));
+		const auto pvs = Bind::VertexShader::Resolve(gfx, "BlendedPhongVS.cso");
+		const auto pvsbc = pvs->GetBytecode();
+		AddBind(std::move(pvs));
 
-			AddStaticBind(std::make_unique<Bind::Topology>(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
+		AddBind(Bind::PixelShader::Resolve(gfx, "BlendedPhongPS.cso"));
 
-			struct PSMaterialConstant
-			{
-				float specularIntensity = 0.6f;
-				float specularPower = 30.0f;
-				float padding[2];
-			} colorConst;
-			AddStaticBind(std::make_unique<Bind::PixelConstantBuffer<PSMaterialConstant>>(gfx, colorConst, 1u));
-		}
-
-		struct Vertex
-		{
-			XMFLOAT3 pos;
-			XMFLOAT3 n;
-			std::array<char, 4> color;
-			char padding;
-		};
-
-		const auto tesselation = tdist(rng);
-		auto model = Geometry::Cone::MakeTesselatedIndependentFaces<Vertex>(tesselation);
-
-		// set vertex colors for mesh
-		for (auto& v : model.vertices)
-		{
-			v.color = {static_cast<char>(10), static_cast<char>(10), static_cast<char>(255)};
-		}
-
-		for (int i = 0; i < tesselation; i++)
-		{
-			model.vertices[i * 3].color = {static_cast<char>(255), static_cast<char>(10), static_cast<char>(10)};
-		}
-
-		// deform mesh linearly
-		model.Transform(XMMatrixScaling(1.0f, 1.0f, 0.7f));
-
-		// add normals
-		model.SetNormalsIndependentFlat();
-
-		AddBind(std::make_unique<Bind::VertexBuffer>(gfx, model.vertices));
-		AddIndexBuffer(std::make_unique<Bind::IndexBuffer>(gfx, model.indices));
+		AddBind(Bind::InputLayout::Resolve(gfx, model.vbd.GetLayout(), pvsbc));
+		AddBind(Bind::Topology::Resolve(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
 
 		AddBind(std::make_unique<Bind::TransformCBuf>(gfx, *this));
+		AddBind(std::make_unique<MaterialCbuf>(gfx, materialConstants, 1u));
+	}
+
+	bool Pyramid::SpawnControlWindow() noexcept
+	{
+		bool dirty = false;
+		bool open = true;
+		if (ImGui::Begin("Pyramid", &open))
+		{
+			ImGui::Text("Material Properties");
+			const auto cd = ImGui::ColorEdit3("Material Color", &materialConstants.color.x);
+			const auto sid = ImGui::SliderFloat("Specular Intensity", &materialConstants.specularIntensity, 0.05f, 4.0f, "%.2f", ImGuiSliderFlags_NoRoundToFormat);
+			const auto spd = ImGui::SliderFloat("Specular Power", &materialConstants.specularPower, 1.0f, 200.0f, "%.2f", ImGuiSliderFlags_NoRoundToFormat);
+			dirty = cd || sid || spd;
+
+			ImGui::Text("Position");
+			ImGui::SliderFloat("X", &pos.x, -80.0f, 80.0f, "%.1f");
+			ImGui::SliderFloat("Y", &pos.y, -80.0f, 80.0f, "%.1f");
+			ImGui::SliderFloat("Z", &pos.z, -80.0f, 80.0f, "%.1f");
+
+			ImGui::Text("Rotation");
+			ImGui::SliderAngle("Theta", &theta, -180.0f, 180.0f);
+			ImGui::SliderAngle("Phi", &phi, -180.0f, 180.0f);
+
+			ImGui::Text("Orientation");
+			ImGui::SliderAngle("Roll", &roll, -180.0f, 180.0f);
+			ImGui::SliderAngle("Pitch", &pitch, -180.0f, 180.0f);
+			ImGui::SliderAngle("Yaw", &yaw, -180.0f, 180.0f);
+
+			if (ImGui::Button("Reset"))
+				Reset();
+		}
+		ImGui::End();
+
+		if (dirty)
+		{
+			SyncMaterial();
+		}
+
+		return open;
+	}
+
+	void Pyramid::SyncMaterial() noexcpt
+	{
+		const auto pConstPS = QueryBindable<MaterialCbuf>();
+		assert(pConstPS != nullptr);
+		pConstPS->Update(gfx, materialConstants);
 	}
 }

@@ -1,26 +1,15 @@
 #pragma once
-#include "Forwards.h"
 
 namespace Draw
 {
-	class Box : public TestObject<Box>
+	class Box : public DrawableObject<Box>
 	{
 	public:
-		Box(Graphics& gfx, std::mt19937& rng,
-		    std::uniform_real_distribution<float>& adist,
-		    std::uniform_real_distribution<float>& ddist,
-		    std::uniform_real_distribution<float>& odist,
-		    std::uniform_real_distribution<float>& rdist,
-		    std::uniform_real_distribution<float>& bdist,
-		    XMFLOAT3 material);
-
-		XMMATRIX GetTransform() const noexcept override;
-
-		// returns false if window is closed
-		bool SpawnControlWindow(int id, Graphics& gfx) noexcept;
+		Box(Graphics& gfx, XMFLOAT3 material);
+		bool SpawnControlWindow() noexcept;
 
 	private:
-		void SyncMaterial(Graphics& gfx) noexcpt;
+		void SyncMaterial() noexcpt;
 
 		struct PSMaterialConstant
 		{
@@ -31,8 +20,5 @@ namespace Draw
 		} materialConstants;
 
 		using MaterialCbuf = Bind::PixelConstantBuffer<PSMaterialConstant>;
-
-		// model transform
-		XMFLOAT3X3 mt;
 	};
 }

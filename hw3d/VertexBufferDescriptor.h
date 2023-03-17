@@ -6,75 +6,31 @@ namespace Dvtx
 	class VertexBufferDescriptor
 	{
 	public:
-		VertexBufferDescriptor(VertexLayout descriptor) noexcpt
-			: descriptor(descriptor)
-		{
-		}
-
-		const VertexLayout& GetDescriptor() const noexcept
-		{
-			return descriptor;
-		}
-
-		size_t NumVertices() const noexcpt
-		{
-			return buffer.size() / descriptor.Size();
-		}
-
-		size_t Size() const noexcpt
-		{
-			return buffer.size();
-		}
-
-		const char* GetData() const noexcpt
-		{
-			return buffer.data();
-		}
+		VertexBufferDescriptor(VertexLayout layout) noexcpt;
+		const VertexLayout& GetLayout() const noexcept;
+		size_t NumVertices() const noexcpt;
+		size_t Size() const noexcpt;
+		const char* GetData() const noexcpt;
 
 		template <typename... Params>
 		void EmplaceBack(Params&&... params) noexcpt
 		{
-			assert(sizeof...(params) == descriptor.GetElementCount() && "Param count doesn't match number of vertext elements");
-			buffer.resize(buffer.size() + descriptor.Size());
+			assert(sizeof...(params) == layout.GetElementCount() && "Param count doesn't match number of vertex elements");
+			buffer.resize(buffer.size() + layout.Size());
 			Back().SetAttributeByIndex(0u, std::forward<Params>(params)...);
 		}
 
-		Vertex Back() noexcpt
-		{
-			assert(buffer.size() != 0u);
-			return Vertex{buffer.data() + buffer.size() - descriptor.Size(), descriptor};
-		}
-
-		Vertex Front() noexcpt
-		{
-			assert(buffer.size() != 0u);
-			return Vertex{buffer.data(), descriptor};
-		}
-
-		Vertex operator[](size_t i) noexcpt
-		{
-			assert(i < NumVertices());
-			return Vertex{buffer.data() + i * descriptor.Size(), descriptor};
-		}
+		Vertex Back() noexcpt;
+		Vertex Front() noexcpt;
+		Vertex operator[](size_t i) noexcpt;
 
 		//Const vertex
-		ConstVertex Back() const noexcpt
-		{
-			return const_cast<VertexBufferDescriptor*>(this)->Back();
-		}
-
-		ConstVertex Front() const noexcpt
-		{
-			return const_cast<VertexBufferDescriptor*>(this)->Front();
-		}
-
-		ConstVertex operator[](size_t i) const noexcpt
-		{
-			return const_cast<VertexBufferDescriptor&>(*this)[i];
-		}
+		ConstVertex Back() const noexcpt;
+		ConstVertex Front() const noexcpt;
+		ConstVertex operator[](size_t i) const noexcpt;
 
 	private:
 		std::vector<char> buffer;
-		VertexLayout descriptor;
+		VertexLayout layout;
 	};
 }

@@ -32,7 +32,7 @@ namespace Entities
 		XMStoreFloat4x4(&appliedTransform, transform);
 	}
 
-	void Node::ShowTree(Node*& pSelectedNode) const noexcept(!true)
+	void Node::ShowTree(Node*& pSelectedNode) const noexcpt
 	{
 		// if there is no selected node, set selectedId to an impossible value
 		const int selectedId = (pSelectedNode == nullptr) ? -1 : pSelectedNode->GetId();
@@ -63,7 +63,7 @@ namespace Entities
 		}
 	}
 
-	void Node::ResetNode() noexcept(!true)
+	void Node::ResetNode() noexcpt
 	{
 		XMStoreFloat4x4(&appliedTransform, XMMatrixIdentity());
 		for (const auto& pChild : childPtrs)

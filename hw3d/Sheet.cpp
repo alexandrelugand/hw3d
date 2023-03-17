@@ -4,87 +4,75 @@
 
 namespace Draw
 {
-	Sheet::Sheet(Graphics& gfx,
-	             std::mt19937& rng,
-	             std::uniform_real_distribution<float>& adist,
-	             std::uniform_real_distribution<float>& ddist,
-	             std::uniform_real_distribution<float>& odist,
-	             std::uniform_real_distribution<float>& rdist)
-		:
-		r(rdist(rng)),
-		theta(adist(rng)),
-		phi(adist(rng)),
-		chi(adist(rng)),
-		droll(ddist(rng)),
-		dpitch(ddist(rng)),
-		dyaw(ddist(rng)),
-		dtheta(odist(rng)),
-		dphi(odist(rng)),
-		dchi(odist(rng))
+	Sheet::Sheet(Graphics& gfx, XMFLOAT3 material)
+		: DrawableObject(gfx)
 	{
-		if (!IsStaticInitialized())
-		{
-			struct Vertex
-			{
-				XMFLOAT3 pos;
+		const auto tag = "$sheet." + Uuid::ToString(Uuid::New());
+		auto model = Geometry::Plane::Make(1, 1);
+		materialConstants.color = material;
 
-				struct
-				{
-					float u;
-					float v;
-				} tex;
-			};
+		AddBind(Bind::VertexBuffer::Resolve(gfx, tag, model.vbd));
+		AddBind(Bind::IndexBuffer::Resolve(gfx, tag, model.indices));
 
-			auto model = Geometry::Plane::Make<Vertex>();
-			model.vertices[0].tex = {0.0f, 0.0f};
-			model.vertices[1].tex = {1.0f, 0.0f};
-			model.vertices[2].tex = {0.0f, 1.0f};
-			model.vertices[3].tex = {1.0f, 1.0f};
+		AddBind(Bind::Texture::Resolve(gfx, "images\\alex.png"));
+		AddBind(Bind::Sampler::Resolve(gfx));
 
-			AddStaticBind(std::make_unique<Bind::VertexBuffer>(gfx, model.vertices));
+		const auto pvs = Bind::VertexShader::Resolve(gfx, "TextureVS.cso");
+		auto pvsbc = pvs->GetBytecode();
+		AddBind(std::move(pvs));
 
-			AddStaticBind(std::make_unique<Bind::Texture>(gfx, Surface::FromFile("images\\alex.png")));
-			AddStaticBind(std::make_unique<Bind::Sampler>(gfx));
+		AddBind(Bind::PixelShader::Resolve(gfx, "TexturePS.cso"));
 
-			auto pvs = std::make_unique<Bind::VertexShader>(gfx, L"TextureVS.cso");
-			auto pvsbc = pvs->GetBytecode();
-			AddStaticBind(std::move(pvs));
-
-			AddStaticBind(std::make_unique<Bind::PixelShader>(gfx, L"TexturePS.cso"));
-
-			AddStaticIndexBuffer(std::make_unique<Bind::IndexBuffer>(gfx, model.indices));
-
-			const std::vector<D3D11_INPUT_ELEMENT_DESC> ied =
-			{
-				{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-				{"TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
-			};
-			AddStaticBind(std::make_unique<Bind::InputLayout>(gfx, ied, pvsbc));
-
-			AddStaticBind(std::make_unique<Bind::Topology>(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
-		}
-		else
-		{
-			SetIndexFromStatic();
-		}
+		AddBind(Bind::InputLayout::Resolve(gfx, model.vbd.GetLayout(), pvsbc));
+		AddBind(Bind::Topology::Resolve(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
+		AddBind(Bind::Cull::Resolve(gfx, None));
 
 		AddBind(std::make_unique<Bind::TransformCBuf>(gfx, *this));
 	}
 
-	void Sheet::Update(float dt) noexcept
+	bool Sheet::SpawnControlWindow() noexcept
 	{
-		roll += droll * dt;
-		pitch += dpitch * dt;
-		yaw += dyaw * dt;
-		theta += dtheta * dt;
-		phi += dphi * dt;
-		chi += dchi * dt;
+		bool dirty = false;
+		bool open = true;
+		if (ImGui::Begin("Sheet", &open))
+		{
+			ImGui::Text("Material Properties");
+			const auto cd = ImGui::ColorEdit3("Material Color", &materialConstants.color.x);
+			const auto sid = ImGui::SliderFloat("Specular Intensity", &materialConstants.specularIntensity, 0.05f, 4.0f, "%.2f", ImGuiSliderFlags_NoRoundToFormat);
+			const auto spd = ImGui::SliderFloat("Specular Power", &materialConstants.specularPower, 1.0f, 200.0f, "%.2f", ImGuiSliderFlags_NoRoundToFormat);
+			dirty = cd || sid || spd;
+
+			ImGui::Text("Position");
+			ImGui::SliderFloat("X", &pos.x, -80.0f, 80.0f, "%.1f");
+			ImGui::SliderFloat("Y", &pos.y, -80.0f, 80.0f, "%.1f");
+			ImGui::SliderFloat("Z", &pos.z, -80.0f, 80.0f, "%.1f");
+
+			ImGui::Text("Rotation");
+			ImGui::SliderAngle("Theta", &theta, -180.0f, 180.0f);
+			ImGui::SliderAngle("Phi", &phi, -180.0f, 180.0f);
+
+			ImGui::Text("Orientation");
+			ImGui::SliderAngle("Roll", &roll, -180.0f, 180.0f);
+			ImGui::SliderAngle("Pitch", &pitch, -180.0f, 180.0f);
+			ImGui::SliderAngle("Yaw", &yaw, -180.0f, 180.0f);
+
+			if (ImGui::Button("Reset"))
+				Reset();
+		}
+		ImGui::End();
+
+		if (dirty)
+		{
+			SyncMaterial();
+		}
+
+		return open;
 	}
 
-	XMMATRIX Sheet::GetTransform() const noexcept
+	void Sheet::SyncMaterial() noexcpt
 	{
-		return XMMatrixRotationRollPitchYaw(pitch, yaw, roll) *
-			XMMatrixTranslation(r, 0.0f, 0.0f) *
-			XMMatrixRotationRollPitchYaw(theta, phi, chi);
+		const auto pConstPS = QueryBindable<MaterialCbuf>();
+		assert(pConstPS != nullptr);
+		pConstPS->Update(gfx, materialConstants);
 	}
 }

@@ -4,8 +4,6 @@
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "D3DCompiler.lib")
 
-namespace dx = DirectX;
-
 Graphics::Graphics(HWND hWnd, unsigned int width, unsigned int height)
 {
 	DXGI_SWAP_CHAIN_DESC sd{};
@@ -100,8 +98,43 @@ Graphics::Graphics(HWND hWnd, unsigned int width, unsigned int height)
 	vp.TopLeftY = 0.0f;
 	pContext->RSSetViewports(1u, &vp);
 
+	InitRasterizerState();
+
 	// Init imgui D3D Impl
 	ImGui_ImplDX11_Init(pDevice.Get(), pContext.Get());
+}
+
+void Graphics::InitRasterizerState()
+{
+	D3D11_RASTERIZER_DESC desc = {};
+	desc.CullMode = D3D11_CULL_NONE;
+	desc.DepthClipEnable = false;
+	desc.FrontCounterClockwise = false;
+	desc.FillMode = D3D11_FILL_WIREFRAME;
+
+	pDevice->CreateRasterizerState(&desc, &m_wire_frame_state);
+
+	desc.CullMode = D3D11_CULL_FRONT;
+	desc.DepthClipEnable = true;
+	desc.FillMode = D3D11_FILL_SOLID;
+	desc.FrontCounterClockwise = true;
+	pDevice->CreateRasterizerState(&desc, &m_cull_front_state);
+
+	desc.CullMode = D3D11_CULL_BACK;
+	pDevice->CreateRasterizerState(&desc, &m_cull_back_state);
+
+	desc.CullMode = D3D11_CULL_NONE;
+	pDevice->CreateRasterizerState(&desc, &m_cull_none_state);
+}
+
+void Graphics::SetCullMode(const CullMode& cullMode) const
+{
+	if (cullMode == Front)
+		pContext->RSSetState(m_cull_front_state.Get());
+	else if (cullMode == Back)
+		pContext->RSSetState(m_cull_back_state.Get());
+	else if (cullMode == None)
+		pContext->RSSetState(m_cull_none_state.Get());
 }
 
 void Graphics::BeginFrame(float red, float green, float blue) const noexcept
@@ -140,187 +173,6 @@ void Graphics::EndFrame()
 		}
 		throw GFX_EXCEPT(hr);
 	}
-}
-
-void Graphics::DrawTestCube(float dt, float x, float z)
-{
-	HRESULT hr;
-
-	static float roll;
-	static float pitch;
-	static float yaw;
-	roll += 1.0f * dt;
-	pitch += 1.0f * dt;
-	yaw += 1.0f * dt;
-
-	struct Vertex
-	{
-		XMFLOAT3 pos;
-	};
-
-	Vertex vertices[] =
-	{
-		{{-1.0f, -1.0f, -1.0f}},
-		{{1.0f, -1.0f, -1.0f}},
-		{{-1.0f, 1.0f, -1.0f}},
-		{{1.0f, 1.0f, -1.0f}},
-		{{-1.0f, -1.0f, 1.0f}},
-		{{1.0f, -1.0f, 1.0f}},
-		{{-1.0f, 1.0f, 1.0f}},
-		{{1.0f, 1.0f, 1.0f}}
-	};
-
-	D3D11_BUFFER_DESC vbd{};
-	vbd.ByteWidth = sizeof(vertices);
-	vbd.Usage = D3D11_USAGE_DEFAULT;
-	vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
-	vbd.CPUAccessFlags = 0u;
-	vbd.MiscFlags = 0u;
-	vbd.StructureByteStride = sizeof(Vertex);
-
-	D3D11_SUBRESOURCE_DATA vsd{};
-	vsd.pSysMem = vertices;
-
-	// Create vertex buffer
-	ComPtr<ID3D11Buffer> pVertexBuffer;
-	GFX_THROW_INFO(pDevice->CreateBuffer(&vbd, &vsd, &pVertexBuffer));
-
-	// Bind vertex buffer to pipeline
-	const UINT stride = sizeof(Vertex);
-	const UINT offset = 0u;
-	pContext->IASetVertexBuffers(0, 1, pVertexBuffer.GetAddressOf(), &stride, &offset);
-
-	// Create index buffer
-	const unsigned short indices[] =
-	{
-		0, 2, 1, 2, 3, 1,
-		1, 3, 5, 3, 7, 5,
-		2, 6, 3, 3, 6, 7,
-		4, 5, 7, 4, 7, 6,
-		0, 4, 2, 2, 4, 6,
-		0, 1, 4, 1, 5, 4
-	};
-
-	D3D11_BUFFER_DESC ibd{};
-	ibd.ByteWidth = sizeof(indices);
-	ibd.Usage = D3D11_USAGE_DEFAULT;
-	ibd.BindFlags = D3D11_BIND_INDEX_BUFFER;
-	ibd.CPUAccessFlags = 0u;
-	ibd.MiscFlags = 0u;
-	ibd.StructureByteStride = sizeof(unsigned short);
-
-	D3D11_SUBRESOURCE_DATA isd{};
-	isd.pSysMem = indices;
-
-	// Create index buffer
-	ComPtr<ID3D11Buffer> pIndexBuffer;
-	GFX_THROW_INFO(pDevice->CreateBuffer(&ibd, &isd, &pIndexBuffer));
-
-	// Bind index buffer to pipeline
-	pContext->IASetIndexBuffer(pIndexBuffer.Get(), DXGI_FORMAT_R16_UINT, 0u);
-
-	// Create constant buffer
-	struct ConstantBuffer
-	{
-		XMMATRIX transform;
-	};
-
-	const ConstantBuffer cb =
-	{
-		{
-			XMMatrixTranspose( //to use column matrix in shader (not row_major matrix), best performances
-				XMMatrixRotationRollPitchYaw(pitch, yaw, roll) *
-				XMMatrixTranslation(x, 0.0f, z + 4.0f) *
-				XMMatrixPerspectiveLH(1.0f, 3.0f / 4.0f, 0.5f, 10.0f)
-			)
-		}
-	};
-
-	D3D11_BUFFER_DESC cbd{};
-	cbd.ByteWidth = sizeof(cb);
-	cbd.Usage = D3D11_USAGE_DYNAMIC;
-	cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	cbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	cbd.MiscFlags = 0u;
-	cbd.StructureByteStride = 0u;
-
-	D3D11_SUBRESOURCE_DATA csd{};
-	csd.pSysMem = &cb;
-
-	// Create constant buffer
-	ComPtr<ID3D11Buffer> pConstantBuffer;
-	GFX_THROW_INFO(pDevice->CreateBuffer(&cbd, &csd, &pConstantBuffer));
-
-	// Bind constant buffer to pipeline
-	pContext->VSSetConstantBuffers(0u, 1u, pConstantBuffer.GetAddressOf());
-
-	// Create constant buffer 2
-	_declspec(align(16))
-	struct ConstantBuffer2
-	{
-		XMFLOAT4 colors[6];
-	};
-
-	const ConstantBuffer2 cb2 =
-	{
-		{
-			{1.0f, 0, 1.0f, 1.0f},
-			{1.0f, 0, 0, 1.0f},
-			{0, 1.0f, 0, 1.0f},
-			{0, 0, 1.0f, 1.0f},
-			{1.0f, 1.0f, 0, 1.0f},
-			{0, 1.0f, 1.0f, 1.0f}
-		}
-	};
-
-	D3D11_BUFFER_DESC cbd2{};
-	cbd2.ByteWidth = sizeof(cb2);
-	cbd2.Usage = D3D11_USAGE_DYNAMIC;
-	cbd2.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
-	cbd2.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
-	cbd2.MiscFlags = 0u;
-	cbd2.StructureByteStride = 0u;
-
-	D3D11_SUBRESOURCE_DATA csd2{};
-	csd2.pSysMem = &cb2;
-
-	// Create constant buffer
-	ComPtr<ID3D11Buffer> pConstantBuffer2;
-	GFX_THROW_INFO(pDevice->CreateBuffer(&cbd2, &csd2, &pConstantBuffer2));
-
-	// Bind constant buffer to pipeline
-	pContext->PSSetConstantBuffers(0u, 1u, pConstantBuffer2.GetAddressOf());
-
-	// Create vertex shader
-	ComPtr<ID3DBlob> pBlob;
-	ComPtr<ID3D11VertexShader> pVertexShader;
-	GFX_THROW_INFO(D3DReadFileToBlob(L"VertexShader.cso", &pBlob));
-	GFX_THROW_INFO(pDevice->CreateVertexShader(pBlob->GetBufferPointer(), pBlob->GetBufferSize(), nullptr, &pVertexShader));
-
-	// Bind vertex shader to pipeline
-	pContext->VSSetShader(pVertexShader.Get(), nullptr, 0u);
-
-	// Input (vertex) layout (2D position only)
-	ComPtr<ID3D11InputLayout> pInputLayout;
-	const D3D11_INPUT_ELEMENT_DESC ied[] =
-	{
-		{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0}
-	};
-	pDevice->CreateInputLayout(ied, static_cast<UINT>(std::size(ied)), pBlob->GetBufferPointer(), pBlob->GetBufferSize(), &pInputLayout);
-	pContext->IASetInputLayout(pInputLayout.Get());
-
-	// Create pixel shader
-	ComPtr<ID3D11PixelShader> pPixelShader;
-	GFX_THROW_INFO(D3DReadFileToBlob(L"PixelShader.cso", &pBlob));
-	GFX_THROW_INFO(pDevice->CreatePixelShader(pBlob->GetBufferPointer(), pBlob->GetBufferSize(), nullptr, &pPixelShader));
-
-	// Bind pixel shader to pipeline
-	pContext->PSSetShader(pPixelShader.Get(), nullptr, 0u);
-
-	// Set primitive topology to triangle list (group of 3 vertices)
-	pContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	GFX_THROW_INFO_ONLY(pContext->DrawIndexed(static_cast<UINT>(std::size(indices)), 0u, 0u));
 }
 
 void Graphics::DrawIndexed(UINT count) noexcpt

@@ -38,6 +38,7 @@ void App::DoFrame()
 	light.Bind(gfx, gfx.GetCamera());
 
 	nano.Draw(gfx);
+
 	light.Draw(gfx);
 
 	while (const auto e = wnd.kbd.ReadKey())
@@ -45,7 +46,7 @@ void App::DoFrame()
 		if (!e->IsPress())
 			continue;
 
-		if (e->IsPress() && e->GetCode() == VK_INSERT)
+		if (e->IsPress() && e->GetCode() == VK_F1)
 		{
 			if (wnd.CursorEnabled())
 			{
@@ -126,18 +127,12 @@ void App::DoFrame()
 
 void App::SpawnSimulationWindow() noexcept
 {
-	while (const auto d = wnd.mouse.ReadRawDelta())
-	{
-		x += d->x;
-		y += d->y;
-	}
-
 	if (ImGui::Begin("Simulation"))
 	{
 		ImGui::SliderFloat("Speed Factor", &speed_factor, 0.0f, 6.0f, "%.4f");
 		ImGui::Text("%.3f ms/frame (%.1f FPS)", 1000.0f / ImGui::GetIO().Framerate, ImGui::GetIO().Framerate);
 		ImGui::Text("Status: %s", speed_factor == 0.0f ? "PAUSED" : "RUNNING");
-		ImGui::Text("Cursor: %s (%d, %d)", wnd.CursorEnabled() ? "ENABLED" : "DISABLED", x, y);
+		ImGui::Text("Cursor: %s", wnd.CursorEnabled() ? "ENABLED" : "DISABLED");
 		if (ImGui::Button("Reset"))
 			speed_factor = 1.0f;
 

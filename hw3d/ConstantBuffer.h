@@ -10,7 +10,7 @@ namespace Bind
 		{
 			INFOMAN(gfx);
 
-			D3D11_BUFFER_DESC cbd{};
+			D3D11_BUFFER_DESC cbd;
 			cbd.ByteWidth = sizeof(C);
 			cbd.Usage = D3D11_USAGE_DYNAMIC;
 			cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
@@ -26,7 +26,7 @@ namespace Bind
 		{
 			INFOMAN(gfx);
 
-			D3D11_BUFFER_DESC cbd{};
+			D3D11_BUFFER_DESC cbd;
 			cbd.ByteWidth = sizeof(constant);
 			cbd.Usage = D3D11_USAGE_DYNAMIC;
 			cbd.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
@@ -74,6 +74,31 @@ namespace Bind
 		{
 			this->GetContext(gfx)->VSSetConstantBuffers(slot, 1u, pConstantBuffer.GetAddressOf());
 		}
+
+		static std::shared_ptr<VertexConstantBuffer> Resolve(Graphics& gfx, const C& consts, UINT slot = 0)
+		{
+			return Codex::Resolve<VertexConstantBuffer>(gfx, consts, slot);
+		}
+
+		static std::shared_ptr<VertexConstantBuffer> Resolve(Graphics& gfx, UINT slot = 0)
+		{
+			return Codex::Resolve<VertexConstantBuffer>(gfx, slot);
+		}
+
+		static std::string GenerateUID(const C&, UINT slot)
+		{
+			return GenerateUID(slot);
+		}
+
+		static std::string GenerateUID(UINT slot = 0)
+		{
+			return typeid(VertexConstantBuffer).name() + "#"s + std::to_string(slot);
+		}
+
+		std::string GetUID() const noexcept override
+		{
+			return GenerateUID(slot);
+		}
 	};
 
 	template <typename C>
@@ -89,6 +114,31 @@ namespace Bind
 		void Bind(Graphics& gfx) noexcpt override
 		{
 			this->GetContext(gfx)->PSSetConstantBuffers(slot, 1u, pConstantBuffer.GetAddressOf());
+		}
+
+		static std::shared_ptr<PixelConstantBuffer> Resolve(Graphics& gfx, const C& consts, UINT slot = 0)
+		{
+			return Codex::Resolve<PixelConstantBuffer>(gfx, consts, slot);
+		}
+
+		static std::shared_ptr<PixelConstantBuffer> Resolve(Graphics& gfx, UINT slot = 0)
+		{
+			return Codex::Resolve<PixelConstantBuffer>(gfx, slot);
+		}
+
+		static std::string GenerateUID(const C&, UINT slot)
+		{
+			return GenerateUID(slot);
+		}
+
+		static std::string GenerateUID(UINT slot = 0)
+		{
+			return typeid(PixelConstantBuffer).name() + "#"s + std::to_string(slot);
+		}
+
+		std::string GetUID() const noexcept override
+		{
+			return GenerateUID(slot);
 		}
 	};
 }

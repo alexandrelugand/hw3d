@@ -11,14 +11,14 @@ namespace Dvtx
 		template <VertexLayout::ElementType Type>
 		auto& Attr() noexcpt
 		{
-			auto pAttribute = pData + descriptor.Resolve<Type>().GetOffset();
+			auto pAttribute = pData + layout.Resolve<Type>().GetOffset();
 			return *reinterpret_cast<typename VertexLayout::Map<Type>::SysType*>(pAttribute); //Magic of metadata template!
 		}
 
 		template <typename T>
 		void SetAttributeByIndex(size_t i, T&& val) noexcpt
 		{
-			const auto& element = descriptor.ResolveByIndex(i);
+			const auto& element = layout.ResolveByIndex(i);
 			auto pAttribute = pData + element.GetOffset();
 			switch (element.Type())
 			{
@@ -49,11 +49,7 @@ namespace Dvtx
 		}
 
 	protected:
-		Vertex(char* pData, const VertexLayout& descriptor)
-			: pData(pData), descriptor(descriptor)
-		{
-			assert(pData != nullptr);
-		}
+		Vertex(char* pData, const VertexLayout& layout);
 
 	private:
 		//Enables parameter pack setting of multiple parameters by element index
@@ -80,6 +76,6 @@ namespace Dvtx
 		}
 
 		char* pData = nullptr;
-		const VertexLayout& descriptor;
+		const VertexLayout& layout;
 	};
 }

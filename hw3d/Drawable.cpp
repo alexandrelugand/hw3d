@@ -5,29 +5,29 @@ namespace Draw
 {
 	void Drawable::Draw(Graphics& gfx) const noexcpt
 	{
+		bool cullFound = false;
 		for (auto& b : binds)
 		{
 			b->Bind(gfx);
+			cullFound |= typeid(*b) == typeid(Bind::Cull);
 		}
 
-		for (auto& b : GetStaticBinds())
+		if (!cullFound)
 		{
-			b->Bind(gfx);
+			gfx.SetCullMode(Front);
 		}
 
 		gfx.DrawIndexed(pIndexBuffer->GetCount());
 	}
 
-	void Drawable::AddBind(std::unique_ptr<Bind::Bindable> bind) noexcpt
+	void Drawable::AddBind(std::shared_ptr<Bind::Bindable> bind) noexcpt
 	{
-		assert("*Must* use AddIndexBuffer to bind index buffer" && typeid(*bind) != typeid(Bind::IndexBuffer));
+		// special case for index buffer
+		if (typeid(*bind) == typeid(Bind::IndexBuffer))
+		{
+			assert("Binding multiple index buffers not allowed" && pIndexBuffer == nullptr);
+			pIndexBuffer = &static_cast<Bind::IndexBuffer&>(*bind);
+		}
 		binds.push_back(std::move(bind));
-	}
-
-	void Drawable::AddIndexBuffer(std::unique_ptr<Bind::IndexBuffer> indexBuffer) noexcpt
-	{
-		assert("Attempting to add index buffer a second time" && pIndexBuffer == nullptr);
-		pIndexBuffer = indexBuffer.get();
-		binds.push_back(std::move(indexBuffer));
 	}
 }

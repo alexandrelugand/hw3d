@@ -1,6 +1,13 @@
 #pragma once
 #include "Forwards.h"
 
+enum CullMode
+{
+	None = 0,
+	Front,
+	Back
+};
+
 class Graphics
 {
 	friend class Bind::Bindable;
@@ -57,27 +64,37 @@ public:
 
 	void BeginFrame(float red, float green, float blue) const noexcept;
 	void EndFrame();
-	void DrawTestCube(float dt, float x, float z);
+
 	void DrawIndexed(UINT uint) noexcpt;
+
 	void SetProjection(FXMMATRIX proj) noexcept;
 	XMMATRIX GetProjection() const noexcept;
+
 	void SetCamera(FXMMATRIX cam) noexcept;
 	XMMATRIX GetCamera() const noexcept;
+
+	void SetCullMode(const CullMode& cullMode) const;
 
 	void EnableImGui() noexcept;
 	void DisableImGui() noexcept;
 	bool IsImGuiEnabled() const noexcept;
 
 private:
+	void InitRasterizerState();
 	bool imguiEnabled = true;
-	XMMATRIX projection;
-	XMMATRIX camera;
+	XMMATRIX projection{};
+	XMMATRIX camera{};
 
-	ComPtr<ID3D11Device> pDevice;
-	ComPtr<IDXGISwapChain> pSwapChain;
-	ComPtr<ID3D11DeviceContext> pContext;
-	ComPtr<ID3D11RenderTargetView> pTarget;
-	ComPtr<ID3D11DepthStencilView> pDSV;
+	ComPtr<ID3D11Device> pDevice = nullptr;
+	ComPtr<IDXGISwapChain> pSwapChain = nullptr;
+	ComPtr<ID3D11DeviceContext> pContext = nullptr;
+	ComPtr<ID3D11RenderTargetView> pTarget = nullptr;
+	ComPtr<ID3D11DepthStencilView> pDSV = nullptr;
+
+	ComPtr<ID3D11RasterizerState> m_wire_frame_state = nullptr;
+	ComPtr<ID3D11RasterizerState> m_cull_front_state = nullptr;
+	ComPtr<ID3D11RasterizerState> m_cull_back_state = nullptr;
+	ComPtr<ID3D11RasterizerState> m_cull_none_state = nullptr;
 
 #ifndef NDEBUG
 	DxgiInfoManager infoManager;

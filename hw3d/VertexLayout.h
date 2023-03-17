@@ -1,5 +1,6 @@
 #pragma once
 #include "Color.h"
+// ReSharper disable CppExplicitSpecializationInNonNamespaceScope
 
 namespace Dvtx
 {
@@ -27,6 +28,7 @@ namespace Dvtx
 			using SysType = XMFLOAT2;
 			static constexpr DXGI_FORMAT dxgi_format = DXGI_FORMAT_R32G32_FLOAT;
 			static constexpr const char* semantic = "POSITION";
+			static constexpr const char* code = "P2";
 		};
 
 		template <>
@@ -35,6 +37,7 @@ namespace Dvtx
 			using SysType = XMFLOAT3;
 			static constexpr DXGI_FORMAT dxgi_format = DXGI_FORMAT_R32G32B32_FLOAT;
 			static constexpr const char* semantic = "POSITION";
+			static constexpr const char* code = "P3";
 		};
 
 		template <>
@@ -43,6 +46,7 @@ namespace Dvtx
 			using SysType = XMFLOAT2;
 			static constexpr DXGI_FORMAT dxgi_format = DXGI_FORMAT_R32G32_FLOAT;
 			static constexpr const char* semantic = "TEXCOORD";
+			static constexpr const char* code = "T2";
 		};
 
 		template <>
@@ -51,6 +55,7 @@ namespace Dvtx
 			using SysType = XMFLOAT3;
 			static constexpr DXGI_FORMAT dxgi_format = DXGI_FORMAT_R32G32B32_FLOAT;
 			static constexpr const char* semantic = "NORMAL";
+			static constexpr const char* code = "N";
 		};
 
 		template <>
@@ -59,6 +64,7 @@ namespace Dvtx
 			using SysType = XMFLOAT3;
 			static constexpr DXGI_FORMAT dxgi_format = DXGI_FORMAT_R32G32B32_FLOAT;
 			static constexpr const char* semantic = "COLOR";
+			static constexpr const char* code = "C3";
 		};
 
 		template <>
@@ -67,6 +73,7 @@ namespace Dvtx
 			using SysType = XMFLOAT4;
 			static constexpr DXGI_FORMAT dxgi_format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 			static constexpr const char* semantic = "COLOR";
+			static constexpr const char* code = "C4";
 		};
 
 		template <>
@@ -75,69 +82,21 @@ namespace Dvtx
 			using SysType = Dvtx::RGBAColor;
 			static constexpr DXGI_FORMAT dxgi_format = DXGI_FORMAT_R8G8B8A8_UNORM;
 			static constexpr const char* semantic = "COLOR";
+			static constexpr const char* code = "C8";
 		};
 
 		class Element
 		{
 		public:
-			Element(ElementType type, size_t offset)
-				: type(type), offset(offset)
-			{
-			}
+			Element(ElementType type, size_t offset);
 
-			size_t GetOffsetAfter() const noexcpt
-			{
-				return offset + Size();
-			}
-
-			size_t GetOffset() const
-			{
-				return offset;
-			}
-
-			size_t Size() const noexcpt
-			{
-				return SizeOf(type);
-			}
-
-			ElementType Type() const noexcpt
-			{
-				return type;
-			}
-
-			static constexpr size_t SizeOf(ElementType type) noexcpt
-			{
-				switch (type)
-				{
-				case Position2D: return sizeof(Map<Position2D>::SysType);
-				case Position3D: return sizeof(Map<Position3D>::SysType);
-				case Texture2D: return sizeof(Map<Texture2D>::SysType);
-				case Normal: return sizeof(Map<Normal>::SysType);
-				case Float3Color: return sizeof(Map<Float3Color>::SysType);
-				case Float4Color: return sizeof(Map<Float4Color>::SysType);
-				case RGBAColor: return sizeof(Map<RGBAColor>::SysType);
-				default: ;
-					assert("Invalid element type" && false);
-				}
-				return 0u;
-			}
-
-			D3D11_INPUT_ELEMENT_DESC GetDesc() const noexcpt
-			{
-				switch (type)
-				{
-				case Position2D: return GenerateDesc<Position2D>(GetOffset());
-				case Position3D: return GenerateDesc<Position3D>(GetOffset());
-				case Texture2D: return GenerateDesc<Texture2D>(GetOffset());
-				case Normal: return GenerateDesc<Normal>(GetOffset());
-				case Float3Color: return GenerateDesc<Float3Color>(GetOffset());
-				case Float4Color: return GenerateDesc<Float4Color>(GetOffset());
-				case RGBAColor: return GenerateDesc<RGBAColor>(GetOffset());
-				default: ;
-					assert("Invalid element type" && false);
-				}
-				return {"INVALID", 0, DXGI_FORMAT_UNKNOWN, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0};
-			}
+			size_t GetOffsetAfter() const noexcpt;
+			size_t GetOffset() const;
+			size_t Size() const noexcpt;
+			ElementType Type() const noexcpt;
+			static constexpr size_t SizeOf(ElementType type) noexcpt;
+			D3D11_INPUT_ELEMENT_DESC GetDesc() const noexcpt;
+			const char* GetCode() const noexcept;
 
 		private:
 			ElementType type;
@@ -164,39 +123,14 @@ namespace Dvtx
 			return elements.front();
 		}
 
-		const Element& ResolveByIndex(size_t index) const noexcpt
-		{
-			return elements[index];
-		}
-
-		VertexLayout& Append(ElementType type) noexcpt
-		{
-			elements.emplace_back(type, Size());
-			return *this;
-		}
-
-		size_t Size() const noexcpt
-		{
-			return elements.empty() ? 0u : elements.back().GetOffsetAfter();
-		}
-
-		size_t GetElementCount() const noexcept
-		{
-			return elements.size();
-		}
-
-		std::vector<D3D11_INPUT_ELEMENT_DESC> GetLayout() const noexcpt
-		{
-			std::vector<D3D11_INPUT_ELEMENT_DESC> desc;
-			desc.reserve(GetElementCount());
-			for (const auto& e : elements)
-			{
-				desc.push_back(e.GetDesc());
-			}
-			return desc;
-		}
+		const Element& ResolveByIndex(size_t index) const noexcpt;
+		VertexLayout& Append(ElementType type) noexcpt;
+		size_t Size() const noexcpt;
+		size_t GetElementCount() const noexcept;
+		std::vector<D3D11_INPUT_ELEMENT_DESC> GetD3DLayout() const noexcpt;
+		std::string GetCode() const noexcpt;
 
 	private:
-		std::vector<Element> elements;
+		std::vector<Element> elements{};
 	};
 }

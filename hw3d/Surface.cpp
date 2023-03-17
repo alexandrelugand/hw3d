@@ -1,5 +1,6 @@
 #include "stdafx.h"
 #include "Surface.h"
+// ReSharper disable CppUnsignedZeroComparison
 
 namespace Gdiplus
 {
@@ -12,7 +13,7 @@ namespace Gdiplus
 
 #pragma comment( lib,"gdiplus.lib" )
 
-namespace Draw
+namespace Bind
 {
 	Surface::Surface(unsigned int width, unsigned int height) noexcept
 		:
@@ -43,12 +44,12 @@ namespace Draw
 	{
 	}
 
-	void Surface::Clear(Color fillValue) noexcept
+	void Surface::Clear(Color fillValue) const noexcept
 	{
 		memset(pBuffer.get(), fillValue.dword, width * height * sizeof(Color));
 	}
 
-	void Surface::PutPixel(unsigned int x, unsigned int y, Color c) noexcept(!IS_DEBUG)
+	void Surface::PutPixel(unsigned int x, unsigned int y, Color c) noexcpt
 	{
 		assert(x >= 0);
 		assert(y >= 0);
@@ -57,7 +58,7 @@ namespace Draw
 		pBuffer[y * width + x] = c;
 	}
 
-	Surface::Color Surface::GetPixel(unsigned int x, unsigned int y) const noexcept(!IS_DEBUG)
+	Surface::Color Surface::GetPixel(unsigned int x, unsigned int y) const noexcpt
 	{
 		assert(x >= 0);
 		assert(y >= 0);
@@ -93,35 +94,29 @@ namespace Draw
 
 	Surface Surface::FromFile(const std::string& name)
 	{
-		unsigned int width = 0;
-		unsigned int height = 0;
-		std::unique_ptr<Color[]> pBuffer;
+		// convert filename to wide string (for Gdiplus)
+		wchar_t wideName[512];
+		mbstowcs_s(nullptr, wideName, name.c_str(), _TRUNCATE);
 
+		Gdiplus::Bitmap bitmap(wideName);
+		if (bitmap.GetLastStatus() != Gdiplus::Status::Ok)
 		{
-			// convert filenam to wide string (for Gdiplus)
-			wchar_t wideName[512];
-			mbstowcs_s(nullptr, wideName, name.c_str(), _TRUNCATE);
+			std::stringstream ss;
+			ss << "Loading image [" << name << "]: failed to load.";
+			throw Exception(__LINE__, __FILE__, ss.str());
+		}
 
-			Gdiplus::Bitmap bitmap(wideName);
-			if (bitmap.GetLastStatus() != Gdiplus::Status::Ok)
+		const auto width = bitmap.GetWidth();
+		const auto height = bitmap.GetHeight();
+		auto pBuffer = std::make_unique<Color[]>(width * height);
+
+		for (int y = 0; y < static_cast<int>(height); y++)
+		{
+			for (int x = 0; x < static_cast<int>(width); x++)
 			{
-				std::stringstream ss;
-				ss << "Loading image [" << name << "]: failed to load.";
-				throw Exception(__LINE__, __FILE__, ss.str());
-			}
-
-			width = bitmap.GetWidth();
-			height = bitmap.GetHeight();
-			pBuffer = std::make_unique<Color[]>(width * height);
-
-			for (unsigned int y = 0; y < height; y++)
-			{
-				for (unsigned int x = 0; x < width; x++)
-				{
-					Gdiplus::Color c;
-					bitmap.GetPixel(x, y, &c);
-					pBuffer[y * width + x] = c.GetValue();
-				}
+				Gdiplus::Color c;
+				bitmap.GetPixel(x, y, &c);
+				pBuffer[y * width + x] = c.GetValue();
 			}
 		}
 
@@ -189,7 +184,7 @@ namespace Draw
 		}
 	}
 
-	void Surface::Copy(const Surface& src) noexcept(!IS_DEBUG)
+	void Surface::Copy(const Surface& src) noexcpt
 	{
 		assert(width == src.width);
 		assert(height == src.height);

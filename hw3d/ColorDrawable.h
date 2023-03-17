@@ -2,7 +2,7 @@
 
 namespace Draw
 {
-	class ColorDrawable : public DrawableBase<ColorDrawable>
+	class ColorDrawable : public Drawable
 	{
 	public:
 		ColorDrawable(XMFLOAT3 color)

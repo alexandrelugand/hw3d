@@ -1,28 +1,33 @@
 #pragma once
 
+using ElementType = Dvtx::VertexLayout::ElementType;
+
 namespace Geometry
 {
 	class Prism
 	{
 	public:
-		template <class V>
-		static IndexedTriangleList<V> MakeTesselated(int longDiv)
+		static IndexedTriangleList MakeTesselated(int longDiv)
 		{
 			assert(longDiv >= 3);
+
+			const auto layout = Dvtx::VertexLayout{}.Append(ElementType::Position3D);
 
 			const auto base = XMVectorSet(1.0f, 0.0f, -1.0f, 0.0f);
 			const auto offset = XMVectorSet(0.0f, 0.0f, 2.0f, 0.0f);
 			const float longitudeAngle = 2.0f * PI / longDiv;
 
 			// near center
-			std::vector<V> vertices;
-			vertices.emplace_back();
-			vertices.back().pos = {0.0f, 0.0f, -1.0f};
+			Dvtx::VertexBufferDescriptor vbd{std::move(layout)};
+			std::vector<XMFLOAT3> vertices;
+
+			XMFLOAT3 centerNear{0.0f, 0.0f, -1.0f};
+			vertices.push_back(centerNear);
 			const auto iCenterNear = static_cast<unsigned short>(vertices.size() - 1);
 
 			// far center
-			vertices.emplace_back();
-			vertices.back().pos = {0.0f, 0.0f, 1.0f};
+			XMFLOAT3 centerFar{0.0f, 0.0f, 1.0f};
+			vertices.push_back(centerFar);
 			const auto iCenterFar = static_cast<unsigned short>(vertices.size() - 1);
 
 			// base vertices
@@ -30,23 +35,25 @@ namespace Geometry
 			{
 				// near base
 				{
-					vertices.emplace_back();
+					XMFLOAT3 nearBase{};
 					auto v = XMVector3Transform(
 						base,
 						XMMatrixRotationZ(longitudeAngle * iLong)
 					);
-					XMStoreFloat3(&vertices.back().pos, v);
+					XMStoreFloat3(&nearBase, v);
+					vertices.push_back(nearBase);
 				}
 
 				// far base
 				{
-					vertices.emplace_back();
+					XMFLOAT3 farBase{};
 					auto v = XMVector3Transform(
 						base,
 						XMMatrixRotationZ(longitudeAngle * iLong)
 					);
 					v = XMVectorAdd(v, offset);
-					XMStoreFloat3(&vertices.back().pos, v);
+					XMStoreFloat3(&farBase, v);
+					vertices.push_back(farBase);
 				}
 			}
 
@@ -77,57 +84,69 @@ namespace Geometry
 				indices.push_back((i + 3) % mod + 2);
 			}
 
-			return {std::move(vertices), std::move(indices)};
+			for (unsigned int i = 0; i < vertices.size(); i++)
+			{
+				vbd.EmplaceBack(vertices[i]);
+			}
+
+			return {std::move(vbd), std::move(indices)};
 		}
 
-		template <class V>
-		static IndexedTriangleList<V> MakeTesselatedIndependentCapNormals(int longDiv)
+		static IndexedTriangleList MakeTesselatedIndependentNormals(int longDiv)
 		{
 			assert(longDiv >= 3);
+
+			const auto layout = Dvtx::VertexLayout{}
+			                    .Append(ElementType::Position3D)
+			                    .Append(ElementType::Normal);
 
 			const auto base = XMVectorSet(1.0f, 0.0f, -1.0f, 0.0f);
 			const auto offset = XMVectorSet(0.0f, 0.0f, 2.0f, 0.0f);
 			const float longitudeAngle = 2.0f * PI / longDiv;
 
-			std::vector<V> vertices;
+			Dvtx::VertexBufferDescriptor vbd{std::move(layout)};
+			std::vector<XMFLOAT3> vertices;
+			std::vector<XMFLOAT3> normals;
 
 			// near center
 			const auto iCenterNear = static_cast<unsigned short>(vertices.size());
-			vertices.emplace_back();
-			vertices.back().pos = {0.0f, 0.0f, -1.0f};
-			vertices.back().n = {0.0f, 0.0f, -1.0f};
+			XMFLOAT3 centerNear{0.0f, 0.0f, -1.0f};
+			vertices.push_back(centerNear);
+			normals.push_back(centerNear);
 
 			// near base vertices
 			const auto iBaseNear = static_cast<unsigned short>(vertices.size());
 			for (int iLong = 0; iLong < longDiv; iLong++)
 			{
-				vertices.emplace_back();
+				XMFLOAT3 calculatedPos{};
 				auto v = XMVector3Transform(
 					base,
 					XMMatrixRotationZ(longitudeAngle * iLong)
 				);
-				XMStoreFloat3(&vertices.back().pos, v);
-				vertices.back().n = {0.0f, 0.0f, -1.0f};
+				XMStoreFloat3(&calculatedPos, v);
+				vertices.push_back(calculatedPos);
+				normals.push_back(XMFLOAT3{0.0f, 0.0f, -1.0f});
 			}
 
 			// far center
 			const auto iCenterFar = static_cast<unsigned short>(vertices.size());
-			vertices.emplace_back();
-			vertices.back().pos = {0.0f, 0.0f, 1.0f};
-			vertices.back().n = {0.0f, 0.0f, 1.0f};
+			vertices.push_back(XMFLOAT3{0.0f, 0.0f, 1.0f});
+			normals.push_back(XMFLOAT3{0.0f, 0.0f, 1.0f});
 
 			// far base vertices
 			const auto iBaseFar = static_cast<unsigned short>(vertices.size());
 			for (int iLong = 0; iLong < longDiv; iLong++)
 			{
-				vertices.emplace_back();
+				XMFLOAT3 calculatedPos;
 				auto v = XMVector3Transform(
 					base,
 					XMMatrixRotationZ(longitudeAngle * iLong)
 				);
 				v = XMVectorAdd(v, offset);
-				XMStoreFloat3(&vertices.back().pos, v);
-				vertices.back().n = {0.0f, 0.0f, 1.0f};
+				XMStoreFloat3(&calculatedPos, v);
+
+				vertices.push_back(calculatedPos);
+				normals.push_back(XMFLOAT3{0.0f, 0.0f, 1.0f});
 			}
 
 			// fusilage vertices
@@ -136,24 +155,28 @@ namespace Geometry
 			{
 				// near base
 				{
-					vertices.emplace_back();
+					XMFLOAT3 calculatedPos;
 					auto v = XMVector3Transform(
 						base,
 						XMMatrixRotationZ(longitudeAngle * iLong)
 					);
-					XMStoreFloat3(&vertices.back().pos, v);
-					vertices.back().n = {vertices.back().pos.x, vertices.back().pos.y, 0.0f};
+					XMStoreFloat3(&calculatedPos, v);
+
+					vertices.push_back(calculatedPos);
+					normals.push_back(XMFLOAT3{calculatedPos.x, calculatedPos.y, 0.0f});
 				}
 				// far base
 				{
-					vertices.emplace_back();
+					XMFLOAT3 calculatedPos;
 					auto v = XMVector3Transform(
 						base,
 						XMMatrixRotationZ(longitudeAngle * iLong)
 					);
 					v = XMVectorAdd(v, offset);
-					XMStoreFloat3(&vertices.back().pos, v);
-					vertices.back().n = {vertices.back().pos.x, vertices.back().pos.y, 0.0f};
+					XMStoreFloat3(&calculatedPos, v);
+
+					vertices.push_back(calculatedPos);
+					normals.push_back(XMFLOAT3{calculatedPos.x, calculatedPos.y, 0.0f});
 				}
 			}
 
@@ -194,13 +217,12 @@ namespace Geometry
 				indices.push_back(i + 1 + iFusilage);
 			}
 
-			return {std::move(vertices), std::move(indices)};
-		}
+			for (unsigned int i = 0; i < vertices.size(); i++)
+			{
+				vbd.EmplaceBack(vertices[i], normals[i]);
+			}
 
-		template <class V>
-		static IndexedTriangleList<V> Make()
-		{
-			return MakeTesselated<V>(24);
+			return {std::move(vbd), std::move(indices)};
 		}
 	};
 }

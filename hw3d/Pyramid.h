@@ -2,14 +2,23 @@
 
 namespace Draw
 {
-	class Pyramid : public TestObject<Pyramid>
+	class Pyramid : public DrawableObject<Pyramid>
 	{
 	public:
-		Pyramid(Graphics& gfx, std::mt19937& rng,
-		        std::uniform_real_distribution<float>& adist,
-		        std::uniform_real_distribution<float>& ddist,
-		        std::uniform_real_distribution<float>& odist,
-		        std::uniform_real_distribution<float>& rdist,
-		        std::uniform_int_distribution<int>& tdist);
+		Pyramid(Graphics& gfx, XMFLOAT3 material);
+		bool SpawnControlWindow() noexcept;
+
+	private:
+		void SyncMaterial() noexcpt;
+
+		struct PSMaterialConstant
+		{
+			XMFLOAT3 color;
+			float specularIntensity = 0.6f;
+			float specularPower = 30.0f;
+			float padding[3];
+		} materialConstants;
+
+		using MaterialCbuf = Bind::PixelConstantBuffer<PSMaterialConstant>;
 	};
 }

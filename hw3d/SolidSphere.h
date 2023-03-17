@@ -6,7 +6,6 @@ namespace Draw
 	{
 	public:
 		SolidSphere(Graphics& gfx, float radius, XMFLOAT3 color);
-		void Update(float dt) noexcept override;
 		void SetPos(XMFLOAT3 pos) noexcept;
 		XMMATRIX GetTransform() const noexcept override;
 

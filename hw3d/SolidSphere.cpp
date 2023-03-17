@@ -7,44 +7,25 @@ namespace Draw
 	SolidSphere::SolidSphere(Graphics& gfx, float radius, XMFLOAT3 color)
 		: ColorDrawable(color)
 	{
-		if (!IsStaticInitialized())
-		{
-			struct Vertex
-			{
-				XMFLOAT3 pos;
-			};
+		auto model = Geometry::Sphere::Make(12, 24);
+		model.Transform(XMMatrixScaling(radius, radius, radius));
 
-			auto model = Geometry::Sphere::Make<Vertex>();
-			model.Transform(XMMatrixScaling(radius, radius, radius));
+		const auto tag = "$sphere." + Uuid::ToString(Uuid::New());
+		AddBind(Bind::VertexBuffer::Resolve(gfx, tag, model.vbd));
+		AddBind(Bind::IndexBuffer::Resolve(gfx, tag, model.indices));
 
-			AddStaticBind(std::make_unique<Bind::VertexBuffer>(gfx, model.vertices));
-			AddStaticIndexBuffer(std::make_unique<Bind::IndexBuffer>(gfx, model.indices));
+		auto pvs = Bind::VertexShader::Resolve(gfx, "SolidVS.cso");
+		auto pvsbc = pvs->GetBytecode();
+		AddBind(std::move(pvs));
 
-			auto pvs = std::make_unique<Bind::VertexShader>(gfx, L"SolidVS.cso");
-			auto pvsbc = pvs->GetBytecode();
-			AddStaticBind(std::move(pvs));
+		AddBind(Bind::PixelShader::Resolve(gfx, "SolidPS.cso"));
 
-			AddStaticBind(std::make_unique<Bind::PixelShader>(gfx, L"SolidPS.cso"));
+		AddBind(Bind::InputLayout::Resolve(gfx, model.vbd.GetLayout(), pvsbc));
 
-			const std::vector<D3D11_INPUT_ELEMENT_DESC> ied =
-			{
-				{"POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0}
-			};
-			AddStaticBind(std::make_unique<Bind::InputLayout>(gfx, ied, pvsbc));
+		AddBind(Bind::Topology::Resolve(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
 
-			AddStaticBind(std::make_unique<Bind::Topology>(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
-		}
-		else
-		{
-			SetIndexFromStatic();
-		}
-
-		AddBind(std::make_unique<Bind::TransformCBuf>(gfx, *this));
-		AddBind(std::make_unique<Bind::ColorCBuf>(gfx, *this));
-	}
-
-	void SolidSphere::Update(float dt) noexcept
-	{
+		AddBind(std::make_shared<Bind::TransformCBuf>(gfx, *this));
+		AddBind(std::make_shared<Bind::ColorCBuf>(gfx, *this));
 	}
 
 	void SolidSphere::SetPos(XMFLOAT3 pos) noexcept

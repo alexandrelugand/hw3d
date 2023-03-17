@@ -1,38 +1,46 @@
 #pragma once
 
+using ElementType = Dvtx::VertexLayout::ElementType;
+
 namespace Geometry
 {
 	class Cone
 	{
 	public:
-		template <class V>
-		static IndexedTriangleList<V> MakeTesselated(int longDiv)
+		static IndexedTriangleList MakeTesselated(int longDiv)
 		{
 			assert(longDiv >= 3);
+
+			const auto layout = Dvtx::VertexLayout{}
+				.Append(ElementType::Position3D);
+			Dvtx::VertexBufferDescriptor vbd{std::move(layout)};
+
+			std::vector<XMFLOAT3> vertices;
 
 			const auto base = XMVectorSet(1.0f, 0.0f, -1.0f, 0.0f);
 			const float longitudeAngle = 2.0f * PI / longDiv;
 
 			// base vertices
-			std::vector<V> vertices;
 			for (int iLong = 0; iLong < longDiv; iLong++)
 			{
-				vertices.emplace_back();
+				XMFLOAT3 calculatedPos;
 				auto v = XMVector3Transform(
 					base,
 					XMMatrixRotationZ(longitudeAngle * iLong)
 				);
-				XMStoreFloat3(&vertices.back().pos, v);
+				XMStoreFloat3(&calculatedPos, v);
+				vertices.push_back(calculatedPos);
 			}
-			// the center
-			vertices.emplace_back();
-			vertices.back().pos = {0.0f, 0.0f, -1.0f};
-			const auto iCenter = static_cast<unsigned short>(vertices.size() - 1);
-			// the tip :darkness:
-			vertices.emplace_back();
-			vertices.back().pos = {0.0f, 0.0f, 1.0f};
-			const auto iTip = static_cast<unsigned short>(vertices.size() - 1);
 
+			// the center
+			XMFLOAT3 center{0.0f, 0.0f, -1.0f};
+			vertices.push_back(center);
+			const auto iCenter = static_cast<unsigned short>(vertices.size() - 1);
+
+			// the tip :darkness:
+			XMFLOAT3 tip{0.0f, 0.0f, 1.0f};
+			vertices.push_back(tip);
+			const auto iTip = static_cast<unsigned short>(vertices.size() - 1);
 
 			// base indices
 			std::vector<unsigned short> indices;
@@ -51,18 +59,29 @@ namespace Geometry
 				indices.push_back(iTip);
 			}
 
-			return {std::move(vertices), std::move(indices)};
+			for (unsigned int i = 0; i < vertices.size(); i++)
+			{
+				vbd.EmplaceBack(vertices[i]);
+			}
+
+			return {std::move(vbd), std::move(indices)};
 		}
 
-		template <class V>
-		static IndexedTriangleList<V> MakeTesselatedIndependentFaces(int longDiv)
+		static IndexedTriangleList MakeTesselatedIndependentNormals(int longDiv)
 		{
 			assert(longDiv >= 3);
 
+			const auto layout = Dvtx::VertexLayout{}
+			                    .Append(ElementType::Position3D)
+			                    .Append(ElementType::Normal);
+
+			Dvtx::VertexBufferDescriptor vbd{std::move(layout)};
+
+			std::vector<XMFLOAT3> vertices;
+			std::vector<XMFLOAT3> normals;
+
 			const auto base = XMVectorSet(1.0f, 0.0f, -1.0f, 0.0f);
 			const float longitudeAngle = 2.0f * PI / longDiv;
-
-			std::vector<V> vertices;
 
 			// cone vertices
 			const auto iCone = static_cast<unsigned short>(vertices.size());
@@ -72,32 +91,36 @@ namespace Geometry
 					longitudeAngle * iLong,
 					longitudeAngle * (((iLong + 1) == longDiv) ? 0 : (iLong + 1))
 				};
-				vertices.emplace_back();
-				vertices.back().pos = {0.0f, 0.0f, 1.0f};
+				XMFLOAT3 top{0.0f, 0.0f, 1.0f};
+				vertices.push_back(top);
+
 				for (auto theta : thetas)
 				{
-					vertices.emplace_back();
+					XMFLOAT3 calculatedPos;
 					const auto v = XMVector3Transform(
 						base,
 						XMMatrixRotationZ(theta)
 					);
-					XMStoreFloat3(&vertices.back().pos, v);
+					XMStoreFloat3(&calculatedPos, v);
+					vertices.push_back(calculatedPos);
 				}
 			}
 
 			// base vertices
 			const auto iBaseCenter = static_cast<unsigned short>(vertices.size());
-			vertices.emplace_back();
-			vertices.back().pos = {0.0f, 0.0f, -1.0f};
+			XMFLOAT3 baseCenter{0.0f, 0.0f, -1.0f};
+			vertices.push_back(baseCenter);
+
 			const auto iBaseEdge = static_cast<unsigned short>(vertices.size());
 			for (int iLong = 0; iLong < longDiv; iLong++)
 			{
-				vertices.emplace_back();
+				XMFLOAT3 calculatedPos;
 				auto v = XMVector3Transform(
 					base,
 					XMMatrixRotationZ(longitudeAngle * iLong)
 				);
-				XMStoreFloat3(&vertices.back().pos, v);
+				XMStoreFloat3(&calculatedPos, v);
+				vertices.push_back(calculatedPos);
 			}
 
 			std::vector<unsigned short> indices;
@@ -116,13 +139,14 @@ namespace Geometry
 				indices.push_back(iLong + iBaseEdge);
 			}
 
-			return {std::move(vertices), std::move(indices)};
-		}
+			IndexedTriangleList::SetNormalsIndependentFlat(vertices, indices, normals);
 
-		template <class V>
-		static IndexedTriangleList<V> Make()
-		{
-			return MakeTesselated<V>(24);
+			for (unsigned int i = 0; i < vertices.size(); i++)
+			{
+				vbd.EmplaceBack(vertices[i], normals[i]);
+			}
+
+			return {std::move(vbd), std::move(indices)};
 		}
 	};
 }

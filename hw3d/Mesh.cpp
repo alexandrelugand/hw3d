@@ -3,27 +3,17 @@
 
 namespace Entities
 {
-	Mesh::Mesh(Graphics& gfx, std::vector<std::unique_ptr<Bind::Bindable>> bindPtrs)
+	Mesh::Mesh(Graphics& gfx, std::vector<std::shared_ptr<Bind::Bindable>> bindPtrs)
+		: DrawableObject(gfx)
 	{
-		if (!IsStaticInitialized())
-		{
-			AddStaticBind(std::make_unique<Bind::Topology>(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
-		}
+		AddBind(Bind::Topology::Resolve(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
 
 		for (auto& pb : bindPtrs)
 		{
-			if (auto pi = dynamic_cast<Bind::IndexBuffer*>(pb.get()))
-			{
-				AddIndexBuffer(std::unique_ptr<Bind::IndexBuffer>{pi});
-				pb.release(); //release last smart pointer holding index buffer pointer
-			}
-			else
-			{
-				AddBind(std::move(pb));
-			}
+			AddBind(std::move(pb));
 		}
 
-		AddBind(std::make_unique<Bind::TransformCBuf>(gfx, *this));
+		AddBind(std::make_shared<Bind::TransformCBuf>(gfx, *this));
 	}
 
 	void Mesh::Draw(Graphics& gfx, FXMMATRIX accumulatedTransform) const noexcpt

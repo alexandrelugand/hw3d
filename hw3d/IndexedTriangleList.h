@@ -2,54 +2,56 @@
 
 namespace Geometry
 {
-	template <class T>
 	class IndexedTriangleList
 	{
 	public:
-		IndexedTriangleList() = default;
-
-		IndexedTriangleList(std::vector<T> verts_in, std::vector<unsigned short> indices_in)
-			: vertices(std::move(verts_in)), indices(std::move(indices_in))
+		IndexedTriangleList(Dvtx::VertexBufferDescriptor vbd_in, std::vector<unsigned short> indices_in)
+			: vbd(std::move(vbd_in)), indices(std::move(indices_in))
 		{
-			assert(vertices.size() > 2);
+			assert(vbd.NumVertices() > 2);
 			assert(indices.size() % 3 == 0);
 		}
 
 		void Transform(FXMMATRIX matrix)
 		{
-			for (auto& v : vertices)
+			using ElementType = Dvtx::VertexLayout::ElementType;
+			for (int i = 0; i < vbd.NumVertices(); i++)
 			{
-				const XMVECTOR pos = XMLoadFloat3(&v.pos);
+				auto& pos = vbd[i].Attr<ElementType::Position3D>();
 				XMStoreFloat3(
-					&v.pos,
-					XMVector3Transform(pos, matrix)
+					&pos,
+					XMVector3Transform(XMLoadFloat3(&pos), matrix)
 				);
 			}
 		}
 
 		// asserts face-independent vertices w/ normals cleared to zero
-		void SetNormalsIndependentFlat() noexcpt
+		static void SetNormalsIndependentFlat(const std::vector<XMFLOAT3>& vertices, const std::vector<unsigned short>& indices, std::vector<XMFLOAT3>& normals) noexcpt
 		{
+			using ElementType = Dvtx::VertexLayout::ElementType;
 			assert(indices.size() % 3 == 0 && indices.size() > 0);
 			for (size_t i = 0; i < indices.size(); i += 3)
 			{
-				auto& v0 = vertices[indices[i]];
-				auto& v1 = vertices[indices[i + 1]];
-				auto& v2 = vertices[indices[i + 2]];
-				const auto p0 = XMLoadFloat3(&v0.pos);
-				const auto p1 = XMLoadFloat3(&v1.pos);
-				const auto p2 = XMLoadFloat3(&v2.pos);
+				auto v0 = vertices[indices[i]];
+				auto v1 = vertices[indices[i + 1]];
+				auto v2 = vertices[indices[i + 2]];
+				const auto p0 = XMLoadFloat3(&v0);
+				const auto p1 = XMLoadFloat3(&v1);
+				const auto p2 = XMLoadFloat3(&v2);
 
 				const auto n = XMVector3Normalize(XMVector3Cross((p1 - p0), (p2 - p0)));
 
-				XMStoreFloat3(&v0.n, n);
-				XMStoreFloat3(&v1.n, n);
-				XMStoreFloat3(&v2.n, n);
+				XMFLOAT3 n0, n1, n2{};
+				XMStoreFloat3(&n0, n);
+				normals.push_back(n0);
+				XMStoreFloat3(&n1, n);
+				normals.push_back(n1);
+				XMStoreFloat3(&n2, n);
+				normals.push_back(n2);
 			}
 		}
 
-	public:
-		std::vector<T> vertices;
+		Dvtx::VertexBufferDescriptor vbd;
 		std::vector<unsigned short> indices;
 	};
 }

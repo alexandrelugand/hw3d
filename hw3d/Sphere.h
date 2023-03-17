@@ -1,55 +1,63 @@
 #pragma once
 
+using ElementType = Dvtx::VertexLayout::ElementType;
+
 namespace Geometry
 {
 	class Sphere
 	{
 	public:
-		template <class V>
-		static IndexedTriangleList<V> MakeTesselated(int latDiv, int longDiv)
+		static IndexedTriangleList Make(int latDiv, int longDiv)
 		{
+			const auto layout = Dvtx::VertexLayout{}.Append(ElementType::Position3D);
+
 			assert(latDiv >= 3);
 			assert(longDiv >= 3);
 
 			constexpr float radius = 1.0f;
 			const auto base = XMVectorSet(0.0f, 0.0f, radius, 0.0f);
-			const float lattitudeAngle = PI / latDiv;
-			const float longitudeAngle = 2.0f * PI / longDiv;
+			const float lattitudeAngle = PI / static_cast<float>(latDiv);
+			const float longitudeAngle = 2.0f * PI / static_cast<float>(longDiv);
 
-			std::vector<V> vertices;
+			Dvtx::VertexBufferDescriptor vbd{std::move(layout)};
 			for (int iLat = 1; iLat < latDiv; iLat++)
 			{
 				const auto latBase = XMVector3Transform(
 					base,
-					XMMatrixRotationX(lattitudeAngle * iLat)
+					XMMatrixRotationX(lattitudeAngle * static_cast<float>(iLat))
 				);
 				for (int iLong = 0; iLong < longDiv; iLong++)
 				{
-					vertices.emplace_back();
+					XMFLOAT3 calculatedPos{};
 					auto v = XMVector3Transform(
 						latBase,
-						XMMatrixRotationZ(longitudeAngle * iLong)
+						XMMatrixRotationZ(longitudeAngle * static_cast<float>(iLong))
 					);
-					XMStoreFloat3(&vertices.back().pos, v);
+					XMStoreFloat3(&calculatedPos, v);
+					vbd.EmplaceBack(calculatedPos);
 				}
 			}
 
 			// add the cap vertices
-			const auto iNorthPole = static_cast<unsigned short>(vertices.size());
-			vertices.emplace_back();
-			XMStoreFloat3(&vertices.back().pos, base);
-			const auto iSouthPole = static_cast<unsigned short>(vertices.size());
-			vertices.emplace_back();
-			XMStoreFloat3(&vertices.back().pos, XMVectorNegate(base));
+			const auto iNorthPole = static_cast<unsigned short>(vbd.NumVertices());
+			XMFLOAT3 northPos{};
+			XMStoreFloat3(&northPos, base);
+			vbd.EmplaceBack(northPos);
 
-			const auto calcIdx = [latDiv, longDiv](unsigned short iLat, unsigned short iLong)
+			const auto iSouthPole = static_cast<unsigned short>(vbd.NumVertices());
+			XMFLOAT3 southPos{};
+			XMStoreFloat3(&southPos, XMVectorNegate(base));
+			vbd.EmplaceBack(southPos);
+
+			const auto calcIdx = [longDiv](int iLat, int iLong)
 			{
-				return iLat * longDiv + iLong;
+				return static_cast<unsigned short>(iLat * longDiv + iLong);
 			};
+
 			std::vector<unsigned short> indices;
-			for (unsigned short iLat = 0; iLat < latDiv - 2; iLat++)
+			for (int iLat = 0; iLat < latDiv - 2; iLat++)
 			{
-				for (unsigned short iLong = 0; iLong < longDiv - 1; iLong++)
+				for (int iLong = 0; iLong < longDiv - 1; iLong++)
 				{
 					indices.push_back(calcIdx(iLat, iLong));
 					indices.push_back(calcIdx(iLat + 1, iLong));
@@ -68,7 +76,7 @@ namespace Geometry
 			}
 
 			// cap fans
-			for (unsigned short iLong = 0; iLong < longDiv - 1; iLong++)
+			for (int iLong = 0; iLong < longDiv - 1; iLong++)
 			{
 				// north
 				indices.push_back(iNorthPole);
@@ -89,13 +97,7 @@ namespace Geometry
 			indices.push_back(calcIdx(latDiv - 2, longDiv - 1));
 			indices.push_back(iSouthPole);
 
-			return {std::move(vertices), std::move(indices)};
-		}
-
-		template <class V>
-		static IndexedTriangleList<V> Make()
-		{
-			return MakeTesselated<V>(12, 24);
+			return {std::move(vbd), std::move(indices)};
 		}
 	};
 }

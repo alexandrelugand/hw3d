@@ -4,58 +4,72 @@
 
 namespace Draw
 {
-	Cylinder::Cylinder(Graphics& gfx, std::mt19937& rng,
-	                   std::uniform_real_distribution<float>& adist,
-	                   std::uniform_real_distribution<float>& ddist,
-	                   std::uniform_real_distribution<float>& odist,
-	                   std::uniform_real_distribution<float>& rdist,
-	                   std::uniform_real_distribution<float>& bdist,
-	                   std::uniform_int_distribution<int>& tdist)
-		: TestObject(gfx, rng, adist, ddist, odist, rdist)
+	Cylinder::Cylinder(Graphics& gfx, XMFLOAT3 material)
+		: DrawableObject(gfx)
 	{
-		if (!IsStaticInitialized())
-		{
-			auto pvs = std::make_unique<Bind::VertexShader>(gfx, L"PhongVS.cso");
-			auto pvsbc = pvs->GetBytecode();
-			AddStaticBind(std::move(pvs));
+		const auto tag = "$cylinder." + Uuid::ToString(Uuid::New());
+		const auto model = Geometry::Prism::MakeTesselatedIndependentNormals(24);
+		materialConstants.color = material;
 
-			AddStaticBind(std::make_unique<Bind::PixelShader>(gfx, L"IndexedPhongPS.cso"));
+		AddBind(Bind::VertexBuffer::Resolve(gfx, tag, model.vbd));
+		AddBind(Bind::IndexBuffer::Resolve(gfx, tag, model.indices));
 
-			const std::vector<D3D11_INPUT_ELEMENT_DESC> ied =
-			{
-				{"POSITION", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0},
-				{"NORMAL", 0, DXGI_FORMAT_R32G32B32A32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0},
-			};
-			AddStaticBind(std::make_unique<Bind::InputLayout>(gfx, ied, pvsbc));
+		const auto pvs = Bind::VertexShader::Resolve(gfx, "BlendedPhongVS.cso");
+		const auto pvsbc = pvs->GetBytecode();
+		AddBind(std::move(pvs));
 
-			AddStaticBind(std::make_unique<Bind::Topology>(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
+		AddBind(Bind::PixelShader::Resolve(gfx, "BlendedPhongPS.cso"));
 
-			struct PSMaterialConstant
-			{
-				XMFLOAT3A colors[6] = {
-					{1.0f, 0.0f, 0.0f},
-					{0.0f, 1.0f, 0.0f},
-					{0.0f, 0.0f, 1.0f},
-					{1.0f, 1.0f, 0.0f},
-					{1.0f, 0.0f, 1.0f},
-					{0.0f, 1.0f, 1.0f},
-				};
-				float specularIntensity = 0.6f;
-				float specularPower = 30.0f;
-			} matConst;
-			AddStaticBind(std::make_unique<Bind::PixelConstantBuffer<PSMaterialConstant>>(gfx, matConst, 1u));
-		}
-
-		struct Vertex
-		{
-			XMFLOAT3 pos;
-			XMFLOAT3 n;
-		};
-
-		const auto model = Geometry::Prism::MakeTesselatedIndependentCapNormals<Vertex>(tdist(rng));
-		AddBind(std::make_unique<Bind::VertexBuffer>(gfx, model.vertices));
-		AddIndexBuffer(std::make_unique<Bind::IndexBuffer>(gfx, model.indices));
+		AddBind(Bind::InputLayout::Resolve(gfx, model.vbd.GetLayout(), pvsbc));
+		AddBind(Bind::Topology::Resolve(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
 
 		AddBind(std::make_unique<Bind::TransformCBuf>(gfx, *this));
+		AddBind(Bind::PixelConstantBuffer<PSMaterialConstant>::Resolve(gfx, materialConstants, 1u));
+	}
+
+	bool Cylinder::SpawnControlWindow() noexcept
+	{
+		bool dirty = false;
+		bool open = true;
+		if (ImGui::Begin("Cylinder", &open))
+		{
+			ImGui::Text("Material Properties");
+			const auto cd = ImGui::ColorEdit3("Material Color", &materialConstants.color.x);
+			const auto sid = ImGui::SliderFloat("Specular Intensity", &materialConstants.specularIntensity, 0.05f, 4.0f, "%.2f", ImGuiSliderFlags_NoRoundToFormat);
+			const auto spd = ImGui::SliderFloat("Specular Power", &materialConstants.specularPower, 1.0f, 200.0f, "%.2f", ImGuiSliderFlags_NoRoundToFormat);
+			dirty = cd || sid || spd;
+
+			ImGui::Text("Position");
+			ImGui::SliderFloat("X", &pos.x, -80.0f, 80.0f, "%.1f");
+			ImGui::SliderFloat("Y", &pos.y, -80.0f, 80.0f, "%.1f");
+			ImGui::SliderFloat("Z", &pos.z, -80.0f, 80.0f, "%.1f");
+
+			ImGui::Text("Rotation");
+			ImGui::SliderAngle("Theta", &theta, -180.0f, 180.0f);
+			ImGui::SliderAngle("Phi", &phi, -180.0f, 180.0f);
+
+			ImGui::Text("Orientation");
+			ImGui::SliderAngle("Roll", &roll, -180.0f, 180.0f);
+			ImGui::SliderAngle("Pitch", &pitch, -180.0f, 180.0f);
+			ImGui::SliderAngle("Yaw", &yaw, -180.0f, 180.0f);
+
+			if (ImGui::Button("Reset"))
+				Reset();
+		}
+		ImGui::End();
+
+		if (dirty)
+		{
+			SyncMaterial();
+		}
+
+		return open;
+	}
+
+	void Cylinder::SyncMaterial() noexcpt
+	{
+		const auto pConstPS = QueryBindable<MaterialCbuf>();
+		assert(pConstPS != nullptr);
+		pConstPS->Update(gfx, materialConstants);
 	}
 }

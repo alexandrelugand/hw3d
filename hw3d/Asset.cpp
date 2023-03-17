@@ -1,18 +1,46 @@
 #include "stdafx.h"
-#include "Box.h"
-#include "Cube.h"
+#include "Asset.h"
 
 namespace Draw
 {
-	Box::Box(Graphics& gfx, XMFLOAT3 material)
+	Asset::Asset(Graphics& gfx, XMFLOAT3 material, float scale)
 		: DrawableObject(gfx)
 	{
-		const auto tag = "$box." + Uuid::ToString(Uuid::New());
-		const auto model = Geometry::Cube::MakeIndependent();
+		const auto tag = "asset." + Uuid::ToString(Uuid::New());
 		materialConstants.color = material;
 
-		AddBind(Bind::VertexBuffer::Resolve(gfx, tag, model.vbd));
-		AddBind(Bind::IndexBuffer::Resolve(gfx, tag, model.indices));
+		Dvtx::VertexBufferDescriptor vbd(
+			std::move(Dvtx::VertexLayout{}
+			          .Append(Dvtx::VertexLayout::Position3D)
+			          .Append(Dvtx::VertexLayout::Normal)
+			)
+		);
+
+		Assimp::Importer imp;
+		const auto model = imp.ReadFile("models\\suzanne.obj", aiProcess_Triangulate | aiProcess_JoinIdenticalVertices);
+		const auto mesh = model->mMeshes[0];
+
+		for (unsigned int i = 0; i < mesh->mNumVertices; i++)
+		{
+			vbd.EmplaceBack(
+				XMFLOAT3{mesh->mVertices[i].x * scale, mesh->mVertices[i].y * scale, mesh->mVertices[i].z * scale},
+				*reinterpret_cast<XMFLOAT3*>(&mesh->mNormals[i])
+			);
+		}
+
+		std::vector<unsigned short> indices;
+		indices.reserve(mesh->mNumFaces * 3);
+		for (unsigned int i = 0; i < mesh->mNumFaces; i++)
+		{
+			const auto& face = mesh->mFaces[i];
+			assert(face.mNumIndices == 3);
+			indices.push_back(face.mIndices[0]);
+			indices.push_back(face.mIndices[1]);
+			indices.push_back(face.mIndices[2]);
+		}
+
+		AddBind(Bind::VertexBuffer::Resolve(gfx, tag, vbd));
+		AddBind(Bind::IndexBuffer::Resolve(gfx, tag, indices));
 
 		const auto pvs = Bind::VertexShader::Resolve(gfx, "BlendedPhongVS.cso");
 		const auto pvsbc = pvs->GetBytecode();
@@ -20,18 +48,19 @@ namespace Draw
 
 		AddBind(Bind::PixelShader::Resolve(gfx, "BlendedPhongPS.cso"));
 
-		AddBind(Bind::InputLayout::Resolve(gfx, model.vbd.GetLayout(), pvsbc));
+
+		AddBind(Bind::InputLayout::Resolve(gfx, vbd.GetLayout(), pvsbc));
 		AddBind(Bind::Topology::Resolve(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
 
 		AddBind(std::make_unique<Bind::TransformCBuf>(gfx, *this));
 		AddBind(std::make_unique<MaterialCbuf>(gfx, materialConstants, 1u));
 	}
 
-	bool Box::SpawnControlWindow() noexcept
+	bool Asset::SpawnControlWindow() noexcept
 	{
 		bool dirty = false;
 		bool open = true;
-		if (ImGui::Begin("Box", &open))
+		if (ImGui::Begin("Asset", &open))
 		{
 			ImGui::Text("Material Properties");
 			const auto cd = ImGui::ColorEdit3("Material Color", &materialConstants.color.x);
@@ -66,7 +95,7 @@ namespace Draw
 		return open;
 	}
 
-	void Box::SyncMaterial() noexcpt
+	void Asset::SyncMaterial() noexcpt
 	{
 		const auto pConstPS = QueryBindable<MaterialCbuf>();
 		assert(pConstPS != nullptr);
