@@ -16,7 +16,8 @@ private:
 
 	Entities::Camera camera;
 	Entities::PointLight light;
-	Entities::Model nano{wnd.Gfx(), "Models\\nano_textured\\nanosuit.obj"};
+	//Entities::Model nano{wnd.Gfx(), "Models\\nano_textured\\nanosuit.obj"};
+	Entities::Model wall{wnd.Gfx(), "Models\\brick_wall\\brick_wall.obj"};
 	Draw::Sheet sheet{wnd.Gfx(), 3.0f};
 
 	void DoFrame();

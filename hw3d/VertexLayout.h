@@ -13,9 +13,11 @@ namespace Dvtx
 			Position3D,
 			Texture2D,
 			Normal,
+			Tangent,
+			Bitangent,
 			Float3Color,
 			Float4Color,
-			RGBAColor,
+			RGBAColor
 		};
 
 		//Metadata templates lookup map
@@ -56,6 +58,24 @@ namespace Dvtx
 			static constexpr DXGI_FORMAT dxgi_format = DXGI_FORMAT_R32G32B32_FLOAT;
 			static constexpr const char* semantic = "NORMAL";
 			static constexpr const char* code = "N";
+		};
+
+		template <>
+		struct Map<Tangent>
+		{
+			using SysType = XMFLOAT3;
+			static constexpr DXGI_FORMAT dxgi_format = DXGI_FORMAT_R32G32B32_FLOAT;
+			static constexpr const char* semantic = "TANGENT";
+			static constexpr const char* code = "Nt";
+		};
+
+		template <>
+		struct Map<Bitangent>
+		{
+			using SysType = XMFLOAT3;
+			static constexpr DXGI_FORMAT dxgi_format = DXGI_FORMAT_R32G32B32_FLOAT;
+			static constexpr const char* semantic = "BITANGENT";
+			static constexpr const char* code = "Nb";
 		};
 
 		template <>

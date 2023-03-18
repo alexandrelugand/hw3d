@@ -36,7 +36,8 @@ namespace Entities
 		                                 aiProcess_Triangulate |
 		                                 aiProcess_JoinIdenticalVertices |
 		                                 aiProcess_ConvertToLeftHanded |
-		                                 aiProcess_GenNormals
+		                                 aiProcess_GenNormals |
+		                                 aiProcess_CalcTangentSpace
 		);
 
 		if (pScene == nullptr)
@@ -71,12 +72,19 @@ namespace Entities
 		pWindow->Show(windowName, *this, *pRoot);
 	}
 
+	void Model::SetRootTransform(FXMMATRIX tf) const noexcept
+	{
+		pRoot->SetAppliedTransform(tf);
+	}
+
 	std::unique_ptr<Mesh> Model::ParseMesh(Graphics& gfx, const aiMesh& mesh, const aiMaterial* const* pMaterial)
 	{
 		Dvtx::VertexBufferDescriptor vbd(
 			std::move(Dvtx::VertexLayout{}
 			          .Append(Dvtx::VertexLayout::Position3D)
 			          .Append(Dvtx::VertexLayout::Normal)
+			          .Append(Dvtx::VertexLayout::Tangent)
+			          .Append(Dvtx::VertexLayout::Bitangent)
 			          .Append(Dvtx::VertexLayout::Texture2D)
 			)
 		);
@@ -86,6 +94,8 @@ namespace Entities
 			vbd.EmplaceBack(
 				*reinterpret_cast<XMFLOAT3*>(&mesh.mVertices[i]),
 				*reinterpret_cast<XMFLOAT3*>(&mesh.mNormals[i]),
+				*reinterpret_cast<XMFLOAT3*>(&mesh.mTangents[i]),
+				*reinterpret_cast<XMFLOAT3*>(&mesh.mBitangents[i]),
 				*reinterpret_cast<XMFLOAT2*>(&mesh.mTextureCoords[0][i])
 			);
 		}
@@ -102,7 +112,7 @@ namespace Entities
 		}
 
 		std::vector<std::shared_ptr<Bind::Bindable>> bindablePtrs;
-		const auto base = "Models\\nano_textured\\"s;
+		const auto base = "Models\\brick_wall\\"s;
 
 		bool hasSpecularMap = false;
 		float defaultShininess = 35.0f;
@@ -127,6 +137,9 @@ namespace Entities
 				material.Get(AI_MATKEY_SHININESS, defaultShininess);
 			}
 
+			material.GetTexture(aiTextureType_NORMALS, 0, &texFileName);
+			bindablePtrs.push_back(Bind::Texture::Resolve(gfx, base + texFileName.C_Str(), 2));
+
 			bindablePtrs.push_back(Bind::Sampler::Resolve(gfx));
 		}
 
@@ -134,24 +147,40 @@ namespace Entities
 		bindablePtrs.push_back(Bind::VertexBuffer::Resolve(gfx, meshTag, vbd));
 		bindablePtrs.push_back(Bind::IndexBuffer::Resolve(gfx, meshTag, indices));
 
-		auto pvs = std::make_unique<Bind::VertexShader>(gfx, "PhongVS.cso");
+		auto pvs = std::make_unique<Bind::VertexShader>(gfx, "PhongVSNormalMap.cso");
 		auto pvsbc = pvs->GetBytecode();
 		bindablePtrs.push_back(std::move(pvs));
 		bindablePtrs.push_back(Bind::InputLayout::Resolve(gfx, vbd.GetLayout(), pvsbc));
 
 		if (hasSpecularMap)
-			bindablePtrs.push_back(Bind::PixelShader::Resolve(gfx, "PhongPSSpecMap.cso"));
-		else
-			bindablePtrs.push_back(Bind::PixelShader::Resolve(gfx, "PhongPS.cso"));
-
-		struct PSMaterialConstant
 		{
-			float specularIntensity = 1.6f;
-			float specularPower = 30.0f;
-			float padding[2]{};
-		} pmc;
-		pmc.specularPower = defaultShininess;
-		bindablePtrs.push_back(Bind::PixelConstantBuffer<PSMaterialConstant>::Resolve(gfx, pmc, 1u));
+			bindablePtrs.push_back(Bind::PixelShader::Resolve(gfx, "PhongPSSpecNormalMap.cso"));
+
+			struct PSMaterialConstant
+			{
+				BOOL normalMapEnabled = TRUE;
+				float padding[3];
+			} pmc;
+			// this is CLEARLY an issue... all meshes will share same mat const, but may have different
+			// Ns (specular power) specified for each in the material properties... bad conflict
+			bindablePtrs.push_back(Bind::PixelConstantBuffer<PSMaterialConstant>::Resolve(gfx, pmc, 1u));
+		}
+		else
+		{
+			bindablePtrs.push_back(Bind::PixelShader::Resolve(gfx, "PhongPSNormalMap.cso"));
+
+			struct PSMaterialConstant
+			{
+				float specularIntensity = 0.18f;
+				float specularPower;
+				BOOL normalMapEnabled = TRUE;
+				float padding[1];
+			} pmc;
+			pmc.specularPower = defaultShininess;
+			// this is CLEARLY an issue... all meshes will share same mat const, but may have different
+			// Ns (specular power) specified for each in the material properties... bad conflict
+			bindablePtrs.push_back(Bind::PixelConstantBuffer<PSMaterialConstant>::Resolve(gfx, pmc, 1u));
+		}
 
 		return std::make_unique<Mesh>(gfx, std::move(bindablePtrs));
 	}

@@ -24,6 +24,7 @@ namespace Entities
 
 		void Draw(Graphics& gfx) const noexcpt;
 		void ShowWindow(const char* windowName = nullptr);
+		void SetRootTransform(FXMMATRIX tf) const noexcept;
 
 	private:
 		std::unique_ptr<Mesh> ParseMesh(Graphics& gfx, const aiMesh& mesh, const aiMaterial* const* pMaterial);

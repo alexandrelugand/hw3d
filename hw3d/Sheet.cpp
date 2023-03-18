@@ -22,7 +22,7 @@ namespace Draw
 		auto pvsbc = pvs->GetBytecode();
 		AddBind(std::move(pvs));
 
-		AddBind(Bind::PixelShader::Resolve(gfx, "PhongPSNormalMap.cso"));
+		AddBind(Bind::PixelShader::Resolve(gfx, "PhongPSNormalMapObject.cso"));
 		AddBind(Bind::PixelConstantBuffer<BumpMappingConstant>::Resolve(gfx, pmc, 1u));
 
 		AddBind(Bind::InputLayout::Resolve(gfx, model.vbd.GetLayout(), pvsbc));

@@ -37,7 +37,8 @@ void App::DoFrame()
 	gfx.SetCamera(camera.GetMatrix());
 	light.Bind(gfx, gfx.GetCamera());
 
-	nano.Draw(gfx);
+	//nano.Draw(gfx);
+	wall.Draw(gfx);
 	sheet.Draw(gfx);
 
 	light.Draw(gfx);
@@ -131,7 +132,8 @@ void App::DoFrame()
 		SpawnSimulationWindow();
 		camera.SpawnControlWindow();
 		light.SpawnControlWindow();
-		nano.ShowWindow();
+		//nano.ShowWindow();
+		wall.ShowWindow();
 		sheet.SpawnControlWindow();
 	}
 
