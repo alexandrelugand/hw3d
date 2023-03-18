@@ -12,12 +12,14 @@ namespace Bind
 		static std::shared_ptr<Texture> Resolve(Graphics& gfx, const std::string& path, UINT slot = 0);
 		static std::string GenerateUID(const std::string& path, UINT slot = 0);
 		std::string GetUID() const noexcept override;
+		bool HasAlpha() const noexcept;
 
 	protected:
-		unsigned int slot;
+		bool hasAlpha = false;
+		std::string path;
 		ComPtr<ID3D11ShaderResourceView> pTextureView;
 
 	private:
-		std::string path;
+		unsigned int slot;
 	};
 }

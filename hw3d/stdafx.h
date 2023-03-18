@@ -22,6 +22,8 @@
 #include <set>
 #include <unordered_map>
 #include <optional>
+#include <iostream>
+#include <filesystem>
 
 // Windows
 #pragma warning(disable:4265)
@@ -61,6 +63,7 @@ namespace Gdiplus
 // Utilities
 #include "utf8.h"
 #include "uuid.h"
+#include "string.h"
 #include "dxerr.h"
 #include "Hw3DMath.h"
 #include "Hw3DTimer.h"
@@ -81,6 +84,7 @@ namespace Gdiplus
 
 // Renderer
 #include "Graphics.h"
+#include "PsMaterialConstants.h"
 
 //Windowing
 #include "Window.h"

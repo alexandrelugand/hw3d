@@ -38,8 +38,9 @@ void App::DoFrame()
 	light.Bind(gfx, gfx.GetCamera());
 
 	//nano.Draw(gfx);
-	wall.Draw(gfx);
-	sheet.Draw(gfx);
+	//wall.Draw(gfx);
+	//sheet.Draw(gfx);
+	gobber.Draw(gfx);
 
 	light.Draw(gfx);
 
@@ -133,8 +134,9 @@ void App::DoFrame()
 		camera.SpawnControlWindow();
 		light.SpawnControlWindow();
 		//nano.ShowWindow();
-		wall.ShowWindow();
-		sheet.SpawnControlWindow();
+		//wall.ShowWindow();
+		gobber.ShowWindow(gfx);
+		//sheet.SpawnControlWindow();
 	}
 
 	// Present

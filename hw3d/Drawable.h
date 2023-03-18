@@ -13,7 +13,6 @@ namespace Draw
 		virtual XMMATRIX GetTransform() const noexcept = 0;
 		virtual void Draw(Graphics& gfx) const noexcpt;
 
-	protected:
 		template <class T>
 		T* QueryBindable() noexcept
 		{
@@ -27,6 +26,7 @@ namespace Draw
 			return nullptr;
 		}
 
+	protected:
 		void AddBind(std::shared_ptr<Bind::Bindable> bind) noexcpt;
 		CullMode cull = Front;
 

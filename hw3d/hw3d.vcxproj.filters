@@ -464,6 +464,12 @@
     <ClInclude Include="TransformAllCBuf.h">
       <Filter>Header Files\Bind</Filter>
     </ClInclude>
+    <ClInclude Include="string.h">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="PsMaterialConstants.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Hw3D.rc">
@@ -530,6 +536,12 @@
       <Filter>Shaders</Filter>
     </FxCompile>
     <FxCompile Include="PhongVSNormalMap.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="PhongVSNoTex.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="PhongPSNoTex.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>

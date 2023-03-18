@@ -3,7 +3,7 @@
 
 namespace Windowing
 {
-	void ModelWindow::Show(const char* windowName, Entities::Model& model, Entities::Node& root) noexcpt
+	void ModelWindow::Show(Graphics& gfx, const char* windowName, Entities::Model& model, Entities::Node& root) noexcpt
 	{
 		// window name defaults to "Model
 		windowName = windowName ? windowName : "Model";
@@ -39,6 +39,9 @@ namespace Windowing
 				ImGui::SliderFloat("Y", &transform.y, -20.0f, 20.0f);
 				ImGui::SliderFloat("Z", &transform.z, -20.0f, 20.0f);
 
+				if (!pSelectedNode->ControlMaterial(gfx, skinMaterial))
+					pSelectedNode->ControlMaterial(gfx, ringMaterial);
+
 				if (ImGui::Button("Reset"))
 					transform = {};
 			}
@@ -51,5 +54,10 @@ namespace Windowing
 		assert(pSelectedNode != nullptr);
 		const auto& transform = transforms.at(pSelectedNode->GetId());
 		return XMMatrixRotationRollPitchYaw(transform.pitch, transform.yaw, transform.roll) * XMMatrixTranslation(transform.x, -transform.y, -transform.z);
+	}
+
+	Entities::Node* ModelWindow::GetSelectedNode() const noexcept
+	{
+		return pSelectedNode;
 	}
 }

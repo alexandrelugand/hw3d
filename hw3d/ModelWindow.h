@@ -6,13 +6,10 @@ namespace Windowing
 	class ModelWindow
 	{
 	public:
-		void Show(const char* windowName, Entities::Model& model, Entities::Node& root) noexcpt;
+		void Show(Graphics& gfx, const char* windowName, Entities::Model& model, Entities::Node& root) noexcpt;
 		XMMATRIX GetTransform() const noexcpt;
 
-		Entities::Node* GetSelectedNode() const noexcept
-		{
-			return pSelectedNode;
-		}
+		Entities::Node* GetSelectedNode() const noexcept;
 
 	private:
 		Entities::Node* pSelectedNode;
@@ -27,6 +24,8 @@ namespace Windowing
 			float z = 0.0f;
 		};
 
+		Renderer::PSMaterialConstantFull skinMaterial;
+		Renderer::PSMaterialConstantNoTex ringMaterial;
 		std::unordered_map<int, TransformParameters> transforms;
 	};
 }

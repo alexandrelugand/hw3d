@@ -19,15 +19,15 @@ namespace Entities
 		};
 
 	public:
-		Model(Graphics& gfx, std::string fileName);
+		Model(Graphics& gfx, const std::string& fileName);
 		~Model() noexcept;
 
 		void Draw(Graphics& gfx) const noexcpt;
-		void ShowWindow(const char* windowName = nullptr);
+		void ShowWindow(Graphics& gfx, const char* windowName = nullptr);
 		void SetRootTransform(FXMMATRIX tf) const noexcept;
 
 	private:
-		std::unique_ptr<Mesh> ParseMesh(Graphics& gfx, const aiMesh& mesh, const aiMaterial* const* pMaterial);
+		std::unique_ptr<Mesh> ParseMesh(Graphics& gfx, const std::string& base, const aiMesh& mesh, const aiMaterial* const* pMaterials);
 		std::unique_ptr<Node> ParseNode(int& nextId, const aiNode& node);
 
 		std::unique_ptr<Node> pRoot = nullptr;

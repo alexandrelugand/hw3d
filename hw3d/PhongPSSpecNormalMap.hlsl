@@ -12,18 +12,17 @@ cbuffer LightCBuf
 cbuffer ObjectCBuf
 {
     bool normalMapEnabled;
-    float padding[3];
-};
-
-cbuffer CBuf
-{
-    matrix modelView;
-    matrix modelViewProj;
+    bool specularMapEnabled;
+    bool hasGloss;
+    float specularPowerConst;
+    float3 specularColor;
+    float specularMapWeight;
 };
 
 Texture2D tex;
 Texture2D spec;
-Texture2D nmap : register(t2);
+Texture2D nmap;
+
 SamplerState splr;
 
 float4 main(float3 viewPos : POSITION, float3 n : NORMAL, float3 tan : TANGENT, float3 bitan : BITANGENT, float2 tc : TEXCOORD) : SV_TARGET
@@ -61,9 +60,22 @@ float4 main(float3 viewPos : POSITION, float3 n : NORMAL, float3 tan : TANGENT, 
     const float3 r = w * 2.0f - vToL;
 
     // calculate specular intensity based on angle between viewing vector and reflection vector, narrow with power function
-    const float4 specularSample = spec.Sample(splr, tc);
-    const float3 specularReflectionColor = specularSample.rgb;
-    const float specularPower = pow(2.0f, specularSample.a * 13.0f);
+    float3 specularReflectionColor;
+    float specularPower = specularPowerConst;
+    if (specularMapEnabled)
+    {
+        const float4 specularSample = spec.Sample(splr, tc);
+        specularReflectionColor = specularSample.rgb * specularMapWeight;
+        if (hasGloss)
+        {
+            specularPower = pow(2.0f, specularSample.a * 13.0f);
+        }
+    }
+    else
+    {
+        specularReflectionColor = specularColor;
+    }
+
     const float3 specular = att * (diffuseColor * diffuseIntensity) * pow(max(0.0f, dot(normalize(-r), normalize(viewPos))), specularPower);
 
 	// final color
