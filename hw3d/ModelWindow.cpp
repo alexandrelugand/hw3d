@@ -69,7 +69,7 @@ namespace Windowing
 	{
 		assert(pSelectedNode != nullptr);
 		const auto& transform = transforms.at(pSelectedNode->GetId());
-		return XMMatrixRotationRollPitchYaw(transform.pitch, transform.yaw, transform.roll) * XMMatrixTranslation(transform.x, -transform.y, -transform.z);
+		return XMMatrixRotationRollPitchYaw(transform.pitch, transform.yaw, transform.roll) * XMMatrixTranslation(transform.x, transform.y, -transform.z);
 	}
 
 	Entities::Node* ModelWindow::GetSelectedNode() const noexcept

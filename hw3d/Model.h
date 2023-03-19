@@ -6,6 +6,7 @@ namespace Entities
 {
 	class Model
 	{
+	public:
 		class ModelException : public Hw3DException
 		{
 		public:
@@ -18,7 +19,6 @@ namespace Entities
 			std::string note;
 		};
 
-	public:
 		Model(Graphics& gfx, const std::string& filePath, const float& scale = 1.0f);
 		~Model() noexcept;
 

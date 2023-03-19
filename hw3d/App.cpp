@@ -6,7 +6,7 @@
 App::App()
 	: wnd(1280u, 1024u, "DirectX Engine"), light(wnd.Gfx())
 {
-	wnd.Gfx().SetProjection(XMMatrixPerspectiveLH(1.0f, 3.0f / 4.0f, 0.5f, 40.0f));
+	wnd.Gfx().SetProjection(XMMatrixPerspectiveLH(1.0f, 3.0f / 4.0f, 0.5f, 400.0f));
 }
 
 int App::Go()
@@ -37,9 +37,10 @@ void App::DoFrame()
 	gfx.SetCamera(camera.GetMatrix());
 	light.Bind(gfx, gfx.GetCamera());
 
-	nano.Draw(gfx);
-	wall.Draw(gfx);
-	gobber.Draw(gfx);
+	//nano.Draw(gfx);
+	//wall.Draw(gfx);
+	//gobber.Draw(gfx);
+	sponza.Draw(gfx);
 
 	light.Draw(gfx);
 
@@ -132,9 +133,10 @@ void App::DoFrame()
 		SpawnSimulationWindow();
 		camera.SpawnControlWindow();
 		light.SpawnControlWindow();
-		nano.ShowWindow(gfx, "Nanosuit");
-		wall.ShowWindow(gfx, "Wall");
-		gobber.ShowWindow(gfx, "Goblin");
+		//nano.ShowWindow(gfx, "Nanosuit");
+		//wall.ShowWindow(gfx, "Wall");
+		//gobber.ShowWindow(gfx, "Goblin");
+		sponza.ShowWindow(wnd.Gfx(), "Sponza");
 	}
 
 	// Present

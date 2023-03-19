@@ -212,6 +212,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="TexturePreprocessor.cpp" />
     <ClCompile Include="TransformAllCBuf.cpp" />
     <ClCompile Include="vendors\imgui\imgui.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
@@ -349,6 +350,7 @@
     <ClInclude Include="NormalMapTwerker.h" />
     <ClInclude Include="PsMaterialConstants.h" />
     <ClInclude Include="string.h" />
+    <ClInclude Include="TexturePreprocessor.h" />
     <ClInclude Include="TransformAllCBuf.h" />
     <ClInclude Include="uuid.h" />
     <ClInclude Include="Hw3DMath.h" />

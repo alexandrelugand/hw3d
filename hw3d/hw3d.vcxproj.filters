@@ -243,6 +243,9 @@
     <ClCompile Include="TransformAllCBuf.cpp">
       <Filter>Source Files\Bind</Filter>
     </ClCompile>
+    <ClCompile Include="TexturePreprocessor.cpp">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -471,6 +474,9 @@
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="NormalMapTwerker.h">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="TexturePreprocessor.h">
       <Filter>Header Files\Utils</Filter>
     </ClInclude>
   </ItemGroup>
