@@ -16,7 +16,7 @@ namespace Draw
 		AddBind(Bind::IndexBuffer::Resolve(gfx, tag, model.indices));
 
 		AddBind(Bind::Texture::Resolve(gfx, "images\\brickwall.jpg"));
-		AddBind(Bind::Texture::Resolve(gfx, "images\\brickwall_normal.jpg", 1u));
+		AddBind(Bind::Texture::Resolve(gfx, "images\\brickwall_normal_obj.png", 2u));
 
 		const auto pvs = Bind::VertexShader::Resolve(gfx, "PhongVS.cso");
 		auto pvsbc = pvs->GetBytecode();

@@ -34,4 +34,12 @@ namespace Renderer
 		float specularPower = 120.0f;
 		float padding[3];
 	};
+
+	struct PSMaterialConstantDiffuseSpec
+	{
+		float specularPowerConst;
+		BOOL hasGloss;
+		float specularMapWeight;
+		float padding;
+	};
 }

@@ -28,11 +28,11 @@ namespace Entities
 		return note;
 	}
 
-	Model::Model(Graphics& gfx, const std::string& fileName)
+	Model::Model(Graphics& gfx, const std::string& filePath, const float& scale)
 		: pWindow(std::make_unique<Windowing::ModelWindow>())
 	{
 		Assimp::Importer imp;
-		const auto pScene = imp.ReadFile(fileName.c_str(),
+		const auto pScene = imp.ReadFile(filePath.c_str(),
 		                                 aiProcess_Triangulate |
 		                                 aiProcess_JoinIdenticalVertices |
 		                                 aiProcess_ConvertToLeftHanded |
@@ -45,11 +45,11 @@ namespace Entities
 			throw ModelException(__LINE__, __FILE__, imp.GetErrorString());
 		}
 
-		const auto filePath = std::filesystem::path(fileName);
-		const auto& base = String::trim(filePath.parent_path().string(), '\\') + "\\"s;
+		const auto path = std::filesystem::path(filePath);
+		const auto& base = String::trim(path.parent_path().string(), '\\') + "\\"s;
 		for (size_t i = 0; i < pScene->mNumMeshes; i++)
 		{
-			meshPtrs.push_back(ParseMesh(gfx, base, *pScene->mMeshes[i], pScene->mMaterials));
+			meshPtrs.push_back(ParseMesh(gfx, base, *pScene->mMeshes[i], pScene->mMaterials, scale));
 		}
 
 		int nextId = 0;
@@ -79,7 +79,7 @@ namespace Entities
 		pRoot->SetAppliedTransform(tf);
 	}
 
-	std::unique_ptr<Mesh> Model::ParseMesh(Graphics& gfx, const std::string& base, const aiMesh& mesh, const aiMaterial* const* pMaterials)
+	std::unique_ptr<Mesh> Model::ParseMesh(Graphics& gfx, const std::string& base, const aiMesh& mesh, const aiMaterial* const* pMaterials, const float& scale)
 	{
 		std::vector<std::shared_ptr<Bind::Bindable>> bindablePtrs;
 
@@ -141,7 +141,6 @@ namespace Entities
 		}
 
 		const auto meshTag = base + "%" + mesh.mName.C_Str();
-		const float scale = 6.0f;
 
 		if (hasDiffuseMap && hasNormalMap && hasSpecularMap)
 		{
@@ -246,6 +245,55 @@ namespace Entities
 			// this is CLEARLY an issue... all meshes will share same mat const, but may have different
 			// Ns (specular power) specified for each in the material properties... bad conflict
 			bindablePtrs.push_back(Bind::PixelConstantBuffer<Renderer::PSMaterialConstantDiffNorm>::Resolve(gfx, pmc, 1u));
+		}
+		else if (hasDiffuseMap && !hasNormalMap && hasSpecularMap)
+		{
+			Dvtx::VertexBufferDescriptor vbuf(std::move(
+				Dvtx::VertexLayout{}
+				.Append(Dvtx::VertexLayout::Position3D)
+				.Append(Dvtx::VertexLayout::Normal)
+				.Append(Dvtx::VertexLayout::Texture2D)
+			));
+
+			for (unsigned int i = 0; i < mesh.mNumVertices; i++)
+			{
+				vbuf.EmplaceBack(
+					XMFLOAT3(mesh.mVertices[i].x * scale, mesh.mVertices[i].y * scale, mesh.mVertices[i].z * scale),
+					*reinterpret_cast<XMFLOAT3*>(&mesh.mNormals[i]),
+					*reinterpret_cast<XMFLOAT2*>(&mesh.mTextureCoords[0][i])
+				);
+			}
+
+			std::vector<unsigned short> indices;
+			indices.reserve(mesh.mNumFaces * 3);
+			for (unsigned int i = 0; i < mesh.mNumFaces; i++)
+			{
+				const auto& face = mesh.mFaces[i];
+				assert(face.mNumIndices == 3);
+				indices.push_back(face.mIndices[0]);
+				indices.push_back(face.mIndices[1]);
+				indices.push_back(face.mIndices[2]);
+			}
+
+			bindablePtrs.push_back(Bind::VertexBuffer::Resolve(gfx, meshTag, vbuf));
+
+			bindablePtrs.push_back(Bind::IndexBuffer::Resolve(gfx, meshTag, indices));
+
+			auto pvs = Bind::VertexShader::Resolve(gfx, "PhongVS.cso");
+			auto pvsbc = pvs->GetBytecode();
+			bindablePtrs.push_back(std::move(pvs));
+
+			bindablePtrs.push_back(Bind::PixelShader::Resolve(gfx, "PhongPSSpec.cso"));
+
+			bindablePtrs.push_back(Bind::InputLayout::Resolve(gfx, vbuf.GetLayout(), pvsbc));
+
+			Renderer::PSMaterialConstantDiffuseSpec pmc{};
+			pmc.specularPowerConst = shininess;
+			pmc.hasGloss = hasAlphaGloss ? TRUE : FALSE;
+			pmc.specularMapWeight = 1.0f;
+			// this is CLEARLY an issue... all meshes will share same mat const, but may have different
+			// Ns (specular power) specified for each in the material properties... bad conflict
+			bindablePtrs.push_back(Bind::PixelConstantBuffer<Renderer::PSMaterialConstantDiffuseSpec>::Resolve(gfx, pmc, 1u));
 		}
 		else if (hasDiffuseMap)
 		{

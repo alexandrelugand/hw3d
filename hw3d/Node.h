@@ -10,6 +10,7 @@ namespace Entities
 		Node(int id, const std::string& name, std::vector<Mesh*> meshPtrs, const XMMATRIX& transform_in) noexcpt;
 
 		void Draw(Graphics& gfx, FXMMATRIX accumulatedTransform) const noexcpt;
+		const XMFLOAT4X4& GetAppliedTransform() const noexcept;
 		void SetAppliedTransform(FXMMATRIX transform) noexcpt;
 		int GetId() const noexcept { return id; }
 		void ShowTree(Node*& pSelectedNode) const noexcpt;

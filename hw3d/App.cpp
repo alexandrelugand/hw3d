@@ -37,9 +37,8 @@ void App::DoFrame()
 	gfx.SetCamera(camera.GetMatrix());
 	light.Bind(gfx, gfx.GetCamera());
 
-	//nano.Draw(gfx);
-	//wall.Draw(gfx);
-	//sheet.Draw(gfx);
+	nano.Draw(gfx);
+	wall.Draw(gfx);
 	gobber.Draw(gfx);
 
 	light.Draw(gfx);
@@ -51,7 +50,7 @@ void App::DoFrame()
 
 		if (e->IsPress() && e->GetCode() == VK_F1)
 		{
-			if (wnd.CursorEnabled())
+			if (wnd.CursorEnabled()) // NOLINT(bugprone-branch-clone)
 			{
 				wnd.DisableCursor();
 				wnd.mouse.EnableRaw();
@@ -133,10 +132,9 @@ void App::DoFrame()
 		SpawnSimulationWindow();
 		camera.SpawnControlWindow();
 		light.SpawnControlWindow();
-		//nano.ShowWindow();
-		//wall.ShowWindow();
-		gobber.ShowWindow(gfx);
-		//sheet.SpawnControlWindow();
+		nano.ShowWindow(gfx, "Nanosuit");
+		wall.ShowWindow(gfx, "Wall");
+		gobber.ShowWindow(gfx, "Goblin");
 	}
 
 	// Present

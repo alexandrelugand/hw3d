@@ -27,6 +27,11 @@ namespace Entities
 		}
 	}
 
+	const XMFLOAT4X4& Node::GetAppliedTransform() const noexcept
+	{
+		return appliedTransform;
+	}
+
 	void Node::SetAppliedTransform(FXMMATRIX transform) noexcpt
 	{
 		XMStoreFloat4x4(&appliedTransform, transform);

@@ -1,13 +1,6 @@
-cbuffer LightCBuf
-{
-    float3 lightPos;
-    float3 ambient;
-    float3 diffuseColor;
-    float diffuseIntensity;
-    float attConst;
-    float attLin;
-    float attQuad;
-};
+#include "ShaderOps.hlsli"
+#include "LightVectorData.hlsli"
+#include "PointLight.hlsli"
 
 cbuffer ObjectCBuf
 {
@@ -17,26 +10,26 @@ cbuffer ObjectCBuf
     float padding[2];
 }
 
-float4 main(float3 viewPos : POSITION, float3 n : NORMAL) : SV_TARGET
+float4 main(float3 viewFragPos : POSITION, float3 viewNormal : NORMAL) : SV_TARGET
 {
-	// fragment to light vector data
-    const float3 vToL = lightPos - viewPos;
-    const float distToL = length(vToL);
-    const float3 dirToL = vToL / distToL;
+	// normalize the mesh normal
+    viewNormal = normalize(viewNormal);
 
-	// diffuse attenuation
-    const float att = 1.0f / (attConst + attLin * distToL + attQuad * (distToL * distToL));
+    // fragment to light vector data
+    const LightVectorData lv = CalculateLightVectorData(viewLightPos, viewFragPos);
 
-	// diffuse intensity
-    const float3 diffuse = diffuseColor * diffuseIntensity * att * max(0.0f, dot(dirToL, n));
+    // attenuation
+    const float att = Attenuate(attConst, attLin, attQuad, lv.distToL);
 
-    // reflected light vector
-    const float3 w = n * dot(vToL, n);
-    const float3 r = w * 2.0f - vToL;
+    // diffuse
+    const float3 diffuse = Diffuse(diffuseColor, diffuseIntensity, att, lv.dirToL, viewNormal);
 
-    // calculate specular intensity based on angle between viewing vector, narrow with power function
-    const float3 specular = att * (diffuseColor * diffuseIntensity) * specularIntensity * pow(max(0.0f, dot(normalize(-r), normalize(viewPos))), specularPower);
+     // specular
+    const float3 specular = Speculate(
+        float3(0.65f, 0.65f, 0.65f), 1.0f, viewNormal,
+        lv.vToL, viewFragPos, att, specularPower
+    );
 
-	// final color
-    return float4(saturate(diffuse + ambient + specular) * color, 1.0f);
+    // final color
+    return float4(saturate((diffuse + ambient) * color + specular), 1.0f);
 }

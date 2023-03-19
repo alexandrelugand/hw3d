@@ -19,7 +19,7 @@ namespace Entities
 		};
 
 	public:
-		Model(Graphics& gfx, const std::string& fileName);
+		Model(Graphics& gfx, const std::string& filePath, const float& scale = 1.0f);
 		~Model() noexcept;
 
 		void Draw(Graphics& gfx) const noexcpt;
@@ -27,7 +27,7 @@ namespace Entities
 		void SetRootTransform(FXMMATRIX tf) const noexcept;
 
 	private:
-		std::unique_ptr<Mesh> ParseMesh(Graphics& gfx, const std::string& base, const aiMesh& mesh, const aiMaterial* const* pMaterials);
+		std::unique_ptr<Mesh> ParseMesh(Graphics& gfx, const std::string& base, const aiMesh& mesh, const aiMaterial* const* pMaterials, const float& scale);
 		std::unique_ptr<Node> ParseNode(int& nextId, const aiNode& node);
 
 		std::unique_ptr<Node> pRoot = nullptr;

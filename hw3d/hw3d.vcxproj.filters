@@ -470,6 +470,9 @@
     <ClInclude Include="PsMaterialConstants.h">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="NormalMapTwerker.h">
+      <Filter>Header Files\Utils</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Hw3D.rc">
@@ -491,14 +494,20 @@
     <None Include="DXTrace.inl">
       <Filter>DxErr</Filter>
     </None>
+    <None Include="LightVectorData.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="PointLight.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="ShaderOps.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="Transform.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
-    <FxCompile Include="TexturePS.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
-    <FxCompile Include="TextureVS.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
     <FxCompile Include="PhongPS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
@@ -523,9 +532,6 @@
     <FxCompile Include="TexturedPhongVS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="PhongPSSpecMap.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
     <FxCompile Include="PhongPSNormalMapObject.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
@@ -542,6 +548,9 @@
       <Filter>Shaders</Filter>
     </FxCompile>
     <FxCompile Include="PhongPSNoTex.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="PhongPSSpec.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>
