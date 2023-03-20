@@ -1,4 +1,7 @@
 #pragma once
+#include <codecvt>
+#pragma warning(push)
+#pragma warning(disable:4996)
 
 namespace String
 {
@@ -37,4 +40,32 @@ namespace String
 	{
 		return rtrim(ltrim(s, c), c);
 	}
+
+
+	static std::string ToNarrow(const wchar_t* str)
+	{
+		// ReSharper disable CppDeprecatedEntity
+		return std::wstring_convert<std::codecvt_utf8<wchar_t>>().to_bytes(str);
+	}
+
+	static std::wstring ToWide(const std::string& str)
+	{
+		return std::wstring(str.begin(), str.end());
+	}
+
+	static std::vector<std::string> TokenizeQuoted(const std::string& input)
+	{
+		std::istringstream stream;
+		stream.str(input);
+		std::vector<std::string> tokens;
+		std::string token;
+
+		while (stream >> std::quoted(token))
+		{
+			tokens.push_back(std::move(token));
+		}
+		return tokens;
+	}
 }
+
+#pragma warning(pop)

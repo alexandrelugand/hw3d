@@ -26,7 +26,7 @@ namespace Entities
 			ImGui::Text("Falloff");
 			ImGui::SliderFloat("Constant", &cbData.attConst, 0.05f, 10.0f, "%.2lf", ImGuiSliderFlags_NoRoundToFormat);
 			ImGui::SliderFloat("Linear", &cbData.attLin, 0.0001f, 4.0f, "%.4lf", ImGuiSliderFlags_NoRoundToFormat);
-			ImGui::SliderFloat("Quadratic", &cbData.attQuad, 0.0000001f, 1.0f, "%.7lf", ImGuiSliderFlags_NoRoundToFormat);
+			ImGui::SliderFloat("Quadratic", &cbData.attQuad, 0.0000001f, 0.1f, "%.7lf", ImGuiSliderFlags_NoRoundToFormat);
 
 			if (ImGui::Button("Reset"))
 				Reset();

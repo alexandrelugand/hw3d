@@ -3,7 +3,7 @@
 class App
 {
 public:
-	App();
+	App(const std::string& commandLine);
 	~App() = default;
 
 	//Master frame / message loop
@@ -11,6 +11,8 @@ public:
 
 private:
 	Windowing::Window wnd;
+	ScriptCommander scriptCommander;
+
 	Hw3DTimer timer;
 	float speed_factor = 1.0f;
 

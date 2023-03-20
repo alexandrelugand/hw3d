@@ -85,6 +85,9 @@
     <Filter Include="Source Files\Dvtx">
       <UniqueIdentifier>{4ff9a9ce-3c70-4f00-a34b-2840ca4d9bab}</UniqueIdentifier>
     </Filter>
+    <Filter Include="DirectXTex">
+      <UniqueIdentifier>{4650863d-388c-4424-9358-5ed689b0ecc5}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp">
@@ -248,6 +251,9 @@
     </ClCompile>
     <ClCompile Include="Rasterizer.cpp">
       <Filter>Source Files\Bind</Filter>
+    </ClCompile>
+    <ClCompile Include="ScriptCommander.cpp">
+      <Filter>Source Files\Utils</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -458,9 +464,6 @@
     <ClInclude Include="Codex.h">
       <Filter>Header Files\Bind</Filter>
     </ClInclude>
-    <ClInclude Include="utf8.h">
-      <Filter>Header Files\Utils</Filter>
-    </ClInclude>
     <ClInclude Include="uuid.h">
       <Filter>Header Files\Utils</Filter>
     </ClInclude>
@@ -484,6 +487,12 @@
     </ClInclude>
     <ClInclude Include="Rasterizer.h">
       <Filter>Header Files\Bind</Filter>
+    </ClInclude>
+    <ClInclude Include="vendors\DirectXTex\include\DirectXTex.h">
+      <Filter>DirectXTex</Filter>
+    </ClInclude>
+    <ClInclude Include="ScriptCommander.h">
+      <Filter>Header Files\Utils</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -518,6 +527,7 @@
     <None Include="Transform.hlsli">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="process.json" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="PhongPS.hlsl">

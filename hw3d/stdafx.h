@@ -14,6 +14,7 @@
 #include <array>
 #include <string>
 #include <algorithm>
+#include <fstream>
 #include <sstream>
 #include <bitset>
 #include <optional>
@@ -44,6 +45,7 @@ namespace Gdiplus
 #include <DirectXMath.h>
 #include <dxgidebug.h>
 #include <d3dcompiler.h>
+#include <DirectXTex.h>
 
 // ImGUI
 #include <imgui/imgui.h>
@@ -59,9 +61,11 @@ namespace Gdiplus
 #include <assimp/scene.h>
 #include <assimp/postprocess.h>
 
+//JSON
+#include <json.hpp>
+
 // HW3D
 // Utilities
-#include "utf8.h"
 #include "uuid.h"
 #include "string.h"
 #include "dxerr.h"
@@ -71,6 +75,8 @@ namespace Gdiplus
 #include "ConditionalNoexcept.h"
 #include "WindowsThrowMacros.h"
 #include "GraphicsThrowMacros.h"
+#include "TexturePreprocessor.h"
+#include "ScriptCommander.h"
 
 // Managers
 #include "WindowsMessageMap.h"

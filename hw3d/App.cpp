@@ -3,8 +3,10 @@
 
 #pragma comment(lib, "assimp-vc143-mt.lib")
 
-App::App()
-	: wnd(1280u, 1024u, "DirectX Engine"), light(wnd.Gfx())
+App::App(const std::string& commandLine)
+	: wnd(1280u, 1024u, "DirectX Engine"),
+	  scriptCommander(String::TokenizeQuoted(commandLine)),
+	  light(wnd.Gfx())
 {
 	wnd.Gfx().SetProjection(XMMatrixPerspectiveLH(1.0f, 3.0f / 4.0f, 0.5f, 400.0f));
 }

@@ -1,5 +1,4 @@
 #pragma once
-#include "Forwards.h"
 
 namespace Windowing
 {
@@ -79,7 +78,6 @@ namespace Windowing
 		static LRESULT CALLBACK HandleMsgThunk(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept;
 		LRESULT HandleMsg(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam) noexcept;
 
-		GDIPlusManager gdipm{};
 		ImguiManager imgui{};
 
 		bool cursorEnabled = true;

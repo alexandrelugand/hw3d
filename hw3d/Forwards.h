@@ -30,7 +30,6 @@ namespace Bind
 	class IndexBuffer;
 	class InputLayout;
 	class PixelShader;
-	class Surface;
 	class Texture;
 	class Topology;
 	class TransformCBuf;

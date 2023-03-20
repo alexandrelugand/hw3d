@@ -43,7 +43,7 @@ namespace Entities
 					c.hasGlossMap = hasGlossMap ? TRUE : FALSE;
 
 					ImGui::SliderFloat("Spec Weight", &c.specularMapWeight, 0.0f, 2.0f);
-					ImGui::SliderFloat("Spec Pow", &c.specularPower, 0.0f, 1000.0f, "%f");
+					ImGui::SliderFloat("Spec Pow", &c.specularPower, 0.0f, 1.0f, "%f");
 					ImGui::ColorPicker3("Spec Color", reinterpret_cast<float*>(&c.specularColor));
 
 					pcb->Update(gfx, c);
@@ -56,7 +56,7 @@ namespace Entities
 				{
 					ImGui::Text("Material");
 					ImGui::ColorPicker3("Spec Color", reinterpret_cast<float*>(&c.specularColor));
-					ImGui::SliderFloat("Spec Pow", &c.specularPower, 0.0f, 1000.0f, "%f");
+					ImGui::SliderFloat("Spec Pow", &c.specularPower, 0.0f, 1.0f, "%f");
 					ImGui::ColorPicker3("Diff Color", reinterpret_cast<float*>(&c.materialColor));
 
 					pcb->Update(gfx, c);

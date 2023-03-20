@@ -9,7 +9,7 @@ int CALLBACK WinMain(
 {
 	try
 	{
-		return App{}.Go();
+		return App{lpCmdLine}.Go();
 	}
 	catch (const Hw3DException& e)
 	{
