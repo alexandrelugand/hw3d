@@ -86,6 +86,7 @@ namespace Entities
 
 		bool hasSpecularMap = false;
 		bool hasAlphaGloss = false;
+		bool hasAlphaDiffuse = false;
 		bool hasNormalMap = false;
 		bool hasDiffuseMap = false;
 		float shininess = 2.0f;
@@ -102,6 +103,9 @@ namespace Entities
 			if (material.GetTexture(aiTextureType_DIFFUSE, 0, &texFileName) == aiReturn_SUCCESS)
 			{
 				bindablePtrs.push_back(Bind::Texture::Resolve(gfx, base + texFileName.C_Str()));
+				auto tex = Bind::Texture::Resolve(gfx, base + texFileName.C_Str());
+				hasAlphaDiffuse = tex->HasAlpha();
+				bindablePtrs.push_back(std::move(tex));
 				hasDiffuseMap = true;
 			}
 			else
@@ -183,7 +187,7 @@ namespace Entities
 			auto pvsbc = pvs->GetBytecode();
 			bindablePtrs.push_back(std::move(pvs));
 
-			bindablePtrs.push_back(Bind::PixelShader::Resolve(gfx, "PhongPSSpecNormalMap.cso"));
+			bindablePtrs.push_back(Bind::PixelShader::Resolve(gfx, hasAlphaDiffuse ? "PhongPSSpecNormMask.cso" : "PhongPSSpecNormalMap.cso"));
 
 			bindablePtrs.push_back(Bind::InputLayout::Resolve(gfx, vbd.GetLayout(), pvsbc));
 
@@ -392,8 +396,14 @@ namespace Entities
 		}
 		else
 		{
-			throw std::runtime_error("terrible combination of textures in material smh");
+			throw std::runtime_error("terrible combination of textures in material mesh");
 		}
+
+		// anything with alpha diffuse is 2-sided IN SPONZA, need a better way
+		// of signalling 2-sidedness to be more general in the future
+		bindablePtrs.push_back(Bind::Rasterizer::Resolve(gfx, hasAlphaDiffuse ? None : Back));
+
+		bindablePtrs.push_back(Bind::Blender::Resolve(gfx, false));
 
 		return std::make_unique<Mesh>(gfx, std::move(bindablePtrs));
 	}

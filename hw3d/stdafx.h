@@ -107,7 +107,8 @@ namespace Gdiplus
 #include "Surface.h"
 #include "Texture.h"
 #include "Sampler.h"
-#include "Cull.h"
+#include "Blender.h"
+#include "Rasterizer.h"
 
 // Dvtx
 #include "Color.h"

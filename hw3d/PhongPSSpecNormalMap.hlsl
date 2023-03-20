@@ -19,6 +19,20 @@ SamplerState splr;
 
 float4 main(float3 viewFragPos : POSITION, float3 viewNormal : NORMAL, float3 viewTan : TANGENT, float3 viewBitan : BITANGENT, float2 tc : TEXCOORD) : SV_TARGET
 {
+    // sample diffuse texture
+    float4 dtex = tex.Sample(splr, tc);
+
+    #ifdef MASK_BOI
+    // bail if highly translucent
+    clip(dtex.a < 0.1f ? -1 : 1); //skip current pixel
+
+    // flip normal when backface
+    if (dot(viewNormal, viewFragPos) >= 0.0f)
+    {
+        viewNormal = -viewNormal;
+    }
+    #endif
+
      // normalize the mesh normal
     viewNormal = normalize(viewNormal);
 
@@ -62,5 +76,5 @@ float4 main(float3 viewFragPos : POSITION, float3 viewNormal : NORMAL, float3 vi
     );
 
 	// final color = attenuate diffuse & ambient by diffuse texture color and add specular reflected
-    return float4(saturate((diffuse + ambient) * tex.Sample(splr, tc).rgb + specularReflected), 1.0f);
+    return float4(saturate((diffuse + ambient) * dtex.rgb + specularReflected), dtex.a);
 }

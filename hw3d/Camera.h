@@ -11,6 +11,7 @@ namespace Entities
 		void Reset() noexcept;
 		void Rotate(float dx, float dy) noexcept;
 		void Translate(XMFLOAT3 translation) noexcept;
+		XMFLOAT3 GetPos() const noexcept;
 
 	private:
 		XMFLOAT3 pos;

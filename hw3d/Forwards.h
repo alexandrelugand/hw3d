@@ -37,6 +37,8 @@ namespace Bind
 	class VertexBuffer;
 	class VertexShader;
 	class Sampler;
+	class Blender;
+	class Rasterizer;
 }
 
 // Draw

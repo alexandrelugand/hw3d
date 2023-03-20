@@ -106,18 +106,9 @@ Graphics::Graphics(HWND hWnd, unsigned int width, unsigned int height)
 
 void Graphics::InitRasterizerState()
 {
-	D3D11_RASTERIZER_DESC desc = {};
-	desc.CullMode = D3D11_CULL_NONE;
-	desc.DepthClipEnable = false;
-	desc.FrontCounterClockwise = false;
-	desc.FillMode = D3D11_FILL_WIREFRAME;
-
-	pDevice->CreateRasterizerState(&desc, &m_wire_frame_state);
+	D3D11_RASTERIZER_DESC desc = CD3D11_RASTERIZER_DESC(CD3D11_DEFAULT{});
 
 	desc.CullMode = D3D11_CULL_FRONT;
-	desc.DepthClipEnable = true;
-	desc.FillMode = D3D11_FILL_SOLID;
-	desc.FrontCounterClockwise = true;
 	pDevice->CreateRasterizerState(&desc, &m_cull_front_state);
 
 	desc.CullMode = D3D11_CULL_BACK;
@@ -125,6 +116,13 @@ void Graphics::InitRasterizerState()
 
 	desc.CullMode = D3D11_CULL_NONE;
 	pDevice->CreateRasterizerState(&desc, &m_cull_none_state);
+
+	desc.CullMode = D3D11_CULL_NONE;
+	desc.DepthClipEnable = false;
+	desc.FrontCounterClockwise = false;
+	desc.FillMode = D3D11_FILL_WIREFRAME;
+
+	pDevice->CreateRasterizerState(&desc, &m_wire_frame_state);
 }
 
 void Graphics::SetCullMode(const CullMode& cullMode) const

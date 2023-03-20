@@ -21,5 +21,6 @@ namespace Bind
 
 	private:
 		unsigned int slot;
+		static UINT CalculateNumberOfMipLevels(UINT width, UINT height) noexcept;
 	};
 }

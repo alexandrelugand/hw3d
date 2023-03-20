@@ -237,14 +237,17 @@
     <ClCompile Include="Vertex.cpp">
       <Filter>Source Files\Dvtx</Filter>
     </ClCompile>
-    <ClCompile Include="Cull.cpp">
-      <Filter>Source Files\Bind</Filter>
-    </ClCompile>
     <ClCompile Include="TransformAllCBuf.cpp">
       <Filter>Source Files\Bind</Filter>
     </ClCompile>
     <ClCompile Include="TexturePreprocessor.cpp">
       <Filter>Source Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="Blender.cpp">
+      <Filter>Source Files\Bind</Filter>
+    </ClCompile>
+    <ClCompile Include="Rasterizer.cpp">
+      <Filter>Source Files\Bind</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -461,9 +464,6 @@
     <ClInclude Include="uuid.h">
       <Filter>Header Files\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="Cull.h">
-      <Filter>Header Files\Bind</Filter>
-    </ClInclude>
     <ClInclude Include="TransformAllCBuf.h">
       <Filter>Header Files\Bind</Filter>
     </ClInclude>
@@ -478,6 +478,12 @@
     </ClInclude>
     <ClInclude Include="TexturePreprocessor.h">
       <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="Blender.h">
+      <Filter>Header Files\Bind</Filter>
+    </ClInclude>
+    <ClInclude Include="Rasterizer.h">
+      <Filter>Header Files\Bind</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -557,6 +563,9 @@
       <Filter>Shaders</Filter>
     </FxCompile>
     <FxCompile Include="PhongPSSpec.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="PhongPSSpecNormMask.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>

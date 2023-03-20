@@ -5,16 +5,9 @@ namespace Draw
 {
 	void Drawable::Draw(Graphics& gfx) const noexcpt
 	{
-		bool cullFound = false;
 		for (auto& b : binds)
 		{
 			b->Bind(gfx);
-			cullFound |= typeid(*b) == typeid(Bind::Cull);
-		}
-
-		if (!cullFound)
-		{
-			gfx.SetCullMode(cull);
 		}
 
 		gfx.DrawIndexed(pIndexBuffer->GetCount());

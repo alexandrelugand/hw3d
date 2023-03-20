@@ -7,6 +7,7 @@ namespace Bind
 	public:
 		IndexBuffer(Graphics& gfx, const std::vector<unsigned short>& indices);
 		IndexBuffer(Graphics& gfx, std::string tag, const std::vector<unsigned short>& indices);
+
 		void Bind(Graphics& gfx) noexcpt override;
 		UINT GetCount() const noexcept { return count; }
 

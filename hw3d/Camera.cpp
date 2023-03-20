@@ -66,4 +66,9 @@ namespace Entities
 			pos.z + translation.z
 		};
 	}
+
+	XMFLOAT3 Camera::GetPos() const noexcept
+	{
+		return pos;
+	}
 }

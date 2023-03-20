@@ -1,5 +1,8 @@
 #include "stdafx.h"
 #include "SolidSphere.h"
+
+#include "Blender.h"
+#include "Rasterizer.h"
 #include "Sphere.h"
 
 namespace Draw
@@ -26,6 +29,9 @@ namespace Draw
 
 		AddBind(std::make_shared<Bind::TransformCBuf>(gfx, *this));
 		AddBind(std::make_shared<Bind::ColorCBuf>(gfx, *this));
+
+		AddBind(Bind::Blender::Resolve(gfx, false));
+		AddBind(Bind::Rasterizer::Resolve(gfx));
 	}
 
 	void SolidSphere::SetPos(XMFLOAT3 pos) noexcept
