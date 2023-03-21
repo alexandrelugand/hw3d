@@ -37,6 +37,23 @@ namespace Entities
 		XMStoreFloat4x4(&appliedTransform, transform);
 	}
 
+	const Dcb::Buffer* Node::GetMaterialConstants() const noexcpt
+	{
+		if (meshPtrs.size() == 0)
+		{
+			return nullptr;
+		}
+		auto pBindable = meshPtrs.front()->QueryBindable<Bind::CachingDynamicPixelCBuf>();
+		return &pBindable->GetBuffer();
+	}
+
+	void Node::SetMaterialConstants(const Dcb::Buffer& buf_in) noexcpt
+	{
+		auto pcb = meshPtrs.front()->QueryBindable<Bind::CachingDynamicPixelCBuf>();
+		assert(pcb != nullptr);
+		pcb->SetBuffer(buf_in);
+	}
+
 	void Node::ShowTree(Node*& pSelectedNode) const noexcpt
 	{
 		// if there is no selected node, set selectedId to an impossible value

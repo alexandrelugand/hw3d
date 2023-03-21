@@ -1,5 +1,5 @@
 #pragma once
-#include "Forwards.h"
+#include "DynamicConstant.h"
 
 namespace Windowing
 {
@@ -7,11 +7,18 @@ namespace Windowing
 	{
 	public:
 		void Show(Graphics& gfx, const char* windowName, Entities::Model& model, Entities::Node& root) noexcpt;
+
+		void ApplyParameters() noexcpt;
 		XMMATRIX GetTransform() const noexcpt;
 
-		Entities::Node* GetSelectedNode() const noexcept;
-
 	private:
+		const Dcb::Buffer& GetMaterial() const noexcpt;
+		bool TransformDirty() const noexcpt;
+		void ResetTransformDirty() noexcpt;
+		bool MaterialDirty() const noexcpt;
+		void ResetMaterialDirty() noexcpt;
+		bool IsDirty() const noexcpt;
+
 		Entities::Node* pSelectedNode;
 
 		struct TransformParameters
@@ -24,8 +31,14 @@ namespace Windowing
 			float z = 0.0f;
 		};
 
-		Renderer::PSMaterialConstantFull skinMaterial;
-		Renderer::PSMaterialConstantNoTex ringMaterial;
-		std::unordered_map<int, TransformParameters> transforms;
+		struct NodeData
+		{
+			TransformParameters tranformParams;
+			bool transformParamsDirty;
+			std::optional<Dcb::Buffer> materialCbuf;
+			bool materialCbufDirty;
+		};
+
+		std::unordered_map<int, NodeData> transforms;
 	};
 }

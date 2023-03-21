@@ -38,6 +38,9 @@ namespace Bind
 	class Sampler;
 	class Blender;
 	class Rasterizer;
+	class DynamicPixelCBuf;
+	class CachingDynamicPixelCBuf;
+	class NocacheDynamicPixelCBuf;
 }
 
 // Draw
@@ -63,7 +66,7 @@ namespace Inputs
 	class Mouse;
 }
 
-// Vertex layout
+// Dynamic Vertex layout
 namespace Dvtx
 {
 	struct RGBAColor;
@@ -71,6 +74,17 @@ namespace Dvtx
 	class Vertex;
 	class ConstVertex;
 	class VertexBufferDescriptor;
+}
+
+// Dynamic Constant buffer
+namespace Dcb
+{
+	class LayoutElement;
+	class Layout;
+	class RawLayout;
+	class CookedLayout;
+	class ConstElementRef;
+	class ElementRef;
 }
 
 // Entities

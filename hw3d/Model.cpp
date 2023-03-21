@@ -62,10 +62,10 @@ namespace Entities
 
 	void Model::Draw(Graphics& gfx) const noexcpt
 	{
-		if (auto node = pWindow->GetSelectedNode())
-		{
-			node->SetAppliedTransform(pWindow->GetTransform());
-		}
+		// I'm still not happy about updating parameters (i.e. mutating a bindable GPU state
+		// which is part of a mesh which is part of a node which is part of the model that is
+		// const in this call) Can probably do this elsewhere
+		pWindow->ApplyParameters();
 		pRoot->Draw(gfx, XMMatrixIdentity());
 	}
 
@@ -102,7 +102,6 @@ namespace Entities
 
 			if (material.GetTexture(aiTextureType_DIFFUSE, 0, &texFileName) == aiReturn_SUCCESS)
 			{
-				bindablePtrs.push_back(Bind::Texture::Resolve(gfx, base + texFileName.C_Str()));
 				auto tex = Bind::Texture::Resolve(gfx, base + texFileName.C_Str());
 				hasAlphaDiffuse = tex->HasAlpha();
 				bindablePtrs.push_back(std::move(tex));
@@ -191,12 +190,23 @@ namespace Entities
 
 			bindablePtrs.push_back(Bind::InputLayout::Resolve(gfx, vbd.GetLayout(), pvsbc));
 
-			Renderer::PSMaterialConstantFull pmc{};
-			pmc.specularPower = shininess;
-			pmc.hasGlossMap = hasAlphaGloss ? TRUE : FALSE;
-			// this is CLEARLY an issue... all meshes will share same mat const, but may have different
-			// Ns (specular power) specified for each in the material properties... bad conflict
-			bindablePtrs.push_back(Bind::PixelConstantBuffer<Renderer::PSMaterialConstantFull>::Resolve(gfx, pmc, 1u));
+			Dcb::RawLayout lay;
+			lay.Add<Dcb::Bool>("normalMapEnabled");
+			lay.Add<Dcb::Bool>("specularMapEnabled");
+			lay.Add<Dcb::Bool>("hasGlossMap");
+			lay.Add<Dcb::Float>("specularPower");
+			lay.Add<Dcb::Float3>("specularColor");
+			lay.Add<Dcb::Float>("specularMapWeight");
+
+			auto buf = Dcb::Buffer(std::move(lay));
+			buf["normalMapEnabled"] = true;
+			buf["specularMapEnabled"] = true;
+			buf["hasGlossMap"] = hasAlphaGloss;
+			buf["specularPower"] = shininess;
+			buf["specularColor"] = XMFLOAT3{0.75f, 0.75f, 0.75f};
+			buf["specularMapWeight"] = 0.671f;
+
+			bindablePtrs.push_back(std::make_shared<Bind::CachingDynamicPixelCBuf>(gfx, buf, 1u));
 		}
 		else if (hasDiffuseMap && hasNormalMap)
 		{
@@ -243,12 +253,17 @@ namespace Entities
 
 			bindablePtrs.push_back(Bind::InputLayout::Resolve(gfx, vbd.GetLayout(), pvsbc));
 
-			Renderer::PSMaterialConstantDiffNorm pmc{};
-			pmc.specularPower = shininess;
-			pmc.specularIntensity = (specularColor.x + specularColor.y + specularColor.z) / 3.0f;
-			// this is CLEARLY an issue... all meshes will share same mat const, but may have different
-			// Ns (specular power) specified for each in the material properties... bad conflict
-			bindablePtrs.push_back(Bind::PixelConstantBuffer<Renderer::PSMaterialConstantDiffNorm>::Resolve(gfx, pmc, 1u));
+			Dcb::RawLayout layout;
+			layout.Add<Dcb::Float>("specularIntensity");
+			layout.Add<Dcb::Float>("specularPower");
+			layout.Add<Dcb::Bool>("normalMapEnabled");
+
+			auto cbuf = Dcb::Buffer(std::move(layout));
+			cbuf["specularIntensity"] = (specularColor.x + specularColor.y + specularColor.z) / 3.0f;
+			cbuf["specularPower"] = shininess;
+			cbuf["normalMapEnabled"] = true;
+
+			bindablePtrs.push_back(std::make_shared<Bind::CachingDynamicPixelCBuf>(gfx, cbuf, 1u));
 		}
 		else if (hasDiffuseMap && !hasNormalMap && hasSpecularMap)
 		{
@@ -291,13 +306,17 @@ namespace Entities
 
 			bindablePtrs.push_back(Bind::InputLayout::Resolve(gfx, vbuf.GetLayout(), pvsbc));
 
-			Renderer::PSMaterialConstantDiffuseSpec pmc{};
-			pmc.specularPowerConst = shininess;
-			pmc.hasGloss = hasAlphaGloss ? TRUE : FALSE;
-			pmc.specularMapWeight = 1.0f;
-			// this is CLEARLY an issue... all meshes will share same mat const, but may have different
-			// Ns (specular power) specified for each in the material properties... bad conflict
-			bindablePtrs.push_back(Bind::PixelConstantBuffer<Renderer::PSMaterialConstantDiffuseSpec>::Resolve(gfx, pmc, 1u));
+			Dcb::RawLayout lay;
+			lay.Add<Dcb::Float>("specularPower");
+			lay.Add<Dcb::Bool>("hasGloss");
+			lay.Add<Dcb::Float>("specularMapWeight");
+
+			auto buf = Dcb::Buffer(std::move(lay));
+			buf["specularPower"] = shininess;
+			buf["hasGloss"] = hasAlphaGloss;
+			buf["specularMapWeight"] = 1.0f;
+
+			bindablePtrs.push_back(std::make_unique<Bind::CachingDynamicPixelCBuf>(gfx, buf, 1u));
 		}
 		else if (hasDiffuseMap)
 		{
@@ -340,12 +359,16 @@ namespace Entities
 
 			bindablePtrs.push_back(Bind::InputLayout::Resolve(gfx, vbd.GetLayout(), pvsbc));
 
-			Renderer::PSMaterialConstantDiffuse pmc{};
-			pmc.specularPower = shininess;
-			pmc.specularIntensity = (specularColor.x + specularColor.y + specularColor.z) / 3.0f;
-			// this is CLEARLY an issue... all meshes will share same mat const, but may have different
-			// Ns (specular power) specified for each in the material properties... bad conflict
-			bindablePtrs.push_back(Bind::PixelConstantBuffer<Renderer::PSMaterialConstantDiffuse>::Resolve(gfx, pmc, 1u));
+			Dcb::RawLayout lay;
+			lay.Add<Dcb::Float>("specularIntensity");
+			lay.Add<Dcb::Float>("specularPower");
+
+			auto buf = Dcb::Buffer(std::move(lay));
+			buf["specularIntensity"] = (specularColor.x + specularColor.y + specularColor.z) / 3.0f;
+			buf["specularPower"] = shininess;
+			buf["specularMapWeight"] = 1.0f;
+
+			bindablePtrs.push_back(std::make_unique<Bind::CachingDynamicPixelCBuf>(gfx, buf, 1u));
 		}
 		else if (!hasDiffuseMap && !hasNormalMap && !hasSpecularMap)
 		{
@@ -386,13 +409,17 @@ namespace Entities
 
 			bindablePtrs.push_back(Bind::InputLayout::Resolve(gfx, vbd.GetLayout(), pvsbc));
 
-			Renderer::PSMaterialConstantNoTex pmc{};
-			pmc.specularPower = shininess;
-			pmc.specularColor = specularColor;
-			pmc.materialColor = diffuseColor;
-			// this is CLEARLY an issue... all meshes will share same mat const, but may have different
-			// Ns (specular power) specified for each in the material properties... bad conflict
-			bindablePtrs.push_back(Bind::PixelConstantBuffer<Renderer::PSMaterialConstantNoTex>::Resolve(gfx, pmc, 1u));
+			Dcb::RawLayout lay;
+			lay.Add<Dcb::Float4>("materialColor");
+			lay.Add<Dcb::Float4>("specularColor");
+			lay.Add<Dcb::Float>("specularPower");
+
+			auto buf = Dcb::Buffer(std::move(lay));
+			buf["specularPower"] = shininess;
+			buf["specularColor"] = specularColor;
+			buf["materialColor"] = diffuseColor;
+
+			bindablePtrs.push_back(std::make_unique<Bind::CachingDynamicPixelCBuf>(gfx, buf, 1u));
 		}
 		else
 		{

@@ -5,6 +5,7 @@
 #include "WinPreprocessor.h"
 
 // STL
+#include <cassert>
 #include <chrono>
 #include <random>
 #include <exception>
@@ -115,13 +116,19 @@ namespace Gdiplus
 #include "Sampler.h"
 #include "Blender.h"
 #include "Rasterizer.h"
+#include "LayoutCodex.h"
+#include "DynamicPixelCBuf.h"
 
-// Dvtx
+// Dynamic Vertex layout
 #include "Color.h"
 #include "VertexLayout.h"
 #include "Vertex.h"
 #include "ConstVertex.h"
 #include "VertexBufferDescriptor.h"
+
+// Dynamic Constant buffer
+#include "LayoutCodex.h"
+#include "DynamicConstant.h"
 
 // Geometry
 #include "IndexedTriangleList.h"

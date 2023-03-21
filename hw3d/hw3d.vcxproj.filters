@@ -88,6 +88,12 @@
     <Filter Include="DirectXTex">
       <UniqueIdentifier>{4650863d-388c-4424-9358-5ed689b0ecc5}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Dcb">
+      <UniqueIdentifier>{9fc68d78-c0d7-4db0-bc36-861545a73170}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Dcb">
+      <UniqueIdentifier>{1463410d-4a35-4503-bec2-7a8e74ede2e1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp">
@@ -254,6 +260,15 @@
     </ClCompile>
     <ClCompile Include="ScriptCommander.cpp">
       <Filter>Source Files\Utils</Filter>
+    </ClCompile>
+    <ClCompile Include="DynamicConstant.cpp">
+      <Filter>Source Files\Dcb</Filter>
+    </ClCompile>
+    <ClCompile Include="LayoutCodex.cpp">
+      <Filter>Source Files\Dcb</Filter>
+    </ClCompile>
+    <ClCompile Include="DynamicPixelCBuf.cpp">
+      <Filter>Source Files\Bind</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -493,6 +508,15 @@
     </ClInclude>
     <ClInclude Include="ScriptCommander.h">
       <Filter>Header Files\Utils</Filter>
+    </ClInclude>
+    <ClInclude Include="DynamicConstant.h">
+      <Filter>Header Files\Dcb</Filter>
+    </ClInclude>
+    <ClInclude Include="LayoutCodex.h">
+      <Filter>Header Files\Dcb</Filter>
+    </ClInclude>
+    <ClInclude Include="DynamicPixelCBuf.h">
+      <Filter>Header Files\Bind</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
