@@ -3,9 +3,19 @@
 
 namespace Dvtx
 {
-	VertexBufferDescriptor::VertexBufferDescriptor(VertexLayout layout) noexcpt
+	VertexBufferDescriptor::VertexBufferDescriptor(VertexLayout layout, size_t size) noexcpt
 		: layout(layout)
 	{
+		Resize(size);
+	}
+
+	void VertexBufferDescriptor::Resize(size_t newSize) noexcpt
+	{
+		const auto size = Size();
+		if (size < newSize)
+		{
+			buffer.resize(buffer.size() + layout.Size() * (newSize - size));
+		}
 	}
 
 	const VertexLayout& VertexBufferDescriptor::GetLayout() const noexcept

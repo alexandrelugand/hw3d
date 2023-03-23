@@ -8,7 +8,8 @@ namespace Draw
 		: DrawableObject(gfx)
 	{
 		const auto tag = "$box." + Uuid::ToString(Uuid::New());
-		const auto model = Geometry::Cube::MakeIndependent();
+
+		const auto model = Geometry::Cube::Make();
 		materialConstants.color = material;
 
 		AddBind(Bind::VertexBuffer::Resolve(gfx, tag, model.vbd));

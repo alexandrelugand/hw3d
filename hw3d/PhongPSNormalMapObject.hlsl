@@ -38,7 +38,7 @@ float4 main(float3 viewFragPos : POSITION, float3 viewNormal : NORMAL, float2 tc
 
 	// specular
     const float3 specular = Speculate(
-        specularIntensity.rrr, 1.0f, viewNormal, lv.vToL,
+        specularIntensity.rrr, diffuseIntensity * specularIntensity, viewNormal, lv.vToL,
         viewFragPos, att, specularPower
     );
 

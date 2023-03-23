@@ -4,11 +4,14 @@
 
 namespace Draw
 {
-	SkinnedBox::SkinnedBox(Graphics& gfx)
+	SkinnedBox::SkinnedBox(Graphics& gfx, float scale, XMFLOAT3 position)
 		: DrawableObject(gfx)
 	{
 		const auto tag = "$skinnedbox." + Uuid::ToString(Uuid::New());
-		const auto model = Geometry::Cube::MakeIndependentTextured();
+		auto model = Geometry::Cube::MakeIndependentTextured();
+		model.SetNormalsIndependentFlat();
+		model.Transform(XMMatrixScaling(scale, scale, scale));
+		pos = position;
 
 		AddBind(Bind::VertexBuffer::Resolve(gfx, tag, model.vbd));
 		AddBind(Bind::IndexBuffer::Resolve(gfx, tag, model.indices));
@@ -24,10 +27,33 @@ namespace Draw
 
 		AddBind(std::make_unique<MaterialCbuf>(gfx, materialConstants, 1u));
 
-		AddBind(Bind::Texture::Resolve(gfx, "images\\alex.png"));
+		AddBind(Bind::Texture::Resolve(gfx, "images\\brickwall.jpg"));
 		AddBind(Bind::Sampler::Resolve(gfx));
 
-		AddBind(std::make_shared<Bind::TransformCBuf>(gfx, *this));
+		auto tacb = std::make_shared<Bind::TransformAllCBuf>(gfx, *this, 0u, 2u);
+		AddBind(tacb);
+
+		AddBind(std::make_shared<Bind::Stencil>(gfx, Bind::Stencil::Mode::Write));
+
+		//Outlining
+		outlineEffect.push_back(Bind::VertexBuffer::Resolve(gfx, tag, model.vbd));
+		outlineEffect.push_back(Bind::IndexBuffer::Resolve(gfx, tag, model.indices));
+		pvs = Bind::VertexShader::Resolve(gfx, "SolidVS.cso");
+		pvsbc = pvs->GetBytecode();
+		outlineEffect.push_back(std::move(pvs));
+
+		outlineEffect.push_back(Bind::PixelShader::Resolve(gfx, "SolidPS.cso"));
+
+		struct SolidColorBuffer
+		{
+			XMFLOAT4 color = {1.0f, 0.4f, 0.4f, 1.0f};
+		} scb;
+		outlineEffect.push_back(Bind::PixelConstantBuffer<SolidColorBuffer>::Resolve(gfx, scb, 1u));
+
+		outlineEffect.push_back(Bind::InputLayout::Resolve(gfx, model.vbd.GetLayout(), pvsbc));
+		outlineEffect.push_back(Bind::Topology::Resolve(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
+		outlineEffect.push_back(std::move(tacb));
+		outlineEffect.push_back(std::make_shared<Bind::Stencil>(gfx, Bind::Stencil::Mode::Mask));
 	}
 
 	bool SkinnedBox::SpawnControlWindow() noexcept
@@ -66,6 +92,25 @@ namespace Draw
 		}
 
 		return open;
+	}
+
+	void SkinnedBox::DrawOutline(Graphics& gfx) noexcpt
+	{
+		outlining = true;
+		for (auto& b : outlineEffect)
+		{
+			b->Bind(gfx);
+		}
+		gfx.DrawIndexed(QueryBindable<Bind::IndexBuffer>()->GetCount());
+		outlining = false;
+	}
+
+	XMMATRIX SkinnedBox::GetTransform() const noexcept
+	{
+		auto transform = DrawableObject::GetTransform();
+		if (outlining)
+			transform = XMMatrixScaling(1.03f, 1.03f, 1.03f) * transform;
+		return transform;
 	}
 
 	void SkinnedBox::SyncMaterial() noexcpt

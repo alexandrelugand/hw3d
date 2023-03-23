@@ -6,7 +6,8 @@ namespace Dvtx
 	class VertexBufferDescriptor
 	{
 	public:
-		VertexBufferDescriptor(VertexLayout layout) noexcpt;
+		VertexBufferDescriptor(VertexLayout layout, size_t size = 0u) noexcpt;
+		void Resize(size_t newSize) noexcpt;
 		const VertexLayout& GetLayout() const noexcept;
 		size_t NumVertices() const noexcpt;
 		size_t Size() const noexcpt;
@@ -30,7 +31,7 @@ namespace Dvtx
 		ConstVertex operator[](size_t i) const noexcpt;
 
 	private:
-		std::vector<char> buffer;
+		std::vector<char> buffer{};
 		VertexLayout layout;
 	};
 }

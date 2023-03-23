@@ -36,7 +36,7 @@ float4 main(float3 viewFragPos : POSITION, float3 viewNormal : NORMAL, float3 vi
 
     // specular
     const float3 specular = Speculate(
-        diffuseColor, diffuseIntensity, viewNormal,
+        diffuseColor, diffuseIntensity * specularIntensity, viewNormal,
         lv.vToL, viewFragPos, att, specularPower
     );
 

@@ -27,8 +27,7 @@ float4 main(float3 viewFragPos : POSITION, float3 viewNormal : NORMAL, float2 tc
     const float3 diffuse = Diffuse(diffuseColor, diffuseIntensity, att, lv.dirToL, viewNormal);
 
     // specular
-    const float3 specular = Speculate(
-        float3(0.65f, 0.65f, 0.65f), 1.0f, viewNormal,
+    const float3 specular = Speculate(float3(0.65f, 0.65f, 0.65f), diffuseIntensity * specularIntensity, viewNormal,
         lv.vToL, viewFragPos, att, specularPower
     );
 

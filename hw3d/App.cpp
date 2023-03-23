@@ -43,6 +43,9 @@ void App::DoFrame()
 	//wall.Draw(gfx);
 	//gobber.Draw(gfx);
 	sponza.Draw(gfx);
+	box.Draw(gfx);
+	box.DrawOutline(gfx);
+
 
 	light.Draw(gfx);
 
@@ -138,6 +141,7 @@ void App::DoFrame()
 		//nano.ShowWindow(gfx, "Nanosuit");
 		//wall.ShowWindow(gfx, "Wall");
 		//gobber.ShowWindow(gfx, "Goblin");
+		box.SpawnControlWindow();
 		sponza.ShowWindow(wnd.Gfx(), "Sponza");
 	}
 

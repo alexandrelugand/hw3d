@@ -39,7 +39,7 @@ float4 main(float3 viewFragPos : POSITION, float3 viewNormal : NORMAL, float2 tc
 
     // specular reflected
     const float3 specularReflected = Speculate(
-        specularReflectionColor, 1.0f, viewNormal,
+        specularReflectionColor, diffuseIntensity, viewNormal,
         lv.vToL, viewFragPos, att, specularPowerLoaded
     );
 

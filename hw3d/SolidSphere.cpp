@@ -1,8 +1,7 @@
 #include "stdafx.h"
 #include "SolidSphere.h"
 
-#include "Blender.h"
-#include "Rasterizer.h"
+
 #include "Sphere.h"
 
 namespace Draw
@@ -28,10 +27,11 @@ namespace Draw
 		AddBind(Bind::Topology::Resolve(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
 
 		AddBind(std::make_shared<Bind::TransformCBuf>(gfx, *this));
-		AddBind(std::make_shared<Bind::ColorCBuf>(gfx, *this));
+		AddBind(std::make_shared<Bind::ColorCBuf>(gfx, *this, 1u));
 
 		AddBind(Bind::Blender::Resolve(gfx, false));
 		AddBind(Bind::Rasterizer::Resolve(gfx));
+		AddBind(std::make_shared<Bind::Stencil>(gfx, Bind::Stencil::Mode::Off));
 	}
 
 	void SolidSphere::SetPos(XMFLOAT3 pos) noexcept

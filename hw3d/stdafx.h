@@ -110,6 +110,7 @@ namespace Gdiplus
 #include "PixelShader.h"
 #include "Topology.h"
 #include "TransformCbuf.h"
+#include "TransformAllCBuf.h"
 #include "ColorCBuf.h"
 #include "Surface.h"
 #include "Texture.h"
@@ -118,6 +119,7 @@ namespace Gdiplus
 #include "Rasterizer.h"
 #include "LayoutCodex.h"
 #include "DynamicPixelCBuf.h"
+#include "Stencil.h"
 
 // Dynamic Vertex layout
 #include "Color.h"

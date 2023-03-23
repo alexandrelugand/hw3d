@@ -429,8 +429,8 @@ namespace Entities
 		// anything with alpha diffuse is 2-sided IN SPONZA, need a better way
 		// of signalling 2-sidedness to be more general in the future
 		bindablePtrs.push_back(Bind::Rasterizer::Resolve(gfx, hasAlphaDiffuse ? None : Back));
-
 		bindablePtrs.push_back(Bind::Blender::Resolve(gfx, false));
+		bindablePtrs.push_back(std::make_shared<Bind::Stencil>(gfx, Bind::Stencil::Mode::Off));
 
 		return std::make_unique<Mesh>(gfx, std::move(bindablePtrs));
 	}

@@ -219,6 +219,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Stencil.cpp" />
     <ClCompile Include="TexturePreprocessor.cpp" />
     <ClCompile Include="TransformAllCBuf.cpp" />
     <ClCompile Include="vendors\imgui\imgui.cpp">
@@ -361,6 +362,7 @@
     <ClInclude Include="PsMaterialConstants.h" />
     <ClInclude Include="Rasterizer.h" />
     <ClInclude Include="ScriptCommander.h" />
+    <ClInclude Include="Stencil.h" />
     <ClInclude Include="string.h" />
     <ClInclude Include="TexturePreprocessor.h" />
     <ClInclude Include="TransformAllCBuf.h" />
