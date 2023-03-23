@@ -188,6 +188,7 @@
     </ClCompile>
     <ClCompile Include="DynamicConstant.cpp" />
     <ClCompile Include="DynamicPixelCBuf.cpp" />
+    <ClCompile Include="FrameCommander.cpp" />
     <ClCompile Include="GDIPlusManager.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
@@ -208,11 +209,15 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Job.cpp" />
     <ClCompile Include="LayoutCodex.cpp" />
+    <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="ModelWindow.cpp" />
     <ClCompile Include="Node.cpp" />
+    <ClCompile Include="NullPixelShader.cpp" />
+    <ClCompile Include="Pass.cpp" />
     <ClCompile Include="Rasterizer.cpp" />
     <ClCompile Include="ScriptCommander.cpp" />
     <ClCompile Include="stdafx.cpp">
@@ -220,6 +225,9 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Stencil.cpp" />
+    <ClCompile Include="Step.cpp" />
+    <ClCompile Include="Technique.cpp" />
+    <ClCompile Include="TechniqueProbe.cpp" />
     <ClCompile Include="TexturePreprocessor.cpp" />
     <ClCompile Include="TransformAllCBuf.cpp" />
     <ClCompile Include="vendors\imgui\imgui.cpp">
@@ -355,15 +363,24 @@
     <ClInclude Include="DynamicConstant.h" />
     <ClInclude Include="DynamicPixelCBuf.h" />
     <ClInclude Include="Forwards.h" />
+    <ClInclude Include="FrameCommander.h" />
     <ClInclude Include="GDIPlusManager.h" />
     <ClInclude Include="GraphicsThrowMacros.h" />
+    <ClInclude Include="Job.h" />
     <ClInclude Include="LayoutCodex.h" />
+    <ClInclude Include="Material.h" />
     <ClInclude Include="NormalMapTwerker.h" />
+    <ClInclude Include="NullPixelShader.h" />
+    <ClInclude Include="Pass.h" />
+    <ClInclude Include="PerfLog.h" />
     <ClInclude Include="PsMaterialConstants.h" />
     <ClInclude Include="Rasterizer.h" />
     <ClInclude Include="ScriptCommander.h" />
     <ClInclude Include="Stencil.h" />
+    <ClInclude Include="Step.h" />
     <ClInclude Include="string.h" />
+    <ClInclude Include="Technique.h" />
+    <ClInclude Include="TechniqueProbe.h" />
     <ClInclude Include="TexturePreprocessor.h" />
     <ClInclude Include="TransformAllCBuf.h" />
     <ClInclude Include="uuid.h" />

@@ -86,6 +86,14 @@ namespace Bind
 		DynamicPixelCBuf::Bind(gfx);
 	}
 
+	void CachingDynamicPixelCBuf::Accept(TechniqueProbe& probe)
+	{
+		if (probe.VisitBuffer(buf))
+		{
+			dirty = true;
+		}
+	}
+
 	NocacheDynamicPixelCBuf::NocacheDynamicPixelCBuf(Graphics& gfx, const Dcb::CookedLayout& layout, UINT slot)
 		: DynamicPixelCBuf(gfx, *layout.ShareRoot(), slot, nullptr),
 		  pLayoutRoot(layout.ShareRoot())

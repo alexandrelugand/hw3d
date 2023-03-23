@@ -11,62 +11,129 @@ namespace Draw
 		auto model = Geometry::Cube::MakeIndependentTextured();
 		model.SetNormalsIndependentFlat();
 		model.Transform(XMMatrixScaling(scale, scale, scale));
-		pos = position;
+		SetPos(position);
 
-		AddBind(Bind::VertexBuffer::Resolve(gfx, tag, model.vbd));
-		AddBind(Bind::IndexBuffer::Resolve(gfx, tag, model.indices));
+		pVertices = Bind::VertexBuffer::Resolve(gfx, tag, model.vertices);
+		pIndices = Bind::IndexBuffer::Resolve(gfx, tag, model.indices);
+		pTopology = Bind::Topology::Resolve(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		auto pvs = Bind::VertexShader::Resolve(gfx, "TexturedPhongVS.cso");
-		auto pvsbc = pvs->GetBytecode();
-		AddBind(std::move(pvs));
-
-		AddBind(Bind::PixelShader::Resolve(gfx, "TexturedPhongPS.cso"));
-
-		AddBind(std::make_unique<Bind::InputLayout>(gfx, model.vbd.GetLayout(), pvsbc));
-		AddBind(std::make_unique<Bind::Topology>(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
-
-		AddBind(std::make_unique<MaterialCbuf>(gfx, materialConstants, 1u));
-
-		AddBind(Bind::Texture::Resolve(gfx, "images\\brickwall.jpg"));
-		AddBind(Bind::Sampler::Resolve(gfx));
-
-		auto tacb = std::make_shared<Bind::TransformAllCBuf>(gfx, *this, 0u, 2u);
-		AddBind(tacb);
-
-		AddBind(std::make_shared<Bind::Stencil>(gfx, Bind::Stencil::Mode::Write));
-
-		//Outlining
-		outlineEffect.push_back(Bind::VertexBuffer::Resolve(gfx, tag, model.vbd));
-		outlineEffect.push_back(Bind::IndexBuffer::Resolve(gfx, tag, model.indices));
-		pvs = Bind::VertexShader::Resolve(gfx, "SolidVS.cso");
-		pvsbc = pvs->GetBytecode();
-		outlineEffect.push_back(std::move(pvs));
-
-		outlineEffect.push_back(Bind::PixelShader::Resolve(gfx, "SolidPS.cso"));
-
-		struct SolidColorBuffer
 		{
-			XMFLOAT4 color = {1.0f, 0.4f, 0.4f, 1.0f};
-		} scb;
-		outlineEffect.push_back(Bind::PixelConstantBuffer<SolidColorBuffer>::Resolve(gfx, scb, 1u));
+			Technique shade("Shade");
+			{
+				Step only(0);
 
-		outlineEffect.push_back(Bind::InputLayout::Resolve(gfx, model.vbd.GetLayout(), pvsbc));
-		outlineEffect.push_back(Bind::Topology::Resolve(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
-		outlineEffect.push_back(std::move(tacb));
-		outlineEffect.push_back(std::make_shared<Bind::Stencil>(gfx, Bind::Stencil::Mode::Mask));
+				only.AddBindable(Bind::Texture::Resolve(gfx, "Images\\brickwall.jpg"));
+				only.AddBindable(Bind::Sampler::Resolve(gfx));
+
+				auto pvs = Bind::VertexShader::Resolve(gfx, "TexturedPhongVS.cso");
+				auto pvsbc = pvs->GetBytecode();
+				only.AddBindable(std::move(pvs));
+
+				only.AddBindable(Bind::PixelShader::Resolve(gfx, "TexturedPhongPS.cso"));
+
+				Dcb::RawLayout lay;
+				lay.Add<Dcb::Float>("specularIntensity");
+				lay.Add<Dcb::Float>("specularPower");
+				auto buf = Dcb::Buffer(std::move(lay));
+				buf["specularIntensity"] = 0.1f;
+				buf["specularPower"] = 20.0f;
+				only.AddBindable(std::make_shared<Bind::CachingDynamicPixelCBuf>(gfx, buf, 1u));
+
+				only.AddBindable(std::make_unique<Bind::InputLayout>(gfx, model.vertices.GetLayout(), pvsbc));
+				only.AddBindable(std::make_shared<Bind::TransformCBuf>(gfx));
+
+				shade.AddStep(std::move(only));
+			}
+			AddTechnique(std::move(shade));
+		}
+
+		Technique outline("Outline");
+		{
+			Step mask(1);
+			{
+				auto pvs = Bind::VertexShader::Resolve(gfx, "SolidVS.cso");
+				auto pvsbc = pvs->GetBytecode();
+				mask.AddBindable(std::move(pvs));
+
+				// TODO: better sub-layout generation tech for future consideration maybe
+				mask.AddBindable(Bind::InputLayout::Resolve(gfx, model.vertices.GetLayout(), pvsbc));
+
+				mask.AddBindable(std::make_shared<Bind::TransformCBuf>(gfx));
+
+				// TODO: might need to specify rasterizer when doubled-sided models start being used
+				outline.AddStep(std::move(mask));
+			}
+
+			Step draw(2);
+			{
+				// these can be pass-constant (tricky due to layout issues)
+				auto pvs = Bind::VertexShader::Resolve(gfx, "SolidVS.cso");
+				auto pvsbc = pvs->GetBytecode();
+				draw.AddBindable(std::move(pvs));
+
+				// this can be pass-constant
+				draw.AddBindable(Bind::PixelShader::Resolve(gfx, "SolidPS.cso"));
+
+				Dcb::RawLayout lay;
+				lay.Add<Dcb::Float4>("color");
+				auto buf = Dcb::Buffer(std::move(lay));
+				buf["color"] = XMFLOAT4{1.0f, 0.4f, 0.4f, 1.0f};
+				draw.AddBindable(std::make_shared<Bind::CachingDynamicPixelCBuf>(gfx, buf, 1u));
+
+				// TODO: better sub-layout generation tech for future consideration maybe
+				draw.AddBindable(Bind::InputLayout::Resolve(gfx, model.vertices.GetLayout(), pvsbc));
+
+				// quick and dirty... nicer solution maybe takes a lambda... we'll see :)
+				class TransformCBufScaling : public Bind::TransformCBuf
+				{
+				public:
+					TransformCBufScaling(Graphics& gfx, float scale = 1.04)
+						: TransformCBuf(gfx),
+						  buf(MakeLayout())
+					{
+						buf["scale"] = scale;
+					}
+
+					void Accept(TechniqueProbe& probe) override
+					{
+						probe.VisitBuffer(buf);
+					}
+
+					void Bind(Graphics& gfx) noexcept override
+					{
+						const float scale = buf["scale"];
+						const auto scaleMatrix = XMMatrixScaling(scale, scale, scale);
+						auto xf = GetTransforms(gfx);
+						xf.modelView = xf.modelView * scaleMatrix;
+						xf.modelViewProj = xf.modelViewProj * scaleMatrix;
+						UpdateBindImpl(gfx, xf);
+					}
+
+				private:
+					static Dcb::RawLayout MakeLayout()
+					{
+						Dcb::RawLayout layout;
+						layout.Add<Dcb::Float>("scale");
+						return layout;
+					}
+
+					Dcb::Buffer buf;
+				};
+				draw.AddBindable(std::make_shared<TransformCBufScaling>(gfx));
+
+				// TODO: might need to specify rasterizer when doubled-sided models start being used
+				outline.AddStep(std::move(draw));
+			}
+			AddTechnique(outline);
+		}
 	}
 
 	bool SkinnedBox::SpawnControlWindow() noexcept
 	{
 		bool dirty = false;
 		bool open = true;
-		if (ImGui::Begin("Skinned Box", &open))
+		if (ImGui::Begin(("Skinned Box##" + std::to_string(id)).c_str(), &open))
 		{
-			ImGui::Text("Material Properties");
-			const auto sid = ImGui::SliderFloat("Specular Intensity", &materialConstants.specularIntensity, 0.05f, 4.0f, "%.2f", ImGuiSliderFlags_NoRoundToFormat);
-			const auto spd = ImGui::SliderFloat("Specular Power", &materialConstants.specularPower, 1.0f, 200.0f, "%.2f", ImGuiSliderFlags_NoRoundToFormat);
-			dirty = sid || spd;
-
 			ImGui::Text("Position");
 			ImGui::SliderFloat("X", &pos.x, -80.0f, 80.0f, "%.1f");
 			ImGui::SliderFloat("Y", &pos.y, -80.0f, 80.0f, "%.1f");
@@ -81,42 +148,56 @@ namespace Draw
 			ImGui::SliderAngle("Pitch", &pitch, -180.0f, 180.0f);
 			ImGui::SliderAngle("Yaw", &yaw, -180.0f, 180.0f);
 
+			class Probe : public TechniqueProbe
+			{
+			public:
+				void OnSetTechnique() override
+				{
+					using namespace std::string_literals;
+					ImGui::TextColored({0.4f, 1.0f, 0.6f, 1.0f}, pTech->GetName().c_str());
+					bool active = pTech->IsActive();
+					ImGui::Checkbox(("Tech Active##"s + std::to_string(techId)).c_str(), &active);
+					pTech->SetActive(active);
+				}
+
+				bool OnVisitBuffer(Dcb::Buffer& buf) override
+				{
+					float dirty = false;
+					const auto dcheck = [&dirty](bool changed) { dirty = dirty || changed; };
+					auto tag = [tagScratch = std::string{}, tagString = "##" + std::to_string(bufId)]
+					(const char* label) mutable
+					{
+						tagScratch = label + tagString;
+						return tagScratch.c_str();
+					};
+
+					if (auto v = buf["scale"]; v.Exists())
+					{
+						dcheck(ImGui::SliderFloat(tag("Scale"), &v, 1.0f, 2.0f, "%.3f"));
+					}
+					if (auto v = buf["color"]; v.Exists())
+					{
+						dcheck(ImGui::ColorPicker4(tag("Color"), reinterpret_cast<float*>(&static_cast<XMFLOAT4&>(v))));
+					}
+					if (auto v = buf["specularIntensity"]; v.Exists())
+					{
+						dcheck(ImGui::SliderFloat(tag("Spec. Intens."), &v, 0.0f, 1.0f));
+					}
+					if (auto v = buf["specularPower"]; v.Exists())
+					{
+						dcheck(ImGui::SliderFloat(tag("Glossiness"), &v, 1.0f, 100.0f, "%.1f"));
+					}
+					return dirty;
+				}
+			} probe;
+
+			Accept(probe);
+
 			if (ImGui::Button("Reset"))
 				Reset();
 		}
 		ImGui::End();
 
-		if (dirty)
-		{
-			SyncMaterial();
-		}
-
 		return open;
-	}
-
-	void SkinnedBox::DrawOutline(Graphics& gfx) noexcpt
-	{
-		outlining = true;
-		for (auto& b : outlineEffect)
-		{
-			b->Bind(gfx);
-		}
-		gfx.DrawIndexed(QueryBindable<Bind::IndexBuffer>()->GetCount());
-		outlining = false;
-	}
-
-	XMMATRIX SkinnedBox::GetTransform() const noexcept
-	{
-		auto transform = DrawableObject::GetTransform();
-		if (outlining)
-			transform = XMMatrixScaling(1.03f, 1.03f, 1.03f) * transform;
-		return transform;
-	}
-
-	void SkinnedBox::SyncMaterial() noexcpt
-	{
-		const auto pConstPS = QueryBindable<MaterialCbuf>();
-		assert(pConstPS != nullptr);
-		pConstPS->Update(gfx, materialConstants);
 	}
 }

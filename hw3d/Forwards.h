@@ -7,6 +7,12 @@ class ImguiManager;
 
 // Renderer
 class Graphics;
+class FrameCommander;
+class Pass;
+class Job;
+class Step;
+class Technique;
+class TechniqueProbe;
 
 // Windows
 namespace Windowing
@@ -85,6 +91,7 @@ namespace Dcb
 	class CookedLayout;
 	class ConstElementRef;
 	class ElementRef;
+	class Buffer;
 }
 
 // Entities

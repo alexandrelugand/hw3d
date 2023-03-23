@@ -9,7 +9,7 @@ namespace Entities
 		PointLight(Graphics& gfx, float radius = 0.5f, XMFLOAT3 color = {1.0f, 1.0f, 1.0f});
 		void SpawnControlWindow() noexcept;
 		void Reset() noexcept;
-		void Draw(Graphics& gfx) const noexcpt;
+		void Submit(FrameCommander& frame) const noexcpt;
 		void Bind(Graphics& gfx, FXMMATRIX view) const noexcept;
 
 	private:

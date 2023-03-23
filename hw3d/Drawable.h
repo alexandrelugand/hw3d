@@ -8,29 +8,19 @@ namespace Draw
 	public:
 		Drawable() = default;
 		Drawable(const Drawable&) = delete;
-		virtual ~Drawable() = default;
+		virtual ~Drawable();
 
+		void AddTechnique(Technique tech_in) noexcept;
 		virtual XMMATRIX GetTransform() const noexcept = 0;
-		virtual void Draw(Graphics& gfx) const noexcpt;
-
-		template <class T>
-		T* QueryBindable() noexcept
-		{
-			for (auto& pb : binds)
-			{
-				if (auto pt = dynamic_cast<T*>(pb.get()))
-				{
-					return pt;
-				}
-			}
-			return nullptr;
-		}
+		void Submit(FrameCommander& frameCmder) const noexcept;
+		void Bind(Graphics& gfx) const noexcept;
+		void Accept(TechniqueProbe& probe);
+		UINT GetIndexCount() const noexcpt;
 
 	protected:
-		void AddBind(std::shared_ptr<Bind::Bindable> bind) noexcpt;
-
-	private:
-		const Bind::IndexBuffer* pIndexBuffer = nullptr;
-		std::vector<std::shared_ptr<Bind::Bindable>> binds;
+		std::shared_ptr<Bind::IndexBuffer> pIndices;
+		std::shared_ptr<Bind::VertexBuffer> pVertices;
+		std::shared_ptr<Bind::Topology> pTopology;
+		std::vector<Technique> techniques{};
 	};
 }

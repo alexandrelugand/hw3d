@@ -3,11 +3,10 @@
 
 namespace Draw
 {
-	Asset::Asset(Graphics& gfx, XMFLOAT3 material, float scale)
-		: DrawableObject(gfx)
+	Asset::Asset(Graphics& gfx, XMFLOAT3 material, float scale, const XMFLOAT3& position)
+		: DrawableObject(gfx, scale, position)
 	{
 		const auto tag = "asset." + Uuid::ToString(Uuid::New());
-		materialConstants.color = material;
 
 		Dvtx::VertexBufferDescriptor vbd(
 			std::move(Dvtx::VertexLayout{}
@@ -39,35 +38,45 @@ namespace Draw
 			indices.push_back(face.mIndices[2]);
 		}
 
-		AddBind(Bind::VertexBuffer::Resolve(gfx, tag, vbd));
-		AddBind(Bind::IndexBuffer::Resolve(gfx, tag, indices));
+		pVertices = Bind::VertexBuffer::Resolve(gfx, tag, vbd);
+		pIndices = Bind::IndexBuffer::Resolve(gfx, tag, indices);
+		pTopology = Bind::Topology::Resolve(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		const auto pvs = Bind::VertexShader::Resolve(gfx, "BlendedPhongVS.cso");
-		const auto pvsbc = pvs->GetBytecode();
-		AddBind(std::move(pvs));
+		{
+			Technique shade("Shade");
+			{
+				Step only(0);
 
-		AddBind(Bind::PixelShader::Resolve(gfx, "BlendedPhongPS.cso"));
+				auto pvs = Bind::VertexShader::Resolve(gfx, "BlendedPhongVS.cso");
+				auto pvsbc = pvs->GetBytecode();
+				only.AddBindable(std::move(pvs));
 
+				only.AddBindable(Bind::PixelShader::Resolve(gfx, "BlendedPhongPS.cso"));
 
-		AddBind(Bind::InputLayout::Resolve(gfx, vbd.GetLayout(), pvsbc));
-		AddBind(Bind::Topology::Resolve(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
+				Dcb::RawLayout lay;
+				lay.Add<Dcb::Float3>("color");
+				lay.Add<Dcb::Float>("specularIntensity");
+				lay.Add<Dcb::Float>("specularPower");
+				auto buf = Dcb::Buffer(std::move(lay));
+				buf["color"] = material;
+				buf["specularIntensity"] = 0.1f;
+				buf["specularPower"] = 20.0f;
+				only.AddBindable(std::make_shared<Bind::CachingDynamicPixelCBuf>(gfx, buf, 1u));
 
-		AddBind(std::make_shared<Bind::TransformCBuf>(gfx, *this));
-		AddBind(std::make_shared<MaterialCbuf>(gfx, materialConstants, 1u));
+				only.AddBindable(std::make_unique<Bind::InputLayout>(gfx, vbd.GetLayout(), pvsbc));
+				only.AddBindable(std::make_shared<Bind::TransformCBuf>(gfx));
+
+				shade.AddStep(std::move(only));
+			}
+			AddTechnique(std::move(shade));
+		}
 	}
 
 	bool Asset::SpawnControlWindow() noexcept
 	{
-		bool dirty = false;
 		bool open = true;
-		if (ImGui::Begin("Asset", &open))
+		if (ImGui::Begin(("Asset##"s + std::to_string(id)).c_str(), &open))
 		{
-			ImGui::Text("Material Properties");
-			const auto cd = ImGui::ColorEdit3("Material Color", &materialConstants.color.x);
-			const auto sid = ImGui::SliderFloat("Specular Intensity", &materialConstants.specularIntensity, 0.05f, 4.0f, "%.2f", ImGuiSliderFlags_NoRoundToFormat);
-			const auto spd = ImGui::SliderFloat("Specular Power", &materialConstants.specularPower, 1.0f, 200.0f, "%.2f", ImGuiSliderFlags_NoRoundToFormat);
-			dirty = cd || sid || spd;
-
 			ImGui::Text("Position");
 			ImGui::SliderFloat("X", &pos.x, -80.0f, 80.0f, "%.1f");
 			ImGui::SliderFloat("Y", &pos.y, -80.0f, 80.0f, "%.1f");
@@ -87,18 +96,6 @@ namespace Draw
 		}
 		ImGui::End();
 
-		if (dirty)
-		{
-			SyncMaterial();
-		}
-
 		return open;
-	}
-
-	void Asset::SyncMaterial() noexcpt
-	{
-		const auto pConstPS = QueryBindable<MaterialCbuf>();
-		assert(pConstPS != nullptr);
-		pConstPS->Update(gfx, materialConstants);
 	}
 }

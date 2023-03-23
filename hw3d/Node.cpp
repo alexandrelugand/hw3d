@@ -10,7 +10,7 @@ namespace Entities
 		XMStoreFloat4x4(&appliedTransform, XMMatrixIdentity());
 	}
 
-	void Node::Draw(Graphics& gfx, FXMMATRIX accumulatedTransform) const noexcpt
+	void Node::Submit(FrameCommander& frame, FXMMATRIX accumulatedTransform) const noexcpt
 	{
 		const auto built = XMLoadFloat4x4(&appliedTransform) *
 			XMLoadFloat4x4(&transform) *
@@ -18,12 +18,12 @@ namespace Entities
 
 		for (const auto pm : meshPtrs)
 		{
-			pm->Draw(gfx, built);
+			pm->Submit(frame, built);
 		}
 
 		for (const auto& pc : childPtrs)
 		{
-			pc->Draw(gfx, built);
+			pc->Submit(frame, built);
 		}
 	}
 
@@ -37,7 +37,7 @@ namespace Entities
 		XMStoreFloat4x4(&appliedTransform, transform);
 	}
 
-	const Dcb::Buffer* Node::GetMaterialConstants() const noexcpt
+	/*const Dcb::Buffer* Node::GetMaterialConstants() const noexcpt
 	{
 		if (meshPtrs.size() == 0)
 		{
@@ -52,7 +52,7 @@ namespace Entities
 		auto pcb = meshPtrs.front()->QueryBindable<Bind::CachingDynamicPixelCBuf>();
 		assert(pcb != nullptr);
 		pcb->SetBuffer(buf_in);
-	}
+	}*/
 
 	void Node::ShowTree(Node*& pSelectedNode) const noexcpt
 	{

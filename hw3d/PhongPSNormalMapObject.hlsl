@@ -3,7 +3,7 @@
 #include "PointLight.hlsli"
 #include "Transform.hlsli"
 
-cbuffer ObjectCBuf
+cbuffer ObjectCBuf : register(b1)
 {
     float specularIntensity;
     float specularPower;

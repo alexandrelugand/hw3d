@@ -6,10 +6,9 @@ namespace Draw
 	class DrawableObject : public Drawable
 	{
 	public:
-		DrawableObject(Graphics& gfx)
-			: gfx(gfx)
+		DrawableObject(Graphics& gfx, float scale = 1.0f, const XMFLOAT3& position = {0.0f, 0.0f, 0.0f})
+			: gfx(gfx), id(GetNextId()), pos(position), scale(scale)
 		{
-			Reset();
 		}
 
 		void Update(float dt) noexcept
@@ -33,6 +32,11 @@ namespace Draw
 			chi = 0.0f;
 		}
 
+		void SetPos(XMFLOAT3 position) noexcept
+		{
+			pos = position;
+		}
+
 		XMMATRIX GetTransform() const noexcept override
 		{
 			return XMMatrixRotationRollPitchYaw(pitch, yaw, roll) *
@@ -43,13 +47,21 @@ namespace Draw
 	protected:
 		Graphics& gfx;
 
-		// positional
+		int id;
 		XMFLOAT3 pos;
+		float scale;
+
 		float roll = 0.0f;
 		float pitch = 0.0f;
 		float yaw = 0.0f;
-		float theta;
-		float phi;
-		float chi;
+		float theta = 0.0f;
+		float phi = 0.0f;
+		float chi = 0.0f;
+
+		static int GetNextId()
+		{
+			static int next = 1;
+			return next++;
+		}
 	};
 }

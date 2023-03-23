@@ -20,44 +20,26 @@ namespace Dvtx
 		{
 			const auto& element = layout.ResolveByIndex(i);
 			auto pAttribute = pData + element.GetOffset();
-			switch (element.Type())
-			{
-			case VertexLayout::Position2D:
-				SetAttribute<VertexLayout::Position2D>(pAttribute, std::forward<T>(val));
-				break;
-			case VertexLayout::Position3D:
-				SetAttribute<VertexLayout::Position3D>(pAttribute, std::forward<T>(val));
-				break;
-			case VertexLayout::Texture2D:
-				SetAttribute<VertexLayout::Texture2D>(pAttribute, std::forward<T>(val));
-				break;
-			case VertexLayout::Normal:
-				SetAttribute<VertexLayout::Normal>(pAttribute, std::forward<T>(val));
-				break;
-			case VertexLayout::Tangent:
-				SetAttribute<VertexLayout::Tangent>(pAttribute, std::forward<T>(val));
-				break;
-			case VertexLayout::Bitangent:
-				SetAttribute<VertexLayout::Bitangent>(pAttribute, std::forward<T>(val));
-				break;
-			case VertexLayout::Float3Color:
-				SetAttribute<VertexLayout::Float3Color>(pAttribute, std::forward<T>(val));
-				break;
-			case VertexLayout::Float4Color:
-				SetAttribute<VertexLayout::Float4Color>(pAttribute, std::forward<T>(val));
-				break;
-			case VertexLayout::RGBAColor:
-				SetAttribute<VertexLayout::RGBAColor>(pAttribute, std::forward<T>(val));
-				break;
-			default:
-				assert("Bad element type" && false);
-			}
+			VertexLayout::Bridge<AttributeSetting>(
+				element.GetType(), this, pAttribute, std::forward<T>(val)
+			);
 		}
 
 	protected:
 		Vertex(char* pData, const VertexLayout& layout);
 
 	private:
+		template <VertexLayout::ElementType type>
+		struct AttributeSetting
+		{
+			template <typename T>
+			static constexpr auto Exec(Vertex* pVertex, char* pAttribute, T&& val) noexcpt
+			{
+				return pVertex->SetAttribute<type>(pAttribute, std::forward<T>(val));
+			}
+		};
+
+
 		//Enables parameter pack setting of multiple parameters by element index
 		template <typename First, typename... Rest>
 		void SetAttributeByIndex(size_t i, First&& first, Rest&&... rest) noexcpt

@@ -5,20 +5,7 @@ namespace Draw
 	class Sheet : public DrawableObject<Sheet>
 	{
 	public:
-		Sheet(Graphics& gfx, float size);
+		Sheet(Graphics& gfx, float scale, const XMFLOAT3& position);
 		bool SpawnControlWindow() noexcept;
-
-	private:
-		void SyncConstPS() noexcpt;
-
-		struct BumpMappingConstant
-		{
-			float specularIntensity = 0.1f;
-			float specularPower = 20.0f;
-			BOOL normalMappingEnabled = TRUE;
-			float padding[1];
-		} pmc;
-
-		using ConstPS = Bind::PixelConstantBuffer<BumpMappingConstant>;
 	};
 }

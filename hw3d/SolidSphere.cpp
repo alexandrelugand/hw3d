@@ -13,25 +13,31 @@ namespace Draw
 		model.Transform(XMMatrixScaling(radius, radius, radius));
 
 		const auto tag = "$sphere." + Uuid::ToString(Uuid::New());
-		AddBind(Bind::VertexBuffer::Resolve(gfx, tag, model.vbd));
-		AddBind(Bind::IndexBuffer::Resolve(gfx, tag, model.indices));
+		pVertices = Bind::VertexBuffer::Resolve(gfx, tag, model.vertices);
+		pIndices = Bind::IndexBuffer::Resolve(gfx, tag, model.indices);
+		pTopology = Bind::Topology::Resolve(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		auto pvs = Bind::VertexShader::Resolve(gfx, "SolidVS.cso");
-		auto pvsbc = pvs->GetBytecode();
-		AddBind(std::move(pvs));
+		{
+			Technique solid;
+			Step only(0);
 
-		AddBind(Bind::PixelShader::Resolve(gfx, "SolidPS.cso"));
+			auto pvs = Bind::VertexShader::Resolve(gfx, "SolidVS.cso");
+			auto pvsbc = pvs->GetBytecode();
+			only.AddBindable(std::move(pvs));
 
-		AddBind(Bind::InputLayout::Resolve(gfx, model.vbd.GetLayout(), pvsbc));
+			only.AddBindable(Bind::PixelShader::Resolve(gfx, "SolidPS.cso"));
 
-		AddBind(Bind::Topology::Resolve(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
+			only.AddBindable(Bind::InputLayout::Resolve(gfx, model.vertices.GetLayout(), pvsbc));
 
-		AddBind(std::make_shared<Bind::TransformCBuf>(gfx, *this));
-		AddBind(std::make_shared<Bind::ColorCBuf>(gfx, *this, 1u));
+			only.AddBindable(std::make_shared<Bind::TransformCBuf>(gfx));
+			only.AddBindable(std::make_shared<Bind::ColorCBuf>(gfx, *this, 1u));
 
-		AddBind(Bind::Blender::Resolve(gfx, false));
-		AddBind(Bind::Rasterizer::Resolve(gfx));
-		AddBind(std::make_shared<Bind::Stencil>(gfx, Bind::Stencil::Mode::Off));
+			only.AddBindable(Bind::Blender::Resolve(gfx, false));
+			only.AddBindable(Bind::Rasterizer::Resolve(gfx));
+
+			solid.AddStep(std::move(only));
+			AddTechnique(std::move(solid));
+		}
 	}
 
 	void SolidSphere::SetPos(XMFLOAT3 pos) noexcept

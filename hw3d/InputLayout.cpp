@@ -18,6 +18,11 @@ namespace Bind
 		);
 	}
 
+	Dvtx::VertexLayout InputLayout::GetLayout() const noexcept
+	{
+		return layout;
+	}
+
 	void InputLayout::Bind(Graphics& gfx) noexcpt
 	{
 		GetContext(gfx)->IASetInputLayout(pInputLayout.Get());

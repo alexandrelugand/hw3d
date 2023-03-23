@@ -8,17 +8,17 @@ namespace Geometry
 	{
 	public:
 		IndexedTriangleList(Dvtx::VertexBufferDescriptor vbd_in, std::vector<unsigned short> indices_in)
-			: vbd(std::move(vbd_in)), indices(std::move(indices_in))
+			: vertices(std::move(vbd_in)), indices(std::move(indices_in))
 		{
-			assert(vbd.NumVertices() > 2);
+			assert(vertices.NumVertices() > 2);
 			assert(indices.size() % 3 == 0);
 		}
 
 		void Transform(FXMMATRIX matrix)
 		{
-			for (int i = 0; i < vbd.NumVertices(); i++)
+			for (int i = 0; i < vertices.NumVertices(); i++)
 			{
-				auto& pos = vbd[i].Attr<ElementType::Position3D>();
+				auto& pos = vertices[i].Attr<ElementType::Position3D>();
 				XMStoreFloat3(
 					&pos,
 					XMVector3Transform(XMLoadFloat3(&pos), matrix)
@@ -32,9 +32,9 @@ namespace Geometry
 			using Type = Dvtx::VertexLayout::ElementType;
 			for (size_t i = 0; i < indices.size(); i += 3)
 			{
-				auto v0 = vbd[indices[i]];
-				auto v1 = vbd[indices[i + 1]];
-				auto v2 = vbd[indices[i + 2]];
+				auto v0 = vertices[indices[i]];
+				auto v1 = vertices[indices[i + 1]];
+				auto v2 = vertices[indices[i + 2]];
 				const auto p0 = XMLoadFloat3(&v0.Attr<Type::Position3D>());
 				const auto p1 = XMLoadFloat3(&v1.Attr<Type::Position3D>());
 				const auto p2 = XMLoadFloat3(&v2.Attr<Type::Position3D>());
@@ -73,7 +73,7 @@ namespace Geometry
 			}
 		}
 
-		Dvtx::VertexBufferDescriptor vbd;
+		Dvtx::VertexBufferDescriptor vertices;
 		std::vector<unsigned short> indices{};
 	};
 }

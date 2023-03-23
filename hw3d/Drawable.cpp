@@ -3,24 +3,41 @@
 
 namespace Draw
 {
-	void Drawable::Draw(Graphics& gfx) const noexcpt
+	Drawable::~Drawable()
 	{
-		for (auto& b : binds)
-		{
-			b->Bind(gfx);
-		}
-
-		gfx.DrawIndexed(pIndexBuffer->GetCount());
 	}
 
-	void Drawable::AddBind(std::shared_ptr<Bind::Bindable> bind) noexcpt
+	void Drawable::AddTechnique(Technique tech_in) noexcept
 	{
-		// special case for index buffer
-		if (typeid(*bind) == typeid(Bind::IndexBuffer))
+		tech_in.InitializeParentReferences(*this);
+		techniques.push_back(std::move(tech_in));
+	}
+
+	void Drawable::Submit(FrameCommander& frameCmder) const noexcept
+	{
+		for (const auto& t : techniques)
 		{
-			assert("Binding multiple index buffers not allowed" && pIndexBuffer == nullptr);
-			pIndexBuffer = &static_cast<Bind::IndexBuffer&>(*bind);
+			t.Submit(frameCmder, *this);
 		}
-		binds.push_back(std::move(bind));
+	}
+
+	void Drawable::Bind(Graphics& gfx) const noexcept
+	{
+		pTopology->Bind(gfx);
+		pVertices->Bind(gfx);
+		pIndices->Bind(gfx);
+	}
+
+	void Drawable::Accept(TechniqueProbe& probe)
+	{
+		for (auto& t : techniques)
+		{
+			t.Accept(probe);
+		}
+	}
+
+	UINT Drawable::GetIndexCount() const noexcpt
+	{
+		return pIndices->GetCount();
 	}
 }

@@ -5,36 +5,54 @@
 
 namespace Draw
 {
-	Sheet::Sheet(Graphics& gfx, float size)
-		: DrawableObject(gfx)
+	Sheet::Sheet(Graphics& gfx, float scale, const XMFLOAT3& position)
+		: DrawableObject(gfx, scale, position)
 	{
 		const auto tag = "$sheet." + Uuid::ToString(Uuid::New());
 		auto model = Geometry::Plane::Make(1, 1);
-		model.Transform(XMMatrixScaling(size, size, 1.0f));
+		model.SetNormalsIndependentFlat();
 
-		AddBind(Bind::VertexBuffer::Resolve(gfx, tag, model.vbd));
-		AddBind(Bind::IndexBuffer::Resolve(gfx, tag, model.indices));
+		pVertices = Bind::VertexBuffer::Resolve(gfx, tag, model.vertices);
+		pIndices = Bind::IndexBuffer::Resolve(gfx, tag, model.indices);
+		pTopology = Bind::Topology::Resolve(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		AddBind(Bind::Texture::Resolve(gfx, "images\\brickwall.jpg"));
-		AddBind(Bind::Texture::Resolve(gfx, "images\\brickwall_normal_obj.png", 2u));
+		{
+			Technique shade("Shade");
+			{
+				Step only(0);
 
-		const auto pvs = Bind::VertexShader::Resolve(gfx, "PhongVS.cso");
-		auto pvsbc = pvs->GetBytecode();
-		AddBind(std::move(pvs));
+				only.AddBindable(Bind::Texture::Resolve(gfx, "images\\brickwall.jpg"));
+				only.AddBindable(Bind::Texture::Resolve(gfx, "images\\brickwall_normal_obj.png", 2u));
+				only.AddBindable(Bind::Sampler::Resolve(gfx));
 
-		AddBind(Bind::PixelShader::Resolve(gfx, "PhongPSNormalMapObject.cso"));
-		AddBind(Bind::PixelConstantBuffer<BumpMappingConstant>::Resolve(gfx, pmc, 1u));
+				auto pvs = Bind::VertexShader::Resolve(gfx, "PhongVS.cso");
+				auto pvsbc = pvs->GetBytecode();
+				only.AddBindable(std::move(pvs));
 
-		AddBind(Bind::InputLayout::Resolve(gfx, model.vbd.GetLayout(), pvsbc));
-		AddBind(Bind::Topology::Resolve(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST));
-		AddBind(Bind::Rasterizer::Resolve(gfx, None));
+				only.AddBindable(Bind::PixelShader::Resolve(gfx, "PhongPSNormalMapObject.cso"));
 
-		AddBind(std::make_shared<Bind::TransformAllCBuf>(gfx, *this, 0u, 2u));
+				Dcb::RawLayout lay;
+				lay.Add<Dcb::Float>("specularIntensity");
+				lay.Add<Dcb::Float>("specularPower");
+				lay.Add<Dcb::Bool>("normalMappingEnabled");
+				auto buf = Dcb::Buffer(std::move(lay));
+				buf["specularIntensity"] = 0.1f;
+				buf["specularPower"] = 20.0f;
+				buf["normalMappingEnabled"] = true;
+				only.AddBindable(std::make_shared<Bind::CachingDynamicPixelCBuf>(gfx, buf, 1u));
+
+				only.AddBindable(std::make_unique<Bind::InputLayout>(gfx, model.vertices.GetLayout(), pvsbc));
+				only.AddBindable(std::make_shared<Bind::TransformAllCBuf>(gfx, 0u, 2u));
+				only.AddBindable(std::make_shared<Bind::Rasterizer>(gfx, None));
+
+				shade.AddStep(std::move(only));
+			}
+			AddTechnique(std::move(shade));
+		}
 	}
 
 	bool Sheet::SpawnControlWindow() noexcept
 	{
-		bool dirty = false;
 		bool open = true;
 		if (ImGui::Begin("Sheet", &open))
 		{
@@ -52,33 +70,52 @@ namespace Draw
 			ImGui::SliderAngle("Pitch", &pitch, -180.0f, 180.0f);
 			ImGui::SliderAngle("Yaw", &yaw, -180.0f, 180.0f);
 
-			const bool changed0 = ImGui::SliderFloat("Spec. Int.", &pmc.specularIntensity, 0.0f, 1.0f);
-			const bool changed1 = ImGui::SliderFloat("Spec. Power", &pmc.specularPower, 0.0f, 100.0f);
-			bool checkState = pmc.normalMappingEnabled == TRUE;
-			const bool changed2 = ImGui::Checkbox("Enable Normal Map", &checkState);
-			pmc.normalMappingEnabled = checkState ? TRUE : FALSE;
-			if (changed0 || changed1 || changed2)
+			class Probe : public TechniqueProbe
 			{
-				dirty = true;
-			}
+			public:
+				void OnSetTechnique() override
+				{
+					using namespace std::string_literals;
+					ImGui::TextColored({0.4f, 1.0f, 0.6f, 1.0f}, pTech->GetName().c_str());
+					bool active = pTech->IsActive();
+					ImGui::Checkbox(("Tech Active##"s + std::to_string(techId)).c_str(), &active);
+					pTech->SetActive(active);
+				}
+
+				bool OnVisitBuffer(Dcb::Buffer& buf) override
+				{
+					float dirty = false;
+					const auto dcheck = [&dirty](bool changed) { dirty = dirty || changed; };
+					auto tag = [tagScratch = std::string{}, tagString = "##" + std::to_string(bufId)]
+					(const char* label) mutable
+					{
+						tagScratch = label + tagString;
+						return tagScratch.c_str();
+					};
+
+					if (auto v = buf["normalMappingEnabled"]; v.Exists())
+					{
+						dcheck(ImGui::Checkbox(tag("Normal map"), &v));
+					}
+					if (auto v = buf["specularIntensity"]; v.Exists())
+					{
+						dcheck(ImGui::SliderFloat(tag("Spec. Intens."), &v, 0.0f, 1.0f));
+					}
+					if (auto v = buf["specularPower"]; v.Exists())
+					{
+						dcheck(ImGui::SliderFloat(tag("Glossiness"), &v, 1.0f, 100.0f, "%.1f"));
+					}
+					return dirty;
+				}
+			} probe;
+
+			Accept(probe);
 
 			if (ImGui::Button("Reset"))
 				Reset();
 		}
 		ImGui::End();
 
-		if (dirty)
-		{
-			SyncConstPS();
-		}
-
 		return open;
-	}
-
-	void Sheet::SyncConstPS() noexcpt
-	{
-		const auto pConstPS = QueryBindable<ConstPS>();
-		assert(pConstPS != nullptr);
-		pConstPS->Update(gfx, pmc);
 	}
 }

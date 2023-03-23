@@ -9,13 +9,13 @@ namespace Entities
 	public:
 		Node(int id, const std::string& name, std::vector<Mesh*> meshPtrs, const XMMATRIX& transform_in) noexcpt;
 
-		void Draw(Graphics& gfx, FXMMATRIX accumulatedTransform) const noexcpt;
+		void Submit(FrameCommander& frame, FXMMATRIX accumulatedTransform) const noexcpt;
 
 		const XMFLOAT4X4& GetAppliedTransform() const noexcept;
 		void SetAppliedTransform(FXMMATRIX transform) noexcpt;
 
-		const Dcb::Buffer* GetMaterialConstants() const noexcpt;
-		void SetMaterialConstants(const Dcb::Buffer&) noexcpt;
+		/*	const Dcb::Buffer* GetMaterialConstants() const noexcpt;
+			void SetMaterialConstants(const Dcb::Buffer&) noexcpt;*/
 
 		int GetId() const noexcept { return id; }
 		void ShowTree(Node*& pSelectedNode) const noexcpt;

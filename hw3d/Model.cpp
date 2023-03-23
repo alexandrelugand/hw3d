@@ -60,13 +60,13 @@ namespace Entities
 	{
 	}
 
-	void Model::Draw(Graphics& gfx) const noexcpt
+	void Model::Submit(FrameCommander& frame) const noexcpt
 	{
 		// I'm still not happy about updating parameters (i.e. mutating a bindable GPU state
 		// which is part of a mesh which is part of a node which is part of the model that is
 		// const in this call) Can probably do this elsewhere
 		pWindow->ApplyParameters();
-		pRoot->Draw(gfx, XMMatrixIdentity());
+		pRoot->Submit(frame, XMMatrixIdentity());
 	}
 
 	void Model::ShowWindow(Graphics& gfx, const char* windowName)
@@ -81,7 +81,7 @@ namespace Entities
 
 	std::unique_ptr<Mesh> Model::ParseMesh(Graphics& gfx, const std::string& base, const aiMesh& mesh, const aiMaterial* const* pMaterials, const float& scale)
 	{
-		std::vector<std::shared_ptr<Bind::Bindable>> bindablePtrs;
+		/*std::vector<std::shared_ptr<Bind::Bindable>> bindablePtrs;
 
 
 		bool hasSpecularMap = false;
@@ -432,7 +432,8 @@ namespace Entities
 		bindablePtrs.push_back(Bind::Blender::Resolve(gfx, false));
 		bindablePtrs.push_back(std::make_shared<Bind::Stencil>(gfx, Bind::Stencil::Mode::Off));
 
-		return std::make_unique<Mesh>(gfx, std::move(bindablePtrs));
+		return std::make_unique<Mesh>(gfx, std::move(bindablePtrs));*/
+		return {};
 	}
 
 	std::unique_ptr<Node> Model::ParseNode(int& nextId, const aiNode& node)

@@ -16,11 +16,12 @@ namespace Bind
 
 		void Bind(Graphics& gfx) noexcept override;
 
-		//static std::shared_ptr<Stencil> Resolve( Graphics& gfx,bool blending,std::optional<float> factor = {} );
-		//static std::string GenerateUID( bool blending,std::optional<float> factor );
-		//std::string GetUID() const noexcept override;
+		static std::shared_ptr<Stencil> Resolve(Graphics& gfx, Mode mode);
+		static std::string GenerateUID(Mode mode);
+		std::string GetUID() const noexcept override;
 
 	private:
+		Mode mode;
 		ComPtr<ID3D11DepthStencilState> pStencil;
 	};
 }

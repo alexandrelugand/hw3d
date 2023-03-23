@@ -5,7 +5,7 @@
 
 App::App(const std::string& commandLine)
 	: wnd(1280u, 1024u, "DirectX Engine"),
-	  scriptCommander(String::TokenizeQuoted(commandLine)),
+	  sc(String::TokenizeQuoted(commandLine)),
 	  light(wnd.Gfx())
 {
 	wnd.Gfx().SetProjection(XMMatrixPerspectiveLH(1.0f, 3.0f / 4.0f, 0.5f, 400.0f));
@@ -37,17 +37,22 @@ void App::DoFrame()
 
 	gfx.BeginFrame(0.07f, 0.0f, 0.12f);
 	gfx.SetCamera(camera.GetMatrix());
-	light.Bind(gfx, gfx.GetCamera());
+	light.Bind(wnd.Gfx(), camera.GetMatrix());
+	light.Submit(fc);
 
 	//nano.Draw(gfx);
 	//wall.Draw(gfx);
 	//gobber.Draw(gfx);
-	sponza.Draw(gfx);
-	box.Draw(gfx);
-	box.DrawOutline(gfx);
+	//sponza.Draw(gfx);
+	box.Submit(fc);
+	box2.Submit(fc);
+	box3.Submit(fc);
+	asset.Submit(fc);
+	cylinder.Submit(fc);
+	pyramid.Submit(fc);
+	sheet.Submit(fc);
 
-
-	light.Draw(gfx);
+	fc.Execute(gfx);
 
 	while (const auto e = wnd.kbd.ReadKey())
 	{
@@ -141,12 +146,19 @@ void App::DoFrame()
 		//nano.ShowWindow(gfx, "Nanosuit");
 		//wall.ShowWindow(gfx, "Wall");
 		//gobber.ShowWindow(gfx, "Goblin");
+		//sponza.ShowWindow(wnd.Gfx(), "Sponza");
 		box.SpawnControlWindow();
-		sponza.ShowWindow(wnd.Gfx(), "Sponza");
+		box2.SpawnControlWindow();
+		box3.SpawnControlWindow();
+		asset.SpawnControlWindow();
+		cylinder.SpawnControlWindow();
+		pyramid.SpawnControlWindow();
+		sheet.SpawnControlWindow();
 	}
 
 	// Present
 	gfx.EndFrame();
+	fc.Reset();
 }
 
 void App::SpawnSimulationWindow() noexcept

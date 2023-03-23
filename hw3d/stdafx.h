@@ -92,6 +92,12 @@ namespace Gdiplus
 // Renderer
 #include "Graphics.h"
 #include "PsMaterialConstants.h"
+#include "Pass.h"
+#include "Job.h"
+#include "Step.h"
+#include "Technique.h"
+#include "TechniqueProbe.h"
+#include "FrameCommander.h"
 
 //Windowing
 #include "Window.h"
@@ -120,6 +126,7 @@ namespace Gdiplus
 #include "LayoutCodex.h"
 #include "DynamicPixelCBuf.h"
 #include "Stencil.h"
+#include "NullPixelShader.h"
 
 // Dynamic Vertex layout
 #include "Color.h"

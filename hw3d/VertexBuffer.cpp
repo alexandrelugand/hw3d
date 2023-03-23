@@ -35,6 +35,11 @@ namespace Bind
 		GFX_THROW_INFO_ONLY(GetContext(gfx)->IASetVertexBuffers(0u, 1u, pVertexBuffer.GetAddressOf(), &stride, &offset));
 	}
 
+	const Dvtx::VertexLayout& VertexBuffer::GetLayout() const noexcept
+	{
+		return layout;
+	}
+
 	std::shared_ptr<VertexBuffer> VertexBuffer::Resolve(Graphics& gfx, const std::string& tag, const Dvtx::VertexBufferDescriptor& vbd)
 	{
 		assert(tag != "?");

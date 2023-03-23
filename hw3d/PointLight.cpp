@@ -47,11 +47,11 @@ namespace Entities
 		};
 	}
 
-	void PointLight::Draw(Graphics& gfx) const noexcpt
+	void PointLight::Submit(FrameCommander& frame) const noexcpt
 	{
 		mesh.SetPos(cbData.pos);
 		mesh.SetColor(cbData.diffuseColor);
-		mesh.Draw(gfx);
+		mesh.Submit(frame);
 	}
 
 	void PointLight::Bind(Graphics& gfx, FXMMATRIX view) const noexcept

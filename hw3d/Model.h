@@ -22,7 +22,7 @@ namespace Entities
 		Model(Graphics& gfx, const std::string& filePath, const float& scale = 1.0f);
 		~Model() noexcept;
 
-		void Draw(Graphics& gfx) const noexcpt;
+		void Submit(FrameCommander& frame) const noexcpt;
 		void ShowWindow(Graphics& gfx, const char* windowName = nullptr);
 		void SetRootTransform(FXMMATRIX tf) const noexcept;
 

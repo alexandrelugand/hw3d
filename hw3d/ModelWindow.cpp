@@ -5,6 +5,7 @@ namespace Windowing
 {
 	void ModelWindow::Show(Graphics& gfx, const char* windowName, Entities::Model& model, Entities::Node& root) noexcpt
 	{
+		/*
 		// window name defaults to "Model
 		windowName = windowName ? windowName : "Model";
 
@@ -112,10 +113,12 @@ namespace Windowing
 			}
 		}
 		ImGui::End();
+		*/
 	}
 
 	void ModelWindow::ApplyParameters() noexcept(!true)
 	{
+		/*
 		if (TransformDirty())
 		{
 			pSelectedNode->SetAppliedTransform(GetTransform());
@@ -126,6 +129,7 @@ namespace Windowing
 			pSelectedNode->SetMaterialConstants(GetMaterial());
 			ResetMaterialDirty();
 		}
+		*/
 	}
 
 	XMMATRIX ModelWindow::GetTransform() const noexcpt
