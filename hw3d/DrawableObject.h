@@ -6,6 +6,11 @@ namespace Draw
 	class DrawableObject : public Drawable
 	{
 	public:
+		DrawableObject(Graphics& gfx, const Material& mat, const aiMesh& mesh, float scale)
+			: Drawable(gfx, mat, mesh, scale), gfx(gfx), id(GetNextId()), pos({0.0f, 0.0f, 0.0f}), scale(scale)
+		{
+		}
+
 		DrawableObject(Graphics& gfx, float scale = 1.0f, const XMFLOAT3& position = {0.0f, 0.0f, 0.0f})
 			: gfx(gfx), id(GetNextId()), pos(position), scale(scale)
 		{

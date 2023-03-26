@@ -1,8 +1,6 @@
 #include "stdafx.h"
 #include "TexturePreprocessor.h"
 
-using ModelException = Entities::Model::ModelException;
-
 template <typename F>
 void TexturePreprocessor::TransformSurface(Bind::Surface& surf, F&& func)
 {
@@ -35,7 +33,7 @@ void TexturePreprocessor::FlipYAllNormalMapsInObj(const std::string& objPath)
 	const auto pScene = imp.ReadFile(objPath.c_str(), 0u);
 	if (pScene == nullptr)
 	{
-		throw ModelException(__LINE__, __FILE__, imp.GetErrorString());
+		throw Entities::ModelException(__LINE__, __FILE__, imp.GetErrorString());
 	}
 
 	// loop through materials and process any normal maps

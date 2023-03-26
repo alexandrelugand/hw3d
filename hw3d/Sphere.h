@@ -39,12 +39,12 @@ namespace Geometry
 			}
 
 			// add the cap vertices
-			const auto iNorthPole = static_cast<unsigned short>(vbd.NumVertices());
+			const auto iNorthPole = static_cast<unsigned short>(vbd.Size());
 			XMFLOAT3 northPos{};
 			XMStoreFloat3(&northPos, base);
 			vbd.EmplaceBack(northPos);
 
-			const auto iSouthPole = static_cast<unsigned short>(vbd.NumVertices());
+			const auto iSouthPole = static_cast<unsigned short>(vbd.Size());
 			XMFLOAT3 southPos{};
 			XMStoreFloat3(&southPos, XMVectorNegate(base));
 			vbd.EmplaceBack(southPos);

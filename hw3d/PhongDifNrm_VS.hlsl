@@ -10,7 +10,7 @@ struct VSOut
     float4 pos : SV_POSITION;
 };
 
-VSOut main(float3 pos : POSITION, float3 n : NORMAL, float3 tan : TANGENT, float3 bitan : BITANGENT, float2 tc : TEXCOORD)
+VSOut main(float3 pos : POSITION, float3 n : NORMAL, float2 tc : TEXCOORD, float3 tan : TANGENT, float3 bitan : BITANGENT)
 {
     VSOut vso;
     vso.viewFragPos = (float3) mul(float4(pos, 1.0f), modelView);

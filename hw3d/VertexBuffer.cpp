@@ -14,7 +14,7 @@ namespace Bind
 		INFOMAN(gfx);
 
 		D3D11_BUFFER_DESC bd;
-		bd.ByteWidth = static_cast<UINT>(vbd.Size());
+		bd.ByteWidth = static_cast<UINT>(vbd.SizeBytes());
 		bd.Usage = D3D11_USAGE_DEFAULT;
 		bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
 		bd.CPUAccessFlags = 0u;

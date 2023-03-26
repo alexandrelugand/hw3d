@@ -4,7 +4,7 @@
 namespace Entities
 {
 	Node::Node(int id, const std::string& name, std::vector<Mesh*> meshPtrs, const XMMATRIX& transform_in) noexcpt
-		: name(name), id(id), meshPtrs(meshPtrs)
+		: id(id), name(name), meshPtrs(meshPtrs)
 	{
 		XMStoreFloat4x4(&transform, transform_in);
 		XMStoreFloat4x4(&appliedTransform, XMMatrixIdentity());
@@ -37,60 +37,38 @@ namespace Entities
 		XMStoreFloat4x4(&appliedTransform, transform);
 	}
 
-	/*const Dcb::Buffer* Node::GetMaterialConstants() const noexcpt
+	int Node::GetId() const noexcept
 	{
-		if (meshPtrs.size() == 0)
-		{
-			return nullptr;
-		}
-		auto pBindable = meshPtrs.front()->QueryBindable<Bind::CachingDynamicPixelCBuf>();
-		return &pBindable->GetBuffer();
+		return id;
 	}
 
-	void Node::SetMaterialConstants(const Dcb::Buffer& buf_in) noexcpt
+	const std::string& Node::GetName() const
 	{
-		auto pcb = meshPtrs.front()->QueryBindable<Bind::CachingDynamicPixelCBuf>();
-		assert(pcb != nullptr);
-		pcb->SetBuffer(buf_in);
-	}*/
+		return name;
+	}
 
-	void Node::ShowTree(Node*& pSelectedNode) const noexcpt
+	bool Node::HasChildren() const noexcept
 	{
-		// if there is no selected node, set selectedId to an impossible value
-		const int selectedId = (pSelectedNode == nullptr) ? -1 : pSelectedNode->GetId();
+		return childPtrs.size() > 0;
+	}
 
-		// build up flags for current node
-		const auto node_flags = ImGuiTreeNodeFlags_OpenOnArrow
-			| ImGuiTreeNodeFlags_OpenOnDoubleClick
-			| ((GetId() == selectedId) ? ImGuiTreeNodeFlags_Selected : 0)
-			| ((childPtrs.size() == 0) ? ImGuiTreeNodeFlags_Leaf : 0);
-
-		// render this node
-		const auto expanded = ImGui::TreeNodeEx(reinterpret_cast<void*>(static_cast<intptr_t>(GetId())), node_flags, name.c_str());
-
-		// detecting / setting selected node
-		if (ImGui::IsItemClicked())
+	void Node::Accept(ModelProbe& probe)
+	{
+		if (probe.PushNode(*this))
 		{
-			pSelectedNode = const_cast<Node*>(this);
-		}
-
-		// if tree node expanded, recursively render all children
-		if (expanded)
-		{
-			for (const auto& pChild : childPtrs)
+			for (auto& cp : childPtrs)
 			{
-				pChild->ShowTree(pSelectedNode);
+				cp->Accept(probe);
 			}
-			ImGui::TreePop();
+			probe.PopNode(*this);
 		}
 	}
 
-	void Node::ResetNode() noexcpt
+	void Node::Accept(TechniqueProbe& probe)
 	{
-		XMStoreFloat4x4(&appliedTransform, XMMatrixIdentity());
-		for (const auto& pChild : childPtrs)
+		for (auto& mp : meshPtrs)
 		{
-			pChild->ResetNode();
+			mp->Accept(probe);
 		}
 	}
 

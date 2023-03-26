@@ -20,11 +20,11 @@ namespace Draw
 			{
 				Step only(0);
 
-				auto pvs = Bind::VertexShader::Resolve(gfx, "BlendedPhongVS.cso");
+				auto pvs = Bind::VertexShader::Resolve(gfx, "BlendedPhong_VS.cso");
 				auto pvsbc = pvs->GetBytecode();
 				only.AddBindable(std::move(pvs));
 
-				only.AddBindable(Bind::PixelShader::Resolve(gfx, "BlendedPhongPS.cso"));
+				only.AddBindable(Bind::PixelShader::Resolve(gfx, "BlendedPhong_PS.cso"));
 
 				Dcb::RawLayout lay;
 				lay.Add<Dcb::Float3>("color");
@@ -34,7 +34,7 @@ namespace Draw
 				buf["color"] = material;
 				buf["specularIntensity"] = 0.1f;
 				buf["specularPower"] = 20.0f;
-				only.AddBindable(std::make_shared<Bind::CachingDynamicPixelCBuf>(gfx, buf, 1u));
+				only.AddBindable(std::make_shared<Bind::CachingPixelCBuf>(gfx, buf, 1u));
 
 				only.AddBindable(std::make_unique<Bind::InputLayout>(gfx, model.vertices.GetLayout(), pvsbc));
 				only.AddBindable(std::make_shared<Bind::TransformCBuf>(gfx));

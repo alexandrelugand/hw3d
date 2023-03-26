@@ -4,12 +4,13 @@
 
 cbuffer ObjectCBuf
 {
-    bool normalMapEnabled;
-    bool specularMapEnabled;
-    bool hasGloss;
-    float specularPowerConst;
+    bool useGlossAlpha;
+    bool useSpecularMap;
     float3 specularColor;
-    float specularMapWeight;
+    float specularWeight;
+    float specularGloss;
+    bool useNormalMap;
+    float normalMapWeight;
 };
 
 Texture2D tex;
@@ -37,9 +38,10 @@ float4 main(float3 viewFragPos : POSITION, float3 viewNormal : NORMAL, float3 vi
     viewNormal = normalize(viewNormal);
 
     // replace normal with mapped if normal mapping enabled
-    if (normalMapEnabled)
+    if (useNormalMap)
     {
-        viewNormal = MapNormal(normalize(viewTan), normalize(viewBitan), viewNormal, tc, nmap, splr);
+        const float3 mappedNormal = MapNormal(normalize(viewTan), normalize(viewBitan), viewNormal, tc, nmap, splr);
+        viewNormal = lerp(viewNormal, mappedNormal, normalMapWeight);
     }
 
 	// fragment to light vector data
@@ -47,20 +49,20 @@ float4 main(float3 viewFragPos : POSITION, float3 viewNormal : NORMAL, float3 vi
 
     // specular parameter determination (mapped or uniform)
     float3 specularReflectionColor;
-    float specularPower = specularPowerConst;
-
-    if (specularMapEnabled)
+    float specularPower = specularGloss;
+    const float4 specularSample = spec.Sample(splr, tc);
+    if (useSpecularMap)
     {
-        const float4 specularSample = spec.Sample(splr, tc);
-        specularReflectionColor = specularSample.rgb * specularMapWeight;
-        if (hasGloss)
-        {
-            specularPower = pow(2.0f, specularSample.a * 13.0f);
-        }
+        specularReflectionColor = specularSample.rgb;
     }
     else
     {
         specularReflectionColor = specularColor;
+    }
+
+    if (useGlossAlpha)
+    {
+        specularPower = pow(2.0f, specularSample.a * 13.0f);
     }
 
 	// attenuation
@@ -71,7 +73,7 @@ float4 main(float3 viewFragPos : POSITION, float3 viewNormal : NORMAL, float3 vi
 
     // specular reflected
     const float3 specularReflected = Speculate(
-        specularReflectionColor, diffuseIntensity, viewNormal,
+       diffuseColor * diffuseIntensity * specularReflectionColor, specularWeight, viewNormal,
         lv.vToL, viewFragPos, att, specularPower
     );
 

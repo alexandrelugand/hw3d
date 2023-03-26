@@ -6,12 +6,26 @@ namespace Dvtx
 	class VertexBufferDescriptor
 	{
 	public:
-		VertexBufferDescriptor(VertexLayout layout, size_t size = 0u) noexcpt;
+		VertexBufferDescriptor(const VertexLayout& layout, size_t size = 0u) noexcpt;
+		VertexBufferDescriptor(const VertexLayout& layout, const aiMesh& mesh);
+
 		void Resize(size_t newSize) noexcpt;
 		const VertexLayout& GetLayout() const noexcept;
-		size_t NumVertices() const noexcpt;
 		size_t Size() const noexcpt;
+		size_t SizeBytes() const noexcpt;
 		const char* GetData() const noexcpt;
+
+		template <VertexLayout::ElementType type>
+		struct AttributeAiMeshFill
+		{
+			static constexpr void Exec(VertexBufferDescriptor* pBuf, const aiMesh& mesh) noexcpt
+			{
+				for (auto end = mesh.mNumVertices, i = 0u; i < end; i++)
+				{
+					(*pBuf)[i].Attr<type>() = VertexLayout::Map<type>::Extract(mesh, i);
+				}
+			}
+		};
 
 		template <typename... Params>
 		void EmplaceBack(Params&&... params) noexcpt

@@ -25,21 +25,25 @@ namespace Draw
 				only.AddBindable(Bind::Texture::Resolve(gfx, "images\\brickwall_normal_obj.png", 2u));
 				only.AddBindable(Bind::Sampler::Resolve(gfx));
 
-				auto pvs = Bind::VertexShader::Resolve(gfx, "PhongVS.cso");
+				auto pvs = Bind::VertexShader::Resolve(gfx, "PhongDif_VS.cso");
 				auto pvsbc = pvs->GetBytecode();
 				only.AddBindable(std::move(pvs));
 
-				only.AddBindable(Bind::PixelShader::Resolve(gfx, "PhongPSNormalMapObject.cso"));
+				only.AddBindable(Bind::PixelShader::Resolve(gfx, "PhongDifNrmNoTBN_PS.cso"));
 
 				Dcb::RawLayout lay;
-				lay.Add<Dcb::Float>("specularIntensity");
-				lay.Add<Dcb::Float>("specularPower");
-				lay.Add<Dcb::Bool>("normalMappingEnabled");
+				lay.Add<Dcb::Float3>("specularColor");
+				lay.Add<Dcb::Float>("specularWeight");
+				lay.Add<Dcb::Float>("specularGloss");
+				lay.Add<Dcb::Bool>("useNormalMap");
+				lay.Add<Dcb::Float>("normalMapWeight");
 				auto buf = Dcb::Buffer(std::move(lay));
-				buf["specularIntensity"] = 0.1f;
-				buf["specularPower"] = 20.0f;
-				buf["normalMappingEnabled"] = true;
-				only.AddBindable(std::make_shared<Bind::CachingDynamicPixelCBuf>(gfx, buf, 1u));
+				buf["specularColor"] = XMFLOAT3{0.7f, 0.7f, 0.7f};
+				buf["specularWeight"] = 0.1f;
+				buf["specularGloss"] = 20.0f;
+				buf["useNormalMap"] = true;
+				buf["normalMapWeight"] = 1.0f;
+				only.AddBindable(std::make_shared<Bind::CachingPixelCBuf>(gfx, buf, 1u));
 
 				only.AddBindable(std::make_unique<Bind::InputLayout>(gfx, model.vertices.GetLayout(), pvsbc));
 				only.AddBindable(std::make_shared<Bind::TransformAllCBuf>(gfx, 0u, 2u));
@@ -78,7 +82,7 @@ namespace Draw
 					using namespace std::string_literals;
 					ImGui::TextColored({0.4f, 1.0f, 0.6f, 1.0f}, pTech->GetName().c_str());
 					bool active = pTech->IsActive();
-					ImGui::Checkbox(("Tech Active##"s + std::to_string(techId)).c_str(), &active);
+					ImGui::Checkbox(("Tech Active##"s + std::to_string(techIdx)).c_str(), &active);
 					pTech->SetActive(active);
 				}
 
@@ -86,22 +90,26 @@ namespace Draw
 				{
 					float dirty = false;
 					const auto dcheck = [&dirty](bool changed) { dirty = dirty || changed; };
-					auto tag = [tagScratch = std::string{}, tagString = "##" + std::to_string(bufId)]
+					auto tag = [tagScratch = std::string{}, tagString = "##" + std::to_string(bufIdx)]
 					(const char* label) mutable
 					{
 						tagScratch = label + tagString;
 						return tagScratch.c_str();
 					};
 
-					if (auto v = buf["normalMappingEnabled"]; v.Exists())
+					if (auto v = buf["useNormalMap"]; v.Exists())
 					{
 						dcheck(ImGui::Checkbox(tag("Normal map"), &v));
 					}
-					if (auto v = buf["specularIntensity"]; v.Exists())
+					if (auto v = buf["specularColor"]; v.Exists())
 					{
-						dcheck(ImGui::SliderFloat(tag("Spec. Intens."), &v, 0.0f, 1.0f));
+						dcheck(ImGui::ColorPicker3(tag("Spec. Color"), reinterpret_cast<float*>(&static_cast<XMFLOAT3&>(v))));
 					}
-					if (auto v = buf["specularPower"]; v.Exists())
+					if (auto v = buf["specularWeight"]; v.Exists())
+					{
+						dcheck(ImGui::SliderFloat(tag("Spec. Weight"), &v, 0.0f, 1.0f));
+					}
+					if (auto v = buf["specularGloss"]; v.Exists())
 					{
 						dcheck(ImGui::SliderFloat(tag("Glossiness"), &v, 1.0f, 100.0f, "%.1f"));
 					}

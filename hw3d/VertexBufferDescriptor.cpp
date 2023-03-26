@@ -3,10 +3,20 @@
 
 namespace Dvtx
 {
-	VertexBufferDescriptor::VertexBufferDescriptor(VertexLayout layout, size_t size) noexcpt
-		: layout(layout)
+	VertexBufferDescriptor::VertexBufferDescriptor(const VertexLayout& layout, size_t size) noexcpt
+		: layout(std::move(layout))
 	{
 		Resize(size);
+	}
+
+	VertexBufferDescriptor::VertexBufferDescriptor(const VertexLayout& layout, const aiMesh& mesh)
+		: layout(std::move(layout))
+	{
+		Resize(mesh.mNumVertices);
+		for (size_t i = 0, end = layout.GetElementCount(); i < end; i++)
+		{
+			VertexLayout::Bridge<AttributeAiMeshFill>(layout.ResolveByIndex(i).GetType(), this, mesh);
+		}
 	}
 
 	void VertexBufferDescriptor::Resize(size_t newSize) noexcpt
@@ -23,12 +33,12 @@ namespace Dvtx
 		return layout;
 	}
 
-	size_t VertexBufferDescriptor::NumVertices() const noexcpt
+	size_t VertexBufferDescriptor::Size() const noexcpt
 	{
 		return buffer.size() / layout.Size();
 	}
 
-	size_t VertexBufferDescriptor::Size() const noexcpt
+	size_t VertexBufferDescriptor::SizeBytes() const noexcpt
 	{
 		return buffer.size();
 	}
@@ -52,7 +62,7 @@ namespace Dvtx
 
 	Vertex VertexBufferDescriptor::operator[](size_t i) noexcpt
 	{
-		assert(i < NumVertices());
+		assert(i < Size());
 		return Vertex{buffer.data() + i * layout.Size(), layout};
 	}
 

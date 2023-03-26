@@ -1,11 +1,13 @@
 #include "ShaderOps.hlsli"
 #include "LightVectorData.hlsli"
 #include "PointLight.hlsli"
+
 cbuffer ObjectCBuf
 {
-    float4 materialColor;
-    float4 specularColor;
-    float specularPower;
+    float3 materialColor;
+    float3 specularColor;
+    float specularWeight;
+    float specularGloss;
 };
 
 float4 main(float3 viewFragPos : POSITION, float3 viewNormal : NORMAL) : SV_TARGET
@@ -24,10 +26,10 @@ float4 main(float3 viewFragPos : POSITION, float3 viewNormal : NORMAL) : SV_TARG
 
     // specular
     const float3 specular = Speculate(
-        specularColor.rgb, diffuseIntensity, viewNormal,
-        lv.vToL, viewFragPos, att, specularPower
+        diffuseColor * diffuseIntensity * specularColor, specularWeight, viewNormal,
+        lv.vToL, viewFragPos, att, specularGloss
     );
 
 	// final color
-    return float4(saturate((diffuse + ambient) * materialColor.rgb + specular), 1.0f);
+    return float4(saturate((diffuse + ambient) * materialColor + specular), 1.0f);
 }

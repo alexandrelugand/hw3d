@@ -7,6 +7,7 @@ namespace Draw
 	{
 	public:
 		Drawable() = default;
+		Drawable(Graphics& gfx, const Material& mat, const aiMesh& mesh, float scale) noexcept;
 		Drawable(const Drawable&) = delete;
 		virtual ~Drawable();
 

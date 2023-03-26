@@ -1,8 +1,8 @@
 #include "stdafx.h"
 #include "Technique.h"
 
-Technique::Technique(std::string name) noexcept
-	: name(std::move(name))
+Technique::Technique(std::string name, bool startActive) noexcept
+	: active(startActive), name(std::move(name))
 {
 }
 

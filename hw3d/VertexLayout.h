@@ -133,7 +133,7 @@ namespace Dvtx
 		};
 
 		template <template<ElementType> class F, typename... Args>
-		static constexpr auto Bridge(ElementType type, Args... args) noexcpt
+		static constexpr auto Bridge(ElementType type, Args&&... args) noexcpt
 		{
 			switch (type)
 			{
@@ -215,23 +215,11 @@ namespace Dvtx
 
 		const Element& ResolveByIndex(size_t index) const noexcpt;
 		VertexLayout& Append(ElementType type) noexcpt;
+		bool Has(ElementType type) const noexcept;
 		size_t Size() const noexcpt;
 		size_t GetElementCount() const noexcept;
 		std::vector<D3D11_INPUT_ELEMENT_DESC> GetD3DLayout() const noexcpt;
 		std::string GetCode() const noexcpt;
-
-		template <ElementType Type>
-		bool Has() const noexcept
-		{
-			for (auto& e : elements)
-			{
-				if (e.GetType() == Type)
-				{
-					return true;
-				}
-			}
-			return false;
-		}
 
 	private:
 		std::vector<Element> elements{};

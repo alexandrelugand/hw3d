@@ -6,6 +6,23 @@ Step::Step(size_t targetPass_in)
 {
 }
 
+Step::Step(const Step& src) noexcept
+	: targetPass(src.targetPass)
+{
+	bindables.reserve(src.bindables.size());
+	for (auto& pb : src.bindables)
+	{
+		if (auto* pCloning = dynamic_cast<const Bind::CloningBindable*>(pb.get()))
+		{
+			bindables.push_back(pCloning->Clone());
+		}
+		else
+		{
+			bindables.push_back(pb);
+		}
+	}
+}
+
 void Step::AddBindable(std::shared_ptr<Bind::Bindable> bind_in) noexcept(!true)
 {
 	bindables.push_back(std::move(bind_in));

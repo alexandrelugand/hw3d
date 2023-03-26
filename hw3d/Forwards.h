@@ -7,12 +7,14 @@ class ImguiManager;
 
 // Renderer
 class Graphics;
-class FrameCommander;
 class Pass;
 class Job;
 class Step;
 class Technique;
 class TechniqueProbe;
+class ModelProbe;
+class FrameCommander;
+class Material;
 
 // Windows
 namespace Windowing
@@ -44,9 +46,7 @@ namespace Bind
 	class Sampler;
 	class Blender;
 	class Rasterizer;
-	class DynamicPixelCBuf;
-	class CachingDynamicPixelCBuf;
-	class NocacheDynamicPixelCBuf;
+	class DynamicCBuf;
 }
 
 // Draw

@@ -5,10 +5,11 @@
 
 cbuffer ObjectCBuf : register(b1)
 {
-    float specularIntensity;
-    float specularPower;
-    bool normalMapEnabled;
-    float padding[1];
+    float3 specularColor;
+    float specularWeight;
+    float specularGloss;
+    bool useNormalMap;
+    float normalMapWeight;
 };
 
 Texture2D tex;
@@ -18,7 +19,7 @@ SamplerState splr;
 float4 main(float3 viewFragPos : POSITION, float3 viewNormal : NORMAL, float2 tc : TEXCOORD) : SV_TARGET
 {
     // sample normal from map if normal mapping enabled
-    if (normalMapEnabled)
+    if (useNormalMap)
     {
         // sample and unpack normal data
         const float3 normalSample = nmap.Sample(splr, tc).xyz;
@@ -38,8 +39,8 @@ float4 main(float3 viewFragPos : POSITION, float3 viewNormal : NORMAL, float2 tc
 
 	// specular
     const float3 specular = Speculate(
-        specularIntensity.rrr, diffuseIntensity * specularIntensity, viewNormal, lv.vToL,
-        viewFragPos, att, specularPower
+        diffuseColor * diffuseIntensity * specularColor, specularWeight, viewNormal,
+        lv.vToL, viewFragPos, att, specularGloss
     );
 
 	// final color

@@ -3,6 +3,18 @@
 
 namespace Draw
 {
+	Drawable::Drawable(Graphics& gfx, const Material& mat, const aiMesh& mesh, float scale) noexcept
+	{
+		pVertices = mat.MakeVertexBindable(gfx, mesh, scale);
+		pIndices = mat.MakeIndexBindable(gfx, mesh);
+		pTopology = Bind::Topology::Resolve(gfx);
+
+		for (auto& t : mat.GetTechniques())
+		{
+			AddTechnique(std::move(t));
+		}
+	}
+
 	Drawable::~Drawable()
 	{
 	}

@@ -21,11 +21,11 @@ namespace Draw
 			Technique solid;
 			Step only(0);
 
-			auto pvs = Bind::VertexShader::Resolve(gfx, "SolidVS.cso");
+			auto pvs = Bind::VertexShader::Resolve(gfx, "Solid_VS.cso");
 			auto pvsbc = pvs->GetBytecode();
 			only.AddBindable(std::move(pvs));
 
-			only.AddBindable(Bind::PixelShader::Resolve(gfx, "SolidPS.cso"));
+			only.AddBindable(Bind::PixelShader::Resolve(gfx, "Solid_PS.cso"));
 
 			only.AddBindable(Bind::InputLayout::Resolve(gfx, model.vertices.GetLayout(), pvsbc));
 

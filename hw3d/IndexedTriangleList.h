@@ -10,13 +10,13 @@ namespace Geometry
 		IndexedTriangleList(Dvtx::VertexBufferDescriptor vbd_in, std::vector<unsigned short> indices_in)
 			: vertices(std::move(vbd_in)), indices(std::move(indices_in))
 		{
-			assert(vertices.NumVertices() > 2);
+			assert(vertices.Size() > 2);
 			assert(indices.size() % 3 == 0);
 		}
 
 		void Transform(FXMMATRIX matrix)
 		{
-			for (int i = 0; i < vertices.NumVertices(); i++)
+			for (int i = 0; i < vertices.Size(); i++)
 			{
 				auto& pos = vertices[i].Attr<ElementType::Position3D>();
 				XMStoreFloat3(

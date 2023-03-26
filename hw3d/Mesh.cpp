@@ -3,8 +3,8 @@
 
 namespace Entities
 {
-	Mesh::Mesh(Graphics& gfx)
-		: DrawableObject(gfx)
+	Mesh::Mesh(Graphics& gfx, const Material& mat, const aiMesh& mesh, float scale)
+		: DrawableObject(gfx, mat, mesh, scale)
 	{
 	}
 

@@ -70,7 +70,7 @@ namespace Bind
 	Surface Surface::FromFile(const std::string& name)
 	{
 		ScratchImage scratch;
-		HRESULT hr = LoadFromWICFile(String::ToWide(name).c_str(), WIC_FLAGS_NONE, nullptr, scratch);
+		HRESULT hr = LoadFromWICFile(String::ToWide(name).c_str(), WIC_FLAGS_IGNORE_SRGB, nullptr, scratch);
 
 		if (FAILED(hr))
 			throw Exception(__LINE__, __FILE__, name, "Failed to load image", hr);

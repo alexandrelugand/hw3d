@@ -14,18 +14,19 @@ namespace Entities
 		const XMFLOAT4X4& GetAppliedTransform() const noexcept;
 		void SetAppliedTransform(FXMMATRIX transform) noexcpt;
 
-		/*	const Dcb::Buffer* GetMaterialConstants() const noexcpt;
-			void SetMaterialConstants(const Dcb::Buffer&) noexcpt;*/
+		int GetId() const noexcept;
+		const std::string& GetName() const;
 
-		int GetId() const noexcept { return id; }
-		void ShowTree(Node*& pSelectedNode) const noexcpt;
-		void ResetNode() noexcpt;
+		bool HasChildren() const noexcept;
+
+		void Accept(ModelProbe& probe);
+		void Accept(TechniqueProbe& probe);
 
 	private:
 		void AddChild(std::unique_ptr<Node> pChild) noexcpt;
 
-		std::string name{};
 		int id = 0;
+		std::string name{};
 		std::vector<Mesh*> meshPtrs{};
 		std::vector<std::unique_ptr<Node>> childPtrs{};
 		XMFLOAT4X4 transform{};

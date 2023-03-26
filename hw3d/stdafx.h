@@ -97,7 +97,9 @@ namespace Gdiplus
 #include "Step.h"
 #include "Technique.h"
 #include "TechniqueProbe.h"
+#include "ModelProbe.h"
 #include "FrameCommander.h"
+#include "Material.h"
 
 //Windowing
 #include "Window.h"
@@ -124,7 +126,7 @@ namespace Gdiplus
 #include "Blender.h"
 #include "Rasterizer.h"
 #include "LayoutCodex.h"
-#include "DynamicPixelCBuf.h"
+#include "DynamicCBuf.h"
 #include "Stencil.h"
 #include "NullPixelShader.h"
 
@@ -155,6 +157,7 @@ namespace Gdiplus
 // Entities
 #include "Camera.h"
 #include "PointLight.h"
+#include "ModelException.h"
 #include "Model.h"
 #include "Node.h"
 #include "Mesh.h"

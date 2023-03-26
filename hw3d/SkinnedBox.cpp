@@ -25,11 +25,11 @@ namespace Draw
 				only.AddBindable(Bind::Texture::Resolve(gfx, "Images\\brickwall.jpg"));
 				only.AddBindable(Bind::Sampler::Resolve(gfx));
 
-				auto pvs = Bind::VertexShader::Resolve(gfx, "TexturedPhongVS.cso");
+				auto pvs = Bind::VertexShader::Resolve(gfx, "TexturedPhong_VS.cso");
 				auto pvsbc = pvs->GetBytecode();
 				only.AddBindable(std::move(pvs));
 
-				only.AddBindable(Bind::PixelShader::Resolve(gfx, "TexturedPhongPS.cso"));
+				only.AddBindable(Bind::PixelShader::Resolve(gfx, "TexturedPhong_PS.cso"));
 
 				Dcb::RawLayout lay;
 				lay.Add<Dcb::Float>("specularIntensity");
@@ -37,7 +37,7 @@ namespace Draw
 				auto buf = Dcb::Buffer(std::move(lay));
 				buf["specularIntensity"] = 0.1f;
 				buf["specularPower"] = 20.0f;
-				only.AddBindable(std::make_shared<Bind::CachingDynamicPixelCBuf>(gfx, buf, 1u));
+				only.AddBindable(std::make_shared<Bind::CachingPixelCBuf>(gfx, buf, 1u));
 
 				only.AddBindable(std::make_unique<Bind::InputLayout>(gfx, model.vertices.GetLayout(), pvsbc));
 				only.AddBindable(std::make_shared<Bind::TransformCBuf>(gfx));
@@ -47,11 +47,11 @@ namespace Draw
 			AddTechnique(std::move(shade));
 		}
 
-		Technique outline("Outline");
+		Technique outline("Outline", false);
 		{
 			Step mask(1);
 			{
-				auto pvs = Bind::VertexShader::Resolve(gfx, "SolidVS.cso");
+				auto pvs = Bind::VertexShader::Resolve(gfx, "Solid_VS.cso");
 				auto pvsbc = pvs->GetBytecode();
 				mask.AddBindable(std::move(pvs));
 
@@ -67,18 +67,18 @@ namespace Draw
 			Step draw(2);
 			{
 				// these can be pass-constant (tricky due to layout issues)
-				auto pvs = Bind::VertexShader::Resolve(gfx, "SolidVS.cso");
+				auto pvs = Bind::VertexShader::Resolve(gfx, "Solid_VS.cso");
 				auto pvsbc = pvs->GetBytecode();
 				draw.AddBindable(std::move(pvs));
 
 				// this can be pass-constant
-				draw.AddBindable(Bind::PixelShader::Resolve(gfx, "SolidPS.cso"));
+				draw.AddBindable(Bind::PixelShader::Resolve(gfx, "Solid_PS.cso"));
 
 				Dcb::RawLayout lay;
 				lay.Add<Dcb::Float4>("color");
 				auto buf = Dcb::Buffer(std::move(lay));
 				buf["color"] = XMFLOAT4{1.0f, 0.4f, 0.4f, 1.0f};
-				draw.AddBindable(std::make_shared<Bind::CachingDynamicPixelCBuf>(gfx, buf, 1u));
+				draw.AddBindable(std::make_shared<Bind::CachingPixelCBuf>(gfx, buf, 1u));
 
 				// TODO: better sub-layout generation tech for future consideration maybe
 				draw.AddBindable(Bind::InputLayout::Resolve(gfx, model.vertices.GetLayout(), pvsbc));
@@ -109,6 +109,11 @@ namespace Draw
 						UpdateBindImpl(gfx, xf);
 					}
 
+					std::unique_ptr<CloningBindable> Clone() const noexcept override
+					{
+						return std::make_unique<TransformCBufScaling>(*this);
+					}
+
 				private:
 					static Dcb::RawLayout MakeLayout()
 					{
@@ -130,7 +135,6 @@ namespace Draw
 
 	bool SkinnedBox::SpawnControlWindow() noexcept
 	{
-		bool dirty = false;
 		bool open = true;
 		if (ImGui::Begin(("Skinned Box##" + std::to_string(id)).c_str(), &open))
 		{
@@ -156,15 +160,15 @@ namespace Draw
 					using namespace std::string_literals;
 					ImGui::TextColored({0.4f, 1.0f, 0.6f, 1.0f}, pTech->GetName().c_str());
 					bool active = pTech->IsActive();
-					ImGui::Checkbox(("Tech Active##"s + std::to_string(techId)).c_str(), &active);
+					ImGui::Checkbox(("Tech Active##"s + std::to_string(techIdx)).c_str(), &active);
 					pTech->SetActive(active);
 				}
 
 				bool OnVisitBuffer(Dcb::Buffer& buf) override
 				{
-					float dirty = false;
+					bool dirty = false;
 					const auto dcheck = [&dirty](bool changed) { dirty = dirty || changed; };
-					auto tag = [tagScratch = std::string{}, tagString = "##" + std::to_string(bufId)]
+					auto tag = [tagScratch = std::string{}, tagString = "##" + std::to_string(bufIdx)]
 					(const char* label) mutable
 					{
 						tagScratch = label + tagString;
