@@ -4,7 +4,8 @@
 #pragma comment(lib, "d3d11.lib")
 #pragma comment(lib, "D3DCompiler.lib")
 
-Graphics::Graphics(HWND hWnd, unsigned int width, unsigned int height)
+Graphics::Graphics(HWND hWnd, UINT width, UINT height)
+	: width(width), height(height)
 {
 	DXGI_SWAP_CHAIN_DESC sd{};
 	sd.BufferDesc.Width = width;
@@ -51,30 +52,6 @@ Graphics::Graphics(HWND hWnd, unsigned int width, unsigned int height)
 	ComPtr<ID3D11Resource> pBackBuffer;
 	GFX_THROW_INFO(pSwapChain->GetBuffer(0, __uuidof(ID3D11Resource), &pBackBuffer));
 	GFX_THROW_INFO(pDevice->CreateRenderTargetView(pBackBuffer.Get(), nullptr, &pTarget));
-
-	// Create depth stencil texture
-	ComPtr<ID3D11Texture2D> pDepthStencil;
-	D3D11_TEXTURE2D_DESC descDepth{};
-	descDepth.Width = width;
-	descDepth.Height = height;
-	descDepth.MipLevels = 1u;
-	descDepth.ArraySize = 1u;
-	descDepth.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	descDepth.SampleDesc.Count = 1u;
-	descDepth.SampleDesc.Quality = 0u;
-	descDepth.Usage = D3D11_USAGE_DEFAULT;
-	descDepth.BindFlags = D3D11_BIND_DEPTH_STENCIL;
-	GFX_THROW_INFO(pDevice->CreateTexture2D(&descDepth, nullptr, &pDepthStencil));
-
-	// Create view of depth stencil texture
-	D3D11_DEPTH_STENCIL_VIEW_DESC descDSV{};
-	descDSV.Format = DXGI_FORMAT_D24_UNORM_S8_UINT;
-	descDSV.ViewDimension = D3D11_DSV_DIMENSION_TEXTURE2D;
-	descDSV.Texture2D.MipSlice = 0u;
-	GFX_THROW_INFO(pDevice->CreateDepthStencilView(pDepthStencil.Get(), &descDSV, &pDSV));
-
-	// Bind depth stencil view to OM
-	pContext->OMSetRenderTargets(1u, pTarget.GetAddressOf(), pDSV.Get());
 
 	// Configure viewport
 	D3D11_VIEWPORT vp;
@@ -126,6 +103,16 @@ void Graphics::SetCullMode(const CullMode& cullMode) const
 		pContext->RSSetState(m_cull_none_state.Get());
 }
 
+UINT Graphics::GetWidth() const noexcept
+{
+	return width;
+}
+
+UINT Graphics::GetHeight() const noexcept
+{
+	return height;
+}
+
 void Graphics::BeginFrame(float red, float green, float blue) const noexcept
 {
 	// ImGui begin frame
@@ -141,9 +128,18 @@ void Graphics::BeginFrame(float red, float green, float blue) const noexcept
 	else
 		pContext->RSSetState(m_cull_front_state.Get());
 
-	const float color[] = {red, green, blue, 1.0f};
+	const float color[] = {red, green, blue, 0.0f};
 	pContext->ClearRenderTargetView(pTarget.Get(), color);
-	pContext->ClearDepthStencilView(pDSV.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0u);
+}
+
+void Graphics::BindSwapBuffer() noexcept
+{
+	pContext->OMSetRenderTargets(1u, pTarget.GetAddressOf(), nullptr);
+}
+
+void Graphics::BindSwapBuffer(const DepthStencil& ds) noexcept
+{
+	pContext->OMSetRenderTargets(1u, pTarget.GetAddressOf(), ds.pDepthStencilView.Get());
 }
 
 void Graphics::EndFrame()

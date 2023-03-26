@@ -6,6 +6,7 @@ class GDIPlusManager;
 class ImguiManager;
 
 // Renderer
+class GraphicsResource;
 class Graphics;
 class Pass;
 class Job;
@@ -15,6 +16,8 @@ class TechniqueProbe;
 class ModelProbe;
 class FrameCommander;
 class Material;
+class DepthStencil;
+class RenderTarget;
 
 // Windows
 namespace Windowing

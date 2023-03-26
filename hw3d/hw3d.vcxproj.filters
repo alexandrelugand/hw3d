@@ -102,9 +102,6 @@
     <ClCompile Include="dxerr.cpp">
       <Filter>DxErr</Filter>
     </ClCompile>
-    <ClCompile Include="Bindable.cpp">
-      <Filter>Source Files\Bind</Filter>
-    </ClCompile>
     <ClCompile Include="IndexBuffer.cpp">
       <Filter>Source Files\Bind</Filter>
     </ClCompile>
@@ -299,6 +296,15 @@
     </ClCompile>
     <ClCompile Include="ModelException.cpp">
       <Filter>Source Files\Entities</Filter>
+    </ClCompile>
+    <ClCompile Include="GraphicsResource.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="DepthStencil.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderTarget.cpp">
+      <Filter>Source Files\Renderer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -584,6 +590,15 @@
     <ClInclude Include="ModelProbe.h">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="GraphicsResouce.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="DepthStencil.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderTarget.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Hw3D.rc">
@@ -678,6 +693,12 @@
       <Filter>Shaders</Filter>
     </FxCompile>
     <FxCompile Include="PhongDifMskSpcNrm_VS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Blur_PS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Fullscreen_VS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>

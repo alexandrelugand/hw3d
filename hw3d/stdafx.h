@@ -90,6 +90,7 @@ namespace Gdiplus
 #include "Mouse.h"
 
 // Renderer
+#include "GraphicsResouce.h"
 #include "Graphics.h"
 #include "PsMaterialConstants.h"
 #include "Pass.h"
@@ -100,6 +101,8 @@ namespace Gdiplus
 #include "ModelProbe.h"
 #include "FrameCommander.h"
 #include "Material.h"
+#include "DepthStencil.h"
+#include "RenderTarget.h"
 
 //Windowing
 #include "Window.h"

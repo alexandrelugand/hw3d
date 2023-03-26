@@ -12,7 +12,7 @@ public:
 private:
 	Windowing::Window wnd;
 	ScriptCommander sc;
-	FrameCommander fc;
+	FrameCommander fc{wnd.Gfx()};
 
 	Hw3DTimer timer;
 	float speed_factor = 1.0f;

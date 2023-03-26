@@ -83,48 +83,7 @@ namespace Draw
 				// TODO: better sub-layout generation tech for future consideration maybe
 				draw.AddBindable(Bind::InputLayout::Resolve(gfx, model.vertices.GetLayout(), pvsbc));
 
-				// quick and dirty... nicer solution maybe takes a lambda... we'll see :)
-				class TransformCBufScaling : public Bind::TransformCBuf
-				{
-				public:
-					TransformCBufScaling(Graphics& gfx, float scale = 1.04)
-						: TransformCBuf(gfx),
-						  buf(MakeLayout())
-					{
-						buf["scale"] = scale;
-					}
-
-					void Accept(TechniqueProbe& probe) override
-					{
-						probe.VisitBuffer(buf);
-					}
-
-					void Bind(Graphics& gfx) noexcept override
-					{
-						const float scale = buf["scale"];
-						const auto scaleMatrix = XMMatrixScaling(scale, scale, scale);
-						auto xf = GetTransforms(gfx);
-						xf.modelView = xf.modelView * scaleMatrix;
-						xf.modelViewProj = xf.modelViewProj * scaleMatrix;
-						UpdateBindImpl(gfx, xf);
-					}
-
-					std::unique_ptr<CloningBindable> Clone() const noexcept override
-					{
-						return std::make_unique<TransformCBufScaling>(*this);
-					}
-
-				private:
-					static Dcb::RawLayout MakeLayout()
-					{
-						Dcb::RawLayout layout;
-						layout.Add<Dcb::Float>("scale");
-						return layout;
-					}
-
-					Dcb::Buffer buf;
-				};
-				draw.AddBindable(std::make_shared<TransformCBufScaling>(gfx));
+				draw.AddBindable(std::make_shared<Bind::TransformCBuf>(gfx));
 
 				// TODO: might need to specify rasterizer when doubled-sided models start being used
 				outline.AddStep(std::move(draw));

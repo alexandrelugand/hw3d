@@ -153,10 +153,6 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="Bindable.cpp">
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
-      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
-    </ClCompile>
     <ClCompile Include="Blender.cpp" />
     <ClCompile Include="Box.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
@@ -174,6 +170,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="DepthStencil.cpp" />
     <ClCompile Include="Drawable.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
@@ -197,6 +194,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="GraphicsResource.cpp" />
     <ClCompile Include="Hw3DException.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
@@ -220,6 +218,7 @@
     <ClCompile Include="NullPixelShader.cpp" />
     <ClCompile Include="Pass.cpp" />
     <ClCompile Include="Rasterizer.cpp" />
+    <ClCompile Include="RenderTarget.cpp" />
     <ClCompile Include="ScriptCommander.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -360,12 +359,14 @@
     <ClInclude Include="ConstVertex.h" />
     <ClInclude Include="Cube.h" />
     <ClInclude Include="Cylinder.h" />
+    <ClInclude Include="DepthStencil.h" />
     <ClInclude Include="Drawable.h" />
     <ClInclude Include="DynamicConstant.h" />
     <ClInclude Include="DynamicCBuf.h" />
     <ClInclude Include="Forwards.h" />
     <ClInclude Include="FrameCommander.h" />
     <ClInclude Include="GDIPlusManager.h" />
+    <ClInclude Include="GraphicsResouce.h" />
     <ClInclude Include="GraphicsThrowMacros.h" />
     <ClInclude Include="Job.h" />
     <ClInclude Include="LayoutCodex.h" />
@@ -378,6 +379,7 @@
     <ClInclude Include="PerfLog.h" />
     <ClInclude Include="PsMaterialConstants.h" />
     <ClInclude Include="Rasterizer.h" />
+    <ClInclude Include="RenderTarget.h" />
     <ClInclude Include="ScriptCommander.h" />
     <ClInclude Include="Stencil.h" />
     <ClInclude Include="Step.h" />
@@ -474,6 +476,22 @@
       <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)%(Filename).cso</ObjectFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjectDir)%(Filename).cso</ObjectFileOutput>
+    </FxCompile>
+    <FxCompile Include="Fullscreen_VS.hlsl">
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjectDir)%(Filename).cso</ObjectFileOutput>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Vertex</ShaderType>
+    </FxCompile>
+    <FxCompile Include="Blur_PS.hlsl">
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">5.0</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">5.0</ShaderModel>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">$(ProjectDir)%(Filename).cso</ObjectFileOutput>
+      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(ProjectDir)%(Filename).cso</ObjectFileOutput>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Pixel</ShaderType>
+      <ShaderType Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Pixel</ShaderType>
     </FxCompile>
     <FxCompile Include="Offset_VS.hlsl">
       <ShaderType Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Vertex</ShaderType>

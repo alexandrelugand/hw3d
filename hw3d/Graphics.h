@@ -11,6 +11,7 @@ enum CullMode
 class Graphics
 {
 	friend class Bind::Bindable;
+	friend class GraphicsResource;
 
 public:
 	class Exception : public Hw3DException
@@ -57,12 +58,14 @@ public:
 		std::string reason;
 	};
 
-	Graphics(HWND hWnd, unsigned int width, unsigned int height);
+	Graphics(HWND hWnd, UINT width, UINT height);
 	Graphics(const Graphics&) = delete;
 	Graphics& operator=(const Graphics&) = delete;
 	~Graphics() = default;
 
 	void BeginFrame(float red, float green, float blue) const noexcept;
+	void BindSwapBuffer() noexcept;
+	void BindSwapBuffer(const DepthStencil& ds) noexcept;
 	void EndFrame();
 
 	void DrawIndexed(UINT uint) noexcpt;
@@ -75,6 +78,9 @@ public:
 
 	void SetCullMode(const CullMode& cullMode) const;
 
+	UINT GetWidth() const noexcept;
+	UINT GetHeight() const noexcept;
+
 	void EnableImGui() noexcept;
 	void DisableImGui() noexcept;
 	bool IsImGuiEnabled() const noexcept;
@@ -84,6 +90,8 @@ public:
 	bool IsWireframeEnabled() const noexcept;
 
 private:
+	UINT width;
+	UINT height;
 	void InitRasterizerState();
 	bool imguiEnabled = true;
 	bool wireframeEnabled = false;
@@ -94,7 +102,6 @@ private:
 	ComPtr<IDXGISwapChain> pSwapChain = nullptr;
 	ComPtr<ID3D11DeviceContext> pContext = nullptr;
 	ComPtr<ID3D11RenderTargetView> pTarget = nullptr;
-	ComPtr<ID3D11DepthStencilView> pDSV = nullptr;
 
 	ComPtr<ID3D11RasterizerState> m_wire_frame_state = nullptr;
 	ComPtr<ID3D11RasterizerState> m_cull_front_state = nullptr;
