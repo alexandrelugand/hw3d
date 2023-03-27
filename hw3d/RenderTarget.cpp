@@ -2,6 +2,7 @@
 #include "RenderTarget.h"
 
 RenderTarget::RenderTarget(Graphics& gfx, UINT width, UINT height)
+	: width(width), height(height)
 {
 	INFOMAN(gfx);
 
@@ -52,11 +53,31 @@ void RenderTarget::BindAsTexture(Graphics& gfx, UINT slot) const noexcept
 void RenderTarget::BindAsTarget(Graphics& gfx) const noexcept
 {
 	GetContext(gfx)->OMSetRenderTargets(1u, pTargetView.GetAddressOf(), nullptr);
+
+	// configure viewport
+	D3D11_VIEWPORT vp;
+	vp.Width = static_cast<float>(width);
+	vp.Height = static_cast<float>(height);
+	vp.MinDepth = 0.0f;
+	vp.MaxDepth = 1.0f;
+	vp.TopLeftX = 0.0f;
+	vp.TopLeftY = 0.0f;
+	GetContext(gfx)->RSSetViewports(1u, &vp);
 }
 
 void RenderTarget::BindAsTarget(Graphics& gfx, const DepthStencil& depthStencil) const noexcept
 {
 	GetContext(gfx)->OMSetRenderTargets(1u, pTargetView.GetAddressOf(), depthStencil.pDepthStencilView.Get());
+
+	// configure viewport
+	D3D11_VIEWPORT vp;
+	vp.Width = static_cast<float>(width);
+	vp.Height = static_cast<float>(height);
+	vp.MinDepth = 0.0f;
+	vp.MaxDepth = 1.0f;
+	vp.TopLeftX = 0.0f;
+	vp.TopLeftY = 0.0f;
+	GetContext(gfx)->RSSetViewports(1u, &vp);
 }
 
 void RenderTarget::Clear(Graphics& gfx, const std::array<float, 4>& color) const noexcept

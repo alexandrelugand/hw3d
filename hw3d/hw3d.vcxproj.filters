@@ -228,9 +228,6 @@
     <ClCompile Include="Mesh.cpp">
       <Filter>Source Files\Entities</Filter>
     </ClCompile>
-    <ClCompile Include="ModelWindow.cpp">
-      <Filter>Source Files\Windowing</Filter>
-    </ClCompile>
     <ClCompile Include="Surface.cpp">
       <Filter>Source Files\Bind</Filter>
     </ClCompile>
@@ -304,6 +301,9 @@
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="RenderTarget.cpp">
+      <Filter>Source Files\Renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="BlurPack.cpp">
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
   </ItemGroup>
@@ -503,9 +503,6 @@
     <ClInclude Include="Color.h">
       <Filter>Header Files\Dvtx</Filter>
     </ClInclude>
-    <ClInclude Include="ModelWindow.h">
-      <Filter>Header Files\Windowing</Filter>
-    </ClInclude>
     <ClInclude Include="Forwards.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -597,6 +594,9 @@
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="RenderTarget.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="BlurPack.h">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
   </ItemGroup>
@@ -695,10 +695,13 @@
     <FxCompile Include="PhongDifMskSpcNrm_VS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
-    <FxCompile Include="Blur_PS.hlsl">
+    <FxCompile Include="BlurOutline_PS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
     <FxCompile Include="Fullscreen_VS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="Blur_PS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>

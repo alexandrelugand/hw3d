@@ -23,7 +23,7 @@ Step::Step(const Step& src) noexcept
 	}
 }
 
-void Step::AddBindable(std::shared_ptr<Bind::Bindable> bind_in) noexcept(!true)
+void Step::AddBindable(std::shared_ptr<Bind::Bindable> bind_in) noexcpt
 {
 	bindables.push_back(std::move(bind_in));
 }

@@ -3,7 +3,7 @@
 
 using Type = Dvtx::VertexLayout::ElementType;
 
-Material::Material(Graphics& gfx, const aiMaterial& material, const std::filesystem::path& path) noexcept(!true)
+Material::Material(Graphics& gfx, const aiMaterial& material, const std::filesystem::path& path) noexcpt
 	: modelPath(path.string())
 {
 	const auto rootPath = path.parent_path().string() + "\\";

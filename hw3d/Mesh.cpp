@@ -13,7 +13,7 @@ namespace Entities
 		return XMLoadFloat4x4(&transform);
 	}
 
-	void Mesh::Submit(FrameCommander& frame, FXMMATRIX accumulatedTransform) const noexcept(!true)
+	void Mesh::Submit(FrameCommander& frame, FXMMATRIX accumulatedTransform) const noexcpt
 	{
 		XMStoreFloat4x4(&transform, accumulatedTransform);
 		Drawable::Submit(frame);

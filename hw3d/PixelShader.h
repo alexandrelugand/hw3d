@@ -6,6 +6,7 @@ namespace Bind
 	{
 	public:
 		PixelShader(Graphics& gfx, const std::string& path);
+
 		void Bind(Graphics& gfx) noexcpt override;
 
 		static std::shared_ptr<PixelShader> Resolve(Graphics& gfx, const std::string& path);

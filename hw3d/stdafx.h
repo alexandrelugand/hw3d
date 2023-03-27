@@ -103,10 +103,10 @@ namespace Gdiplus
 #include "Material.h"
 #include "DepthStencil.h"
 #include "RenderTarget.h"
+#include "BlurPack.h"
 
 //Windowing
 #include "Window.h"
-#include "ModelWindow.h"
 
 // Bind
 #include "Bindable.h"

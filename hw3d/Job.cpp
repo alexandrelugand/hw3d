@@ -6,7 +6,7 @@ Job::Job(const Step* step, const Draw::Drawable* drawable)
 {
 }
 
-void Job::Execute(Graphics& gfx) const noexcept(!true)
+void Job::Execute(Graphics& gfx) const noexcpt
 {
 	pDrawable->Bind(gfx);
 	pStep->Bind(gfx);

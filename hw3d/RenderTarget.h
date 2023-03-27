@@ -12,6 +12,8 @@ public:
 	void Clear(Graphics& gfx) const noexcept;
 
 private:
+	UINT width;
+	UINT height;
 	ComPtr<ID3D11ShaderResourceView> pTextureView = nullptr;
 	ComPtr<ID3D11RenderTargetView> pTargetView = nullptr;
 };

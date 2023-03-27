@@ -1,4 +1,6 @@
 #pragma once
+#include "Bindable.h"
+#include "Codex.h"
 
 namespace Bind
 {
@@ -40,6 +42,8 @@ namespace Bind
 			// Create constant buffer
 			GFX_THROW_INFO(GetDevice(gfx)->CreateBuffer(&cbd, &csd, &pConstantBuffer));
 		}
+
+		~ConstantBuffer() override = default;
 
 		void Update(Graphics& gfx, const C& constant)
 		{

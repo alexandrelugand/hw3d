@@ -18,12 +18,12 @@ class FrameCommander;
 class Material;
 class DepthStencil;
 class RenderTarget;
+class BlurPack;
 
 // Windows
 namespace Windowing
 {
 	class Window;
-	class ModelWindow;
 }
 
 // Bind

@@ -6,7 +6,7 @@ void Pass::Accept(Job& job) noexcept
 	jobs.push_back(std::move(job));
 }
 
-void Pass::Execute(Graphics& gfx) const noexcept(!true)
+void Pass::Execute(Graphics& gfx) const noexcpt
 {
 	for (const auto& j : jobs)
 	{

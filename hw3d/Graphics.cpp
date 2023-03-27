@@ -7,7 +7,7 @@
 Graphics::Graphics(HWND hWnd, UINT width, UINT height)
 	: width(width), height(height)
 {
-	DXGI_SWAP_CHAIN_DESC sd{};
+	DXGI_SWAP_CHAIN_DESC sd;
 	sd.BufferDesc.Width = width;
 	sd.BufferDesc.Height = height;
 	sd.BufferDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM;
@@ -52,16 +52,6 @@ Graphics::Graphics(HWND hWnd, UINT width, UINT height)
 	ComPtr<ID3D11Resource> pBackBuffer;
 	GFX_THROW_INFO(pSwapChain->GetBuffer(0, __uuidof(ID3D11Resource), &pBackBuffer));
 	GFX_THROW_INFO(pDevice->CreateRenderTargetView(pBackBuffer.Get(), nullptr, &pTarget));
-
-	// Configure viewport
-	D3D11_VIEWPORT vp;
-	vp.Width = static_cast<float>(width);
-	vp.Height = static_cast<float>(height);
-	vp.MinDepth = 0.0f;
-	vp.MaxDepth = 1.0f;
-	vp.TopLeftX = 0.0f;
-	vp.TopLeftY = 0.0f;
-	pContext->RSSetViewports(1u, &vp);
 
 	InitRasterizerState();
 
@@ -135,11 +125,31 @@ void Graphics::BeginFrame(float red, float green, float blue) const noexcept
 void Graphics::BindSwapBuffer() noexcept
 {
 	pContext->OMSetRenderTargets(1u, pTarget.GetAddressOf(), nullptr);
+
+	// Configure viewport
+	D3D11_VIEWPORT vp;
+	vp.Width = static_cast<float>(width);
+	vp.Height = static_cast<float>(height);
+	vp.MinDepth = 0.0f;
+	vp.MaxDepth = 1.0f;
+	vp.TopLeftX = 0.0f;
+	vp.TopLeftY = 0.0f;
+	pContext->RSSetViewports(1u, &vp);
 }
 
 void Graphics::BindSwapBuffer(const DepthStencil& ds) noexcept
 {
 	pContext->OMSetRenderTargets(1u, pTarget.GetAddressOf(), ds.pDepthStencilView.Get());
+
+	// Configure viewport
+	D3D11_VIEWPORT vp;
+	vp.Width = static_cast<float>(width);
+	vp.Height = static_cast<float>(height);
+	vp.MinDepth = 0.0f;
+	vp.MaxDepth = 1.0f;
+	vp.TopLeftX = 0.0f;
+	vp.TopLeftY = 0.0f;
+	pContext->RSSetViewports(1u, &vp);
 }
 
 void Graphics::EndFrame()

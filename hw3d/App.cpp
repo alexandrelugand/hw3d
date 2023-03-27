@@ -355,6 +355,8 @@ void App::DoFrame()
 
 		modelProbe.SpawnWindow(goblin);
 		modelProbe.SpawnWindow(sponza);
+
+		fc.ShowWindows(wnd.Gfx());
 	}
 
 	// Present
