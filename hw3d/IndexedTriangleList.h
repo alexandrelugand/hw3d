@@ -47,6 +47,59 @@ namespace Geometry
 			}
 		}
 
+		void SetNormalsAndTBNIndependentFlat() noexcpt
+		{
+			using namespace DirectX;
+			using Type = Dvtx::VertexLayout::ElementType;
+			for (size_t i = 0; i < indices.size(); i += 3)
+			{
+				auto v0 = vertices[indices[i]];
+				auto v1 = vertices[indices[i + 1]];
+				auto v2 = vertices[indices[i + 2]];
+				const auto p0 = XMLoadFloat3(&v0.Attr<Type::Position3D>());
+				const auto p1 = XMLoadFloat3(&v1.Attr<Type::Position3D>());
+				const auto p2 = XMLoadFloat3(&v2.Attr<Type::Position3D>());
+				const auto t0 = XMLoadFloat2(&v0.Attr<Type::Texture2D>());
+				const auto t1 = XMLoadFloat2(&v1.Attr<Type::Texture2D>());
+				const auto t2 = XMLoadFloat2(&v2.Attr<Type::Texture2D>());
+
+				const auto n = -XMVector3Normalize(XMVector3Cross((p1 - p0), (p2 - p0)));
+
+				XMStoreFloat3(&v0.Attr<Type::Normal>(), n);
+				XMStoreFloat3(&v1.Attr<Type::Normal>(), n);
+				XMStoreFloat3(&v2.Attr<Type::Normal>(), n);
+
+				XMVECTOR tangent;
+				XMVECTOR binormal;
+				ComputeTangents(p0, p1, p2, t0, t1, t2, tangent, binormal);
+
+				XMStoreFloat3(&v0.Attr<Type::Tangent>(), tangent);
+				XMStoreFloat3(&v1.Attr<Type::Tangent>(), tangent);
+				XMStoreFloat3(&v2.Attr<Type::Tangent>(), tangent);
+
+				XMStoreFloat3(&v0.Attr<Type::Bitangent>(), binormal);
+				XMStoreFloat3(&v1.Attr<Type::Bitangent>(), binormal);
+				XMStoreFloat3(&v2.Attr<Type::Bitangent>(), binormal);
+			}
+		}
+
+		void ComputeTangents(const XMVECTOR& v0, const XMVECTOR& v1, const XMVECTOR& v2, const XMVECTOR& t0, const XMVECTOR& t1, const XMVECTOR& t2, XMVECTOR& tangent, XMVECTOR& binormal)
+		{
+			const XMVECTOR deltaPos1 = XMVectorSubtract(v1, v0);
+			const XMVECTOR deltaPos2 = XMVectorSubtract(v2, v0);
+
+			const XMVECTOR deltaUV1 = XMVectorSubtract(t1, t0);
+			const XMVECTOR deltaUV2 = XMVectorSubtract(t2, t0);
+
+			const float r = 1.0f / (deltaUV1.m128_f32[0] * deltaUV2.m128_f32[1] - deltaUV1.m128_f32[1] * deltaUV2.m128_f32[0]);
+			tangent = (deltaPos1 * deltaUV2.m128_f32[1] - deltaPos2 * deltaUV1.m128_f32[1]);
+			tangent = tangent * r;
+			tangent = XMVector3Normalize(tangent);
+			binormal = (deltaPos2 * deltaUV1.m128_f32[0] - deltaPos1 * deltaUV2.m128_f32[0]);
+			binormal = binormal * r;
+			XMVector3Normalize(binormal);
+		}
+
 		// asserts face-independent vertices w/ normals cleared to zero
 		static void SetNormalsIndependentFlat(const std::vector<XMFLOAT3>& vertices, const std::vector<unsigned short>& indices, std::vector<XMFLOAT3>& normals) noexcpt
 		{

@@ -57,7 +57,7 @@ namespace Rgph
 		throw RGC_EXCEPTION(oss.str());
 	}
 
-	void Pass::SetSinkLinkage(const std::string& registeredName, const std::string& target)
+	void Pass::SetSinkLinkage(const std::string& registeredName, const std::string& target) const
 	{
 		auto& sink = GetSink(registeredName);
 		auto targetSplit = String::Split(target, ".");

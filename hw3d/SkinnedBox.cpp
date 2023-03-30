@@ -9,8 +9,8 @@ namespace Draw
 	{
 		name = "SkinnedBox";
 		const auto tag = std::format("${}.{}", String::ToLower(name).c_str(), std::to_string(id));
-		auto model = Geometry::Cube::MakeIndependentTextured();
-		model.SetNormalsIndependentFlat();
+		auto model = Geometry::Cube::MakeIndependentTexturedAndTBN();
+		model.SetNormalsAndTBNIndependentFlat();
 		model.Transform(XMMatrixScaling(scale, scale, scale));
 
 		pVertices = Bind::VertexBuffer::Resolve(gfx, tag, model.vertices);
@@ -28,11 +28,11 @@ namespace Draw
 				only.AddBindable(Bind::Texture::Resolve(gfx, "images\\brickwall_normal_obj.png", 2u));
 				only.AddBindable(Bind::Sampler::Resolve(gfx));
 
-				auto pvs = Bind::VertexShader::Resolve(gfx, "PhongDif_VS.cso");
+				auto pvs = Bind::VertexShader::Resolve(gfx, "PhongDifNrm_VS.cso");
 				auto pvsbc = pvs->GetBytecode();
 				only.AddBindable(std::move(pvs));
 
-				only.AddBindable(Bind::PixelShader::Resolve(gfx, "PhongDifNrmNoTBN_PS.cso"));
+				only.AddBindable(Bind::PixelShader::Resolve(gfx, "PhongDifNrm_PS.cso"));
 
 				Dcb::RawLayout lay;
 				lay.Add<Dcb::Float3>("specularColor");
@@ -49,7 +49,7 @@ namespace Draw
 				only.AddBindable(std::make_shared<Bind::CachingPixelCBuf>(gfx, buf, 1u));
 
 				only.AddBindable(Bind::InputLayout::Resolve(gfx, model.vertices.GetLayout(), pvsbc));
-				only.AddBindable(Bind::Rasterizer::Resolve(gfx, CullMode::Front));
+				only.AddBindable(Bind::Rasterizer::Resolve(gfx, CullMode::Back));
 				only.AddBindable(tcb);
 
 				shade.AddStep(std::move(only));

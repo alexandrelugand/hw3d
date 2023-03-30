@@ -17,7 +17,7 @@ namespace Rgph
 		Source& GetSource(const std::string& registeredName) const;
 		Sink& GetSink(const std::string& registeredName) const;
 
-		void SetSinkLinkage(const std::string& registeredName, const std::string& target);
+		void SetSinkLinkage(const std::string& registeredName, const std::string& target) const;
 		virtual void Finalize();
 
 	protected:
