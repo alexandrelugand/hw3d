@@ -7,18 +7,19 @@ public:
 	Technique() = default;
 	Technique(std::string name, bool startActive = true) noexcept;
 
-	void Submit(FrameCommander& frameCmder, const Draw::Drawable& drawable) const noexcept;
+	void Submit(const Draw::Drawable& drawable) const noexcept;
 
 	const std::string& GetName() const noexcept;
-	void AddStep(Step step) noexcept;
+	void AddStep(Rgph::Step step) noexcept;
 	bool IsActive() const noexcept;
 	void SetActive(bool active_in) noexcept;
 
-	void InitializeParentReferences(const Draw::Drawable& drawable) noexcept;
-	void Accept(TechniqueProbe& probe);
+	void InitializeParentReferences(const Draw::Drawable& drawable) const noexcept;
+	void Accept(Probes::TechniqueProbe& probe);
+	void Link(Rgph::RenderGraph& rg);
 
 private:
 	bool active = true;
-	std::vector<Step> steps{};
-	std::string name = "Nameless Tech";
+	std::vector<Rgph::Step> steps{};
+	std::string name;
 };

@@ -49,9 +49,19 @@ Graphics::Graphics(HWND hWnd, UINT width, UINT height)
 	));
 
 	// Gain access to texture subresource in swap chain (back buffer)
-	ComPtr<ID3D11Resource> pBackBuffer;
-	GFX_THROW_INFO(pSwapChain->GetBuffer(0, __uuidof(ID3D11Resource), &pBackBuffer));
-	GFX_THROW_INFO(pDevice->CreateRenderTargetView(pBackBuffer.Get(), nullptr, &pTarget));
+	ComPtr<ID3D11Texture2D> pBackBuffer;
+	GFX_THROW_INFO(pSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), &pBackBuffer));
+	pTarget = std::shared_ptr<Bind::RenderTarget>{new Bind::OutputOnlyRenderTarget(*this, pBackBuffer.Get())};
+
+	// viewport always fullscreen (for now)
+	D3D11_VIEWPORT vp;
+	vp.Width = static_cast<float>(width);
+	vp.Height = static_cast<float>(height);
+	vp.MinDepth = 0.0f;
+	vp.MaxDepth = 1.0f;
+	vp.TopLeftX = 0.0f;
+	vp.TopLeftY = 0.0f;
+	pContext->RSSetViewports(1u, &vp);
 
 	InitRasterizerState();
 
@@ -85,11 +95,11 @@ void Graphics::SetCullMode(const CullMode& cullMode) const
 	if (wireframeEnabled)
 		return;
 
-	if (cullMode == Front)
+	if (cullMode == CullMode::Front)
 		pContext->RSSetState(m_cull_front_state.Get());
-	else if (cullMode == Back)
+	else if (cullMode == CullMode::Back)
 		pContext->RSSetState(m_cull_back_state.Get());
-	else if (cullMode == None)
+	else if (cullMode == CullMode::None)
 		pContext->RSSetState(m_cull_none_state.Get());
 }
 
@@ -101,6 +111,11 @@ UINT Graphics::GetWidth() const noexcept
 UINT Graphics::GetHeight() const noexcept
 {
 	return height;
+}
+
+std::shared_ptr<Bind::RenderTarget> Graphics::GetTarget() const noexcept
+{
+	return pTarget;
 }
 
 void Graphics::BeginFrame(float red, float green, float blue) const noexcept
@@ -117,39 +132,6 @@ void Graphics::BeginFrame(float red, float green, float blue) const noexcept
 		pContext->RSSetState(m_wire_frame_state.Get());
 	else
 		pContext->RSSetState(m_cull_front_state.Get());
-
-	const float color[] = {red, green, blue, 0.0f};
-	pContext->ClearRenderTargetView(pTarget.Get(), color);
-}
-
-void Graphics::BindSwapBuffer() noexcept
-{
-	pContext->OMSetRenderTargets(1u, pTarget.GetAddressOf(), nullptr);
-
-	// Configure viewport
-	D3D11_VIEWPORT vp;
-	vp.Width = static_cast<float>(width);
-	vp.Height = static_cast<float>(height);
-	vp.MinDepth = 0.0f;
-	vp.MaxDepth = 1.0f;
-	vp.TopLeftX = 0.0f;
-	vp.TopLeftY = 0.0f;
-	pContext->RSSetViewports(1u, &vp);
-}
-
-void Graphics::BindSwapBuffer(const DepthStencil& ds) noexcept
-{
-	pContext->OMSetRenderTargets(1u, pTarget.GetAddressOf(), ds.pDepthStencilView.Get());
-
-	// Configure viewport
-	D3D11_VIEWPORT vp;
-	vp.Width = static_cast<float>(width);
-	vp.Height = static_cast<float>(height);
-	vp.MinDepth = 0.0f;
-	vp.MaxDepth = 1.0f;
-	vp.TopLeftX = 0.0f;
-	vp.TopLeftY = 0.0f;
-	pContext->RSSetViewports(1u, &vp);
 }
 
 void Graphics::EndFrame()

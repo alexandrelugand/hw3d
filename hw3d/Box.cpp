@@ -7,8 +7,8 @@ namespace Draw
 	Box::Box(Graphics& gfx, XMFLOAT3 material, const float scale, const XMFLOAT3& position)
 		: DrawableObject(gfx, scale, position)
 	{
-		const auto tag = "$box." + Uuid::ToString(Uuid::New());
-
+		name = "Box";
+		const auto tag = std::format("${}.{}", String::ToLower(name).c_str(), std::to_string(id));
 		auto model = Geometry::Cube::Make();
 		model.SetNormalsIndependentFlat();
 
@@ -19,7 +19,7 @@ namespace Draw
 		{
 			Technique shade("Shade");
 			{
-				Step only(0);
+				Rgph::Step only("lambertian");
 
 				auto pvs = Bind::VertexShader::Resolve(gfx, "BlendedPhong_VS.cso");
 				auto pvsbc = pvs->GetBytecode();
@@ -44,32 +44,5 @@ namespace Draw
 			}
 			AddTechnique(std::move(shade));
 		}
-	}
-
-	bool Box::SpawnControlWindow() noexcept
-	{
-		bool open = true;
-		if (ImGui::Begin(("Box##"s + std::to_string(id)).c_str(), &open))
-		{
-			ImGui::Text("Position");
-			ImGui::SliderFloat("X", &pos.x, -80.0f, 80.0f, "%.1f");
-			ImGui::SliderFloat("Y", &pos.y, -80.0f, 80.0f, "%.1f");
-			ImGui::SliderFloat("Z", &pos.z, -80.0f, 80.0f, "%.1f");
-
-			ImGui::Text("Rotation");
-			ImGui::SliderAngle("Theta", &theta, -180.0f, 180.0f);
-			ImGui::SliderAngle("Phi", &phi, -180.0f, 180.0f);
-
-			ImGui::Text("Orientation");
-			ImGui::SliderAngle("Roll", &roll, -180.0f, 180.0f);
-			ImGui::SliderAngle("Pitch", &pitch, -180.0f, 180.0f);
-			ImGui::SliderAngle("Yaw", &yaw, -180.0f, 180.0f);
-
-			if (ImGui::Button("Reset"))
-				Reset();
-		}
-		ImGui::End();
-
-		return open;
 	}
 }

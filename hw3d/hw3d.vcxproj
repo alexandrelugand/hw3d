@@ -153,12 +153,15 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="BindingPass.cpp" />
     <ClCompile Include="Blender.cpp" />
-    <ClCompile Include="BlurPack.cpp" />
+    <ClCompile Include="BlurOutlineDrawingPass.cpp" />
+    <ClCompile Include="BlurOutlineRenderGraph.cpp" />
     <ClCompile Include="Box.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="BufferClearPass.cpp" />
     <ClCompile Include="Camera.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
@@ -176,6 +179,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="DrawableObject.cpp" />
+    <ClCompile Include="DrawableProbe.cpp" />
     <ClCompile Include="dxerr.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
@@ -186,7 +191,7 @@
     </ClCompile>
     <ClCompile Include="DynamicConstant.cpp" />
     <ClCompile Include="DynamicCBuf.cpp" />
-    <ClCompile Include="FrameCommander.cpp" />
+    <ClCompile Include="FullscreenPass.cpp" />
     <ClCompile Include="GDIPlusManager.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
@@ -196,6 +201,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="GraphicsResource.cpp" />
+    <ClCompile Include="HierarchyModelProbe.cpp" />
+    <ClCompile Include="HorizontalBlurPass.cpp" />
     <ClCompile Include="Hw3DException.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
@@ -209,27 +216,39 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Job.cpp" />
+    <ClCompile Include="LambertianPass.cpp" />
     <ClCompile Include="LayoutCodex.cpp" />
     <ClCompile Include="Material.cpp" />
     <ClCompile Include="Mesh.cpp" />
+    <ClCompile Include="MeshTechniqueProbe.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="ModelException.cpp" />
     <ClCompile Include="Node.cpp" />
     <ClCompile Include="NullPixelShader.cpp" />
+    <ClCompile Include="OutlineDrawingPass.cpp" />
+    <ClCompile Include="OutlineMaskGenerationPass.cpp" />
     <ClCompile Include="Pass.cpp" />
     <ClCompile Include="Rasterizer.cpp" />
+    <ClCompile Include="RenderGraph.cpp" />
+    <ClCompile Include="RenderGraphCompileException.cpp" />
+    <ClCompile Include="RenderQueuePass.cpp" />
     <ClCompile Include="RenderTarget.cpp" />
+    <ClCompile Include="ScaleOutlineRenderGraph.cpp" />
     <ClCompile Include="ScriptCommander.cpp" />
+    <ClCompile Include="Sink.cpp" />
+    <ClCompile Include="Source.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="Stencil.cpp" />
     <ClCompile Include="Step.cpp" />
+    <ClCompile Include="StepLinkingProbe.cpp" />
     <ClCompile Include="Technique.cpp" />
     <ClCompile Include="TechniqueProbe.cpp" />
     <ClCompile Include="TexturePreprocessor.cpp" />
     <ClCompile Include="TransformAllCBuf.cpp" />
+    <ClCompile Include="TransformCBufScaling.cpp" />
     <ClCompile Include="vendors\imgui\imgui.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">NotUsing</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">NotUsing</PrecompiledHeader>
@@ -329,6 +348,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="VerticalBlurPass.cpp" />
     <ClCompile Include="Window.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
@@ -346,9 +366,13 @@
     <ClInclude Include="App.h" />
     <ClInclude Include="Asset.h" />
     <ClInclude Include="Bindable.h" />
+    <ClInclude Include="BindingPass.h" />
     <ClInclude Include="Blender.h" />
-    <ClInclude Include="BlurPack.h" />
+    <ClInclude Include="BlurOutlineDrawingPass.h" />
+    <ClInclude Include="BlurOutlineRenderGraph.h" />
     <ClInclude Include="Box.h" />
+    <ClInclude Include="BufferClearPass.h" />
+    <ClInclude Include="BufferResource.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="Codex.h" />
     <ClInclude Include="Color.h" />
@@ -362,33 +386,49 @@
     <ClInclude Include="Cylinder.h" />
     <ClInclude Include="DepthStencil.h" />
     <ClInclude Include="Drawable.h" />
+    <ClInclude Include="DrawableProbe.h" />
     <ClInclude Include="DynamicConstant.h" />
     <ClInclude Include="DynamicCBuf.h" />
     <ClInclude Include="Forwards.h" />
-    <ClInclude Include="FrameCommander.h" />
+    <ClInclude Include="FullscreenPass.h" />
     <ClInclude Include="GDIPlusManager.h" />
     <ClInclude Include="GraphicsResouce.h" />
     <ClInclude Include="GraphicsThrowMacros.h" />
+    <ClInclude Include="HierarchyModelProbe.h" />
+    <ClInclude Include="HorizontalBlurPass.h" />
     <ClInclude Include="Job.h" />
+    <ClInclude Include="LambertianPass.h" />
     <ClInclude Include="LayoutCodex.h" />
     <ClInclude Include="Material.h" />
+    <ClInclude Include="MeshTechniqueProbe.h" />
     <ClInclude Include="ModelException.h" />
     <ClInclude Include="ModelProbe.h" />
     <ClInclude Include="NormalMapTwerker.h" />
     <ClInclude Include="NullPixelShader.h" />
+    <ClInclude Include="OutlineDrawingPass.h" />
+    <ClInclude Include="OutlineMaskGenerationPass.h" />
     <ClInclude Include="Pass.h" />
     <ClInclude Include="PerfLog.h" />
     <ClInclude Include="PsMaterialConstants.h" />
     <ClInclude Include="Rasterizer.h" />
+    <ClInclude Include="RenderGraph.h" />
+    <ClInclude Include="RenderGraphCompileException.h" />
+    <ClInclude Include="RenderQueuePass.h" />
     <ClInclude Include="RenderTarget.h" />
+    <ClInclude Include="ScaleOutlineRenderGraph.h" />
     <ClInclude Include="ScriptCommander.h" />
+    <ClInclude Include="Sink.h" />
+    <ClInclude Include="Source.h" />
     <ClInclude Include="Stencil.h" />
     <ClInclude Include="Step.h" />
+    <ClInclude Include="StepLinkingProbe.h" />
     <ClInclude Include="string.h" />
     <ClInclude Include="Technique.h" />
     <ClInclude Include="TechniqueProbe.h" />
     <ClInclude Include="TexturePreprocessor.h" />
     <ClInclude Include="TransformAllCBuf.h" />
+    <ClInclude Include="TransformCBufScaling.h" />
+    <ClInclude Include="TransformParameters.h" />
     <ClInclude Include="uuid.h" />
     <ClInclude Include="Hw3DMath.h" />
     <ClInclude Include="dxerr.h" />
@@ -432,6 +472,7 @@
     <ClInclude Include="VertexBufferDescriptor.h" />
     <ClInclude Include="VertexLayout.h" />
     <ClInclude Include="VertexShader.h" />
+    <ClInclude Include="VerticalBlurPass.h" />
     <ClInclude Include="WindowsThrowMacros.h" />
     <ClInclude Include="WinPreprocessor.h" />
     <ClInclude Include="Hw3DTimer.h" />

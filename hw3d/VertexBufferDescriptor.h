@@ -6,8 +6,8 @@ namespace Dvtx
 	class VertexBufferDescriptor
 	{
 	public:
-		VertexBufferDescriptor(const VertexLayout& layout, size_t size = 0u) noexcpt;
-		VertexBufferDescriptor(const VertexLayout& layout, const aiMesh& mesh);
+		VertexBufferDescriptor(const VertexLayout& layout_in, size_t size = 0u) noexcpt;
+		VertexBufferDescriptor(const VertexLayout& layout_in, const aiMesh& mesh);
 
 		void Resize(size_t newSize) noexcpt;
 		const VertexLayout& GetLayout() const noexcept;

@@ -10,7 +10,7 @@ namespace Entities
 		XMStoreFloat4x4(&appliedTransform, XMMatrixIdentity());
 	}
 
-	void Node::Submit(FrameCommander& frame, FXMMATRIX accumulatedTransform) const noexcpt
+	void Node::Submit(FXMMATRIX accumulatedTransform) const noexcpt
 	{
 		const auto built = XMLoadFloat4x4(&appliedTransform) *
 			XMLoadFloat4x4(&transform) *
@@ -18,12 +18,12 @@ namespace Entities
 
 		for (const auto pm : meshPtrs)
 		{
-			pm->Submit(frame, built);
+			pm->Submit(built);
 		}
 
 		for (const auto& pc : childPtrs)
 		{
-			pc->Submit(frame, built);
+			pc->Submit(built);
 		}
 	}
 
@@ -52,7 +52,7 @@ namespace Entities
 		return childPtrs.size() > 0;
 	}
 
-	void Node::Accept(ModelProbe& probe)
+	void Node::Accept(Probes::ModelProbe& probe)
 	{
 		if (probe.PushNode(*this))
 		{
@@ -64,7 +64,7 @@ namespace Entities
 		}
 	}
 
-	void Node::Accept(TechniqueProbe& probe)
+	void Node::Accept(Probes::TechniqueProbe& probe) const
 	{
 		for (auto& mp : meshPtrs)
 		{

@@ -6,7 +6,7 @@ namespace Bind
 	{
 	public:
 		TransformCBuf(Graphics& gfx, UINT slot = 0u);
-		void Bind(Graphics& gfx) noexcept override;
+		void Bind(Graphics& gfx) noexcpt override;
 		void InitializeParentReferences(const Draw::Drawable& parent) noexcept override;
 		std::unique_ptr<CloningBindable> Clone() const noexcept override;
 
@@ -17,8 +17,8 @@ namespace Bind
 			XMMATRIX modelViewProj;
 		};
 
-		virtual void UpdateBindImpl(Graphics& gfx, const Transforms& tf) noexcept;
-		Transforms GetTransforms(Graphics& gfx) noexcept;
+		virtual void UpdateBindImpl(Graphics& gfx, const Transforms& tf) noexcpt;
+		Transforms GetTransforms(Graphics& gfx) noexcpt;
 
 	private:
 		static std::unique_ptr<VertexConstantBuffer<Transforms>> pVcbuf;

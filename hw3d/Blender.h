@@ -6,7 +6,7 @@ namespace Bind
 	{
 	public:
 		Blender(Graphics& gfx, bool blending, std::optional<float> factor = {});
-		void Bind(Graphics& gfx) noexcept override;
+		void Bind(Graphics& gfx) noexcpt override;
 
 		void SetFactor(float factor) noexcpt;
 		float GetFactor() const noexcpt;

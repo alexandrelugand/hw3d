@@ -19,7 +19,7 @@ namespace Bind
 		{
 		}
 
-		virtual void Accept(TechniqueProbe& probe)
+		virtual void Accept(Probes::TechniqueProbe& probe)
 		{
 		}
 	};

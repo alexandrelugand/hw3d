@@ -14,7 +14,7 @@ cbuffer Control
 
 float4 main(float2 uv : TEXCOORD) : SV_TARGET
 {
-    uint width, height;
+    float width, height;
     tex.GetDimensions(width, height);
 
     //using to get position of pixel in texture coordinate

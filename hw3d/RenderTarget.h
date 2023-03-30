@@ -1,19 +1,49 @@
 #pragma once
 
-class RenderTarget : public GraphicsResource
+namespace Bind
 {
-public:
-	RenderTarget(Graphics& gfx, UINT width, UINT height);
-	void BindAsTexture(Graphics& gfx, UINT slot) const noexcept;
-	void BindAsTarget(Graphics& gfx) const noexcept;
-	void BindAsTarget(Graphics& gfx, const DepthStencil& depthStencil) const noexcept;
+	class RenderTarget : public Bindable, public BufferResource
+	{
+	public:
+		void BindAsBuffer(Graphics& gfx) noexcpt override;
+		void BindAsBuffer(Graphics& gfx, BufferResource* buffer) noexcpt override;
+		void BindAsBuffer(Graphics& gfx, DepthStencil* depthStencil) noexcpt;
+		void Clear(Graphics& gfx) noexcpt override;
+		void Clear(Graphics& gfx, const std::array<float, 4>& color) const noexcpt;
 
-	void Clear(Graphics& gfx, const std::array<float, 4>& color) const noexcept;
-	void Clear(Graphics& gfx) const noexcept;
+		UINT GetWidth() const noexcept;
+		UINT GetHeight() const noexcept;
 
-private:
-	UINT width;
-	UINT height;
-	ComPtr<ID3D11ShaderResourceView> pTextureView = nullptr;
-	ComPtr<ID3D11RenderTargetView> pTargetView = nullptr;
-};
+	protected:
+		RenderTarget(Graphics& gfx, ID3D11Texture2D* pTexture);
+		RenderTarget(Graphics& gfx, UINT width, UINT height);
+		UINT width;
+		UINT height;
+		ComPtr<ID3D11RenderTargetView> pTargetView = nullptr;
+
+	private:
+		void BindAsBuffer(Graphics& gfx, ID3D11DepthStencilView* pDepthStencilView) noexcpt;
+	};
+
+	class ShaderInputRenderTarget : public RenderTarget
+	{
+	public:
+		ShaderInputRenderTarget(Graphics& gfx, UINT width, UINT height, UINT slot);
+		void Bind(Graphics& gfx) noexcpt override;
+
+	private:
+		UINT slot;
+		ComPtr<ID3D11ShaderResourceView> pShaderResourceView = nullptr;
+	};
+
+	class OutputOnlyRenderTarget : public RenderTarget
+	{
+		friend class Graphics;
+
+	public:
+		void Bind(Graphics& gfx) noexcpt override;
+
+	private:
+		OutputOnlyRenderTarget(Graphics& gfx, ID3D11Texture2D* pTexture);
+	};
+}

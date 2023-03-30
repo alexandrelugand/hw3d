@@ -6,13 +6,13 @@ Technique::Technique(std::string name, bool startActive) noexcept
 {
 }
 
-void Technique::Submit(FrameCommander& frameCmder, const Draw::Drawable& drawable) const noexcept
+void Technique::Submit(const Draw::Drawable& drawable) const noexcept
 {
 	if (active)
 	{
 		for (const auto& s : steps)
 		{
-			s.Submit(frameCmder, drawable);
+			s.Submit(drawable);
 		}
 	}
 }
@@ -22,7 +22,7 @@ const std::string& Technique::GetName() const noexcept
 	return name;
 }
 
-void Technique::AddStep(Step step) noexcept
+void Technique::AddStep(Rgph::Step step) noexcept
 {
 	steps.push_back(std::move(step));
 }
@@ -37,7 +37,7 @@ void Technique::SetActive(bool active_in) noexcept
 	active = active_in;
 }
 
-void Technique::InitializeParentReferences(const Draw::Drawable& drawable) noexcept
+void Technique::InitializeParentReferences(const Draw::Drawable& drawable) const noexcept
 {
 	for (auto& s : steps)
 	{
@@ -45,11 +45,19 @@ void Technique::InitializeParentReferences(const Draw::Drawable& drawable) noexc
 	}
 }
 
-void Technique::Accept(TechniqueProbe& probe)
+void Technique::Accept(Probes::TechniqueProbe& probe)
 {
 	probe.SetTechnique(this);
 	for (auto& s : steps)
 	{
 		s.Accept(probe);
+	}
+}
+
+void Technique::Link(Rgph::RenderGraph& rg)
+{
+	for (auto& step : steps)
+	{
+		step.Link(rg);
 	}
 }

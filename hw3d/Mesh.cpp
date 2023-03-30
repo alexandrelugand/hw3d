@@ -6,6 +6,7 @@ namespace Entities
 	Mesh::Mesh(Graphics& gfx, const Material& mat, const aiMesh& mesh, float scale)
 		: DrawableObject(gfx, mat, mesh, scale)
 	{
+		name = "Mesh";
 	}
 
 	XMMATRIX Mesh::GetTransform() const noexcept
@@ -13,9 +14,9 @@ namespace Entities
 		return XMLoadFloat4x4(&transform);
 	}
 
-	void Mesh::Submit(FrameCommander& frame, FXMMATRIX accumulatedTransform) const noexcpt
+	void Mesh::Submit(FXMMATRIX accumulatedTransform) const noexcpt
 	{
 		XMStoreFloat4x4(&transform, accumulatedTransform);
-		Drawable::Submit(frame);
+		Drawable::Submit();
 	}
 }

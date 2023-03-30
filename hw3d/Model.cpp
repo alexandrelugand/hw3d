@@ -55,9 +55,9 @@ namespace Entities
 		return name;
 	}
 
-	void Model::Submit(FrameCommander& frame) const noexcpt
+	void Model::Submit() const noexcpt
 	{
-		pRoot->Submit(frame, XMMatrixIdentity());
+		pRoot->Submit(XMMatrixIdentity());
 	}
 
 	void Model::SetRootTransform(FXMMATRIX tf) const noexcept
@@ -65,9 +65,17 @@ namespace Entities
 		pRoot->SetAppliedTransform(tf);
 	}
 
-	void Model::Accept(ModelProbe& probe)
+	void Model::Accept(Probes::ModelProbe& probe) const
 	{
 		pRoot->Accept(probe);
+	}
+
+	void Model::LinkTechniques(Rgph::RenderGraph& rg) const
+	{
+		for (const auto& pMesh : meshPtrs)
+		{
+			pMesh->LinkTechniques(rg);
+		}
 	}
 
 	std::unique_ptr<Node> Model::ParseNode(int& nodeId, const aiNode& node, float scale)

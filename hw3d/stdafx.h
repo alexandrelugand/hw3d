@@ -93,22 +93,16 @@ namespace Gdiplus
 #include "GraphicsResouce.h"
 #include "Graphics.h"
 #include "PsMaterialConstants.h"
-#include "Pass.h"
-#include "Job.h"
-#include "Step.h"
 #include "Technique.h"
 #include "TechniqueProbe.h"
 #include "ModelProbe.h"
-#include "FrameCommander.h"
 #include "Material.h"
-#include "DepthStencil.h"
-#include "RenderTarget.h"
-#include "BlurPack.h"
 
 //Windowing
 #include "Window.h"
 
 // Bind
+#include "BufferResource.h"
 #include "Bindable.h"
 #include "Codex.h"
 #include "Drawable.h"
@@ -122,6 +116,7 @@ namespace Gdiplus
 #include "Topology.h"
 #include "TransformCbuf.h"
 #include "TransformAllCBuf.h"
+#include "TransformCBufScaling.h"
 #include "ColorCBuf.h"
 #include "Surface.h"
 #include "Texture.h"
@@ -132,6 +127,8 @@ namespace Gdiplus
 #include "DynamicCBuf.h"
 #include "Stencil.h"
 #include "NullPixelShader.h"
+#include "DepthStencil.h"
+#include "RenderTarget.h"
 
 // Dynamic Vertex layout
 #include "Color.h"
@@ -164,3 +161,30 @@ namespace Gdiplus
 #include "Model.h"
 #include "Node.h"
 #include "Mesh.h"
+
+// Render graph
+#include "RenderGraphCompileException.h"
+#include "Pass.h"
+#include "Sink.h"
+#include "Source.h"
+#include "BindingPass.h"
+#include "Job.h"
+#include "Step.h"
+#include "RenderQueuePass.h"
+#include "BlurOutlineDrawingPass.h"
+#include "RenderGraph.h"
+#include "BufferClearPass.h"
+#include "LambertianPass.h"
+#include "OutlineMaskGenerationPass.h"
+#include "FullscreenPass.h"
+#include "HorizontalBlurPass.h"
+#include "VerticalBlurPass.h"
+#include "BlurOutlineRenderGraph.h"
+#include "ScaleOutlineRenderGraph.h"
+
+// Probes
+#include "TransformParameters.h"
+#include "MeshTechniqueProbe.h"
+#include "TechniqueProbe.h"
+#include "HierarchyModelProbe.h"
+#include "DrawableProbe.h"

@@ -25,7 +25,8 @@ namespace Bind
 
 	void InputLayout::Bind(Graphics& gfx) noexcpt
 	{
-		GetContext(gfx)->IASetInputLayout(pInputLayout.Get());
+		INFOMAN_NOHR(gfx);
+		GFX_THROW_INFO_ONLY(GetContext(gfx)->IASetInputLayout(pInputLayout.Get()));
 	}
 
 	std::shared_ptr<InputLayout> InputLayout::Resolve(Graphics& gfx, const Dvtx::VertexLayout& layout, ID3DBlob* pVertexShaderBytecode)

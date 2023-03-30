@@ -13,10 +13,11 @@ namespace Draw
 
 		void AddTechnique(Technique tech_in) noexcept;
 		virtual XMMATRIX GetTransform() const noexcept = 0;
-		void Submit(FrameCommander& frameCmder) const noexcept;
-		void Bind(Graphics& gfx) const noexcept;
-		void Accept(TechniqueProbe& probe);
+		void Submit() const noexcept;
+		void Bind(Graphics& gfx) const noexcpt;
+		void Accept(Probes::TechniqueProbe& probe);
 		UINT GetIndexCount() const noexcpt;
+		void LinkTechniques(Rgph::RenderGraph& rg);
 
 	protected:
 		std::shared_ptr<Bind::IndexBuffer> pIndices;

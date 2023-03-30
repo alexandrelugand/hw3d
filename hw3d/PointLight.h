@@ -9,8 +9,9 @@ namespace Entities
 		PointLight(Graphics& gfx, float radius = 0.5f, XMFLOAT3 color = {1.0f, 1.0f, 1.0f});
 		void SpawnControlWindow() noexcept;
 		void Reset() noexcept;
-		void Submit(FrameCommander& frame) const noexcpt;
+		void Submit() const noexcpt;
 		void Bind(Graphics& gfx, FXMMATRIX view) const noexcept;
+		void LinkTechniques(Rgph::RenderGraph& rg) const;
 
 	private:
 		struct PointLightCBuf

@@ -1,13 +1,15 @@
 #pragma once
 
-class Job
+namespace Rgph
 {
-public:
-	Job(const Step* step, const Draw::Drawable* drawable);
+	class Job
+	{
+	public:
+		Job(const Step* step, const Draw::Drawable* drawable);
+		void Execute(Graphics& gfx) const noexcpt;
 
-	void Execute(Graphics& gfx) const noexcpt;
-
-private:
-	const Step* pStep;
-	const Draw::Drawable* pDrawable;
-};
+	private:
+		const Step* pStep;
+		const Draw::Drawable* pDrawable;
+	};
+}

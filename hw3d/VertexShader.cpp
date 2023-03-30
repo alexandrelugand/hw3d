@@ -4,6 +4,7 @@
 namespace Bind
 {
 	VertexShader::VertexShader(Graphics& gfx, const std::string& path)
+		: path(path)
 	{
 		INFOMAN(gfx);
 

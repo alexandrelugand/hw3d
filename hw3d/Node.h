@@ -9,7 +9,7 @@ namespace Entities
 	public:
 		Node(int id, const std::string& name, std::vector<Mesh*> meshPtrs, const XMMATRIX& transform_in) noexcpt;
 
-		void Submit(FrameCommander& frame, FXMMATRIX accumulatedTransform) const noexcpt;
+		void Submit(FXMMATRIX accumulatedTransform) const noexcpt;
 
 		const XMFLOAT4X4& GetAppliedTransform() const noexcept;
 		void SetAppliedTransform(FXMMATRIX transform) noexcpt;
@@ -19,8 +19,8 @@ namespace Entities
 
 		bool HasChildren() const noexcept;
 
-		void Accept(ModelProbe& probe);
-		void Accept(TechniqueProbe& probe);
+		void Accept(Probes::ModelProbe& probe);
+		void Accept(Probes::TechniqueProbe& probe) const;
 
 	private:
 		void AddChild(std::unique_ptr<Node> pChild) noexcpt;

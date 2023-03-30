@@ -8,16 +8,10 @@ class ImguiManager;
 // Renderer
 class GraphicsResource;
 class Graphics;
-class Pass;
-class Job;
-class Step;
+
 class Technique;
-class TechniqueProbe;
-class ModelProbe;
 class FrameCommander;
 class Material;
-class DepthStencil;
-class RenderTarget;
 class BlurPack;
 
 // Windows
@@ -29,6 +23,7 @@ namespace Windowing
 // Bind
 namespace Bind
 {
+	class BufferResource;
 	class Bindable;
 	class Codex;
 	class ColorCBuf;
@@ -50,13 +45,14 @@ namespace Bind
 	class Blender;
 	class Rasterizer;
 	class DynamicCBuf;
+	class DepthStencil;
+	class RenderTarget;
 }
 
 // Draw
 namespace Draw
 {
 	class Drawable;
-	template <class T>
 	class DrawableObject;
 	class ColorDrawable;
 	class Asset;
@@ -105,6 +101,28 @@ namespace Entities
 	class Model;
 	class Camera;
 	class PointLight;
+}
+
+// Render graph
+namespace Rgph
+{
+	class Pass;
+	class Sink;
+	class Source;
+	class BindingPass;
+	class Job;
+	class Step;
+	class RenderQueuePass;
+	class RenderGraph;
+}
+
+namespace Probes
+{
+	class TechniqueProbe;
+	class ModelProbe;
+	class DrawableProbe;
+	class HierarchyModelProbe;
+	class MeshTechniqueProbe;
 }
 
 // Namespaces

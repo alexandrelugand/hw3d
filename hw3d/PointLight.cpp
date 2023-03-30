@@ -15,9 +15,9 @@ namespace Entities
 		if (ImGui::Begin("Light"))
 		{
 			ImGui::Text("Position");
-			ImGui::SliderFloat("X", &cbData.pos.x, -60.0f, 60.0f, "%.1lf");
-			ImGui::SliderFloat("Y", &cbData.pos.y, -60.0f, 60.0f, "%.1lf");
-			ImGui::SliderFloat("Z", &cbData.pos.z, -60.0f, 60.0f, "%.1lf");
+			ImGui::SliderFloat("X", &cbData.pos.x, -100.0f, 100.0f, "%.1lf");
+			ImGui::SliderFloat("Y", &cbData.pos.y, -100.0f, 100.0f, "%.1lf");
+			ImGui::SliderFloat("Z", &cbData.pos.z, -100.0f, 100.0f, "%.1lf");
 
 			ImGui::Text("Intensity/Color");
 			ImGui::ColorEdit3("Diffuse Color", &cbData.diffuseColor.x);
@@ -47,11 +47,11 @@ namespace Entities
 		};
 	}
 
-	void PointLight::Submit(FrameCommander& frame) const noexcpt
+	void PointLight::Submit() const noexcpt
 	{
 		mesh.SetPos(cbData.pos);
 		mesh.SetColor(cbData.diffuseColor);
-		mesh.Submit(frame);
+		mesh.Submit();
 	}
 
 	void PointLight::Bind(Graphics& gfx, FXMMATRIX view) const noexcept
@@ -61,5 +61,10 @@ namespace Entities
 		XMStoreFloat3(&dataCopy.pos, XMVector3Transform(pos, view));
 		cbuf.Update(gfx, dataCopy);
 		cbuf.Bind(gfx);
+	}
+
+	void PointLight::LinkTechniques(Rgph::RenderGraph& rg) const
+	{
+		mesh.LinkTechniques(rg);
 	}
 }

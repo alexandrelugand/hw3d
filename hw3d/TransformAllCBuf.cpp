@@ -12,7 +12,7 @@ namespace Bind
 			pPcbuf = std::make_unique<PixelConstantBuffer<Transforms>>(gfx, PS_slot);
 	}
 
-	void TransformAllCBuf::Bind(Graphics& gfx) noexcept
+	void TransformAllCBuf::Bind(Graphics& gfx) noexcpt
 	{
 		const auto tf = GetTransforms(gfx);
 		TransformCBuf::UpdateBindImpl(gfx, tf);
@@ -24,7 +24,7 @@ namespace Bind
 		return std::make_unique<TransformAllCBuf>(*this);
 	}
 
-	void TransformAllCBuf::UpdateBindImpl(Graphics& gfx, const Transforms& tf) noexcept
+	void TransformAllCBuf::UpdateBindImpl(Graphics& gfx, const Transforms& tf) noexcpt
 	{
 		pPcbuf->Update(gfx, tf);
 		pPcbuf->Bind(gfx);

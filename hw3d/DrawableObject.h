@@ -2,17 +2,16 @@
 
 namespace Draw
 {
-	template <class T>
 	class DrawableObject : public Drawable
 	{
 	public:
 		DrawableObject(Graphics& gfx, const Material& mat, const aiMesh& mesh, float scale)
-			: Drawable(gfx, mat, mesh, scale), gfx(gfx), id(GetNextId()), pos({0.0f, 0.0f, 0.0f}), scale(scale)
+			: Drawable(gfx, mat, mesh, scale), gfx(gfx), id(GetNextId()), name(typeid(*this).name()), pos({0.0f, 0.0f, 0.0f}), scale(scale)
 		{
 		}
 
 		DrawableObject(Graphics& gfx, float scale = 1.0f, const XMFLOAT3& position = {0.0f, 0.0f, 0.0f})
-			: gfx(gfx), id(GetNextId()), pos(position), scale(scale)
+			: gfx(gfx), id(GetNextId()), name("Draw"), pos(position), scale(scale)
 		{
 		}
 
@@ -37,22 +36,24 @@ namespace Draw
 			chi = 0.0f;
 		}
 
-		void SetPos(XMFLOAT3 position) noexcept
-		{
-			pos = position;
-		}
+		int GetId() const noexcept;
+		const std::string& GetName() const noexcept;
+		void SetName(const std::string& name_in) noexcept;
+		std::string GetSysName() const noexcept;
 
-		XMMATRIX GetTransform() const noexcept override
-		{
-			return XMMatrixRotationRollPitchYaw(pitch, yaw, roll) *
-				XMMatrixTranslation(pos.x, pos.y, -pos.z) *
-				XMMatrixRotationRollPitchYaw(theta, phi, chi);
-		}
+		const XMFLOAT3& GetPosition() const noexcept;
+		void SetPosition(XMFLOAT3 position) noexcept;
+
+		XMFLOAT3 GetRotation() const noexcept;
+		void SetRotation(XMFLOAT3 rotation) noexcept;
+
+		XMMATRIX GetTransform() const noexcept override;
 
 	protected:
 		Graphics& gfx;
 
 		int id;
+		std::string name;
 		XMFLOAT3 pos;
 		float scale;
 

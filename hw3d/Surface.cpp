@@ -129,8 +129,8 @@ namespace Bind
 		return !scratch.IsAlphaAllOpaque();
 	}
 
-	Surface::Surface(ScratchImage scratch) noexcept
-		: scratch(std::move(scratch))
+	Surface::Surface(ScratchImage scratch_in) noexcept
+		: scratch(std::move(scratch_in))
 	{
 	}
 

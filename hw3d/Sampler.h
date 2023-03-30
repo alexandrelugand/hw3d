@@ -5,16 +5,23 @@ namespace Bind
 	class Sampler : public Bindable
 	{
 	public:
-		Sampler(Graphics& gfx, bool anisotropic, bool reflect);
+		enum class Type
+		{
+			Anisotropic,
+			Bilinear,
+			Point
+		};
+
+		Sampler(Graphics& gfx, Type type, bool reflect);
 		void Bind(Graphics& gfx) noexcpt override;
 
-		static std::shared_ptr<Sampler> Resolve(Graphics& gfx, bool anisotropic = true, bool reflect = false);
-		static std::string GenerateUID(bool anisotropic, bool reflect);
+		static std::shared_ptr<Sampler> Resolve(Graphics& gfx, Type type = Type::Anisotropic, bool reflect = false);
+		static std::string GenerateUID(Type type, bool reflect);
 		std::string GetUID() const noexcept override;
 
 	protected:
 		ComPtr<ID3D11SamplerState> pSampler;
-		bool anisotropic;
+		Type type;
 		bool reflect;
 	};
 }

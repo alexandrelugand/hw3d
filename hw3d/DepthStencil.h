@@ -1,15 +1,40 @@
 #pragma once
+#include "BufferResource.h"
 
-class DepthStencil : public GraphicsResource
+namespace Bind
 {
-	friend class RenderTarget;
-	friend class Graphics;
+	class DepthStencil : public Bindable, public BufferResource
+	{
+		friend class RenderTarget;
 
-public:
-	DepthStencil(Graphics& gfx, UINT width, UINT height);
-	void BindAsDepthStencil(Graphics& gfx) const noexcept;
-	void Clear(Graphics& gfx) const noexcept;
+	public:
+		void BindAsBuffer(Graphics& gfx) noexcpt override;
+		void BindAsBuffer(Graphics& gfx, BufferResource* buffer) noexcpt override;
+		void BindAsBuffer(Graphics& gfx, RenderTarget* rt) noexcpt;
+		void Clear(Graphics& gfx) noexcpt override;
 
-private:
-	ComPtr<ID3D11DepthStencilView> pDepthStencilView = nullptr;
-};
+	protected:
+		DepthStencil(Graphics& gfx, UINT width, UINT height, bool canBindShaderInput);
+		ComPtr<ID3D11DepthStencilView> pDepthStencilView;
+	};
+
+	class ShaderInputDepthStencil : public DepthStencil
+	{
+	public:
+		ShaderInputDepthStencil(Graphics& gfx, UINT slot);
+		ShaderInputDepthStencil(Graphics& gfx, UINT width, UINT height, UINT slot);
+		void Bind(Graphics& gfx) noexcpt override;
+
+	private:
+		UINT slot;
+		ComPtr<ID3D11ShaderResourceView> pShaderResourceView;
+	};
+
+	class OutputOnlyDepthStencil : public DepthStencil
+	{
+	public:
+		OutputOnlyDepthStencil(Graphics& gfx);
+		OutputOnlyDepthStencil(Graphics& gfx, UINT width, UINT height);
+		void Bind(Graphics& gfx) noexcpt override;
+	};
+}

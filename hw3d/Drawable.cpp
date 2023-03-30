@@ -25,22 +25,22 @@ namespace Draw
 		techniques.push_back(std::move(tech_in));
 	}
 
-	void Drawable::Submit(FrameCommander& frameCmder) const noexcept
+	void Drawable::Submit() const noexcept
 	{
 		for (const auto& t : techniques)
 		{
-			t.Submit(frameCmder, *this);
+			t.Submit(*this);
 		}
 	}
 
-	void Drawable::Bind(Graphics& gfx) const noexcept
+	void Drawable::Bind(Graphics& gfx) const noexcpt
 	{
 		pTopology->Bind(gfx);
 		pVertices->Bind(gfx);
 		pIndices->Bind(gfx);
 	}
 
-	void Drawable::Accept(TechniqueProbe& probe)
+	void Drawable::Accept(Probes::TechniqueProbe& probe)
 	{
 		for (auto& t : techniques)
 		{
@@ -51,5 +51,13 @@ namespace Draw
 	UINT Drawable::GetIndexCount() const noexcpt
 	{
 		return pIndices->GetCount();
+	}
+
+	void Drawable::LinkTechniques(Rgph::RenderGraph& rg)
+	{
+		for (auto& tech : techniques)
+		{
+			tech.Link(rg);
+		}
 	}
 }

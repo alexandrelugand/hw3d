@@ -19,7 +19,7 @@ namespace Draw
 
 		{
 			Technique solid;
-			Step only(0);
+			Rgph::Step only("lambertian");
 
 			auto pvs = Bind::VertexShader::Resolve(gfx, "Solid_VS.cso");
 			auto pvsbc = pvs->GetBytecode();

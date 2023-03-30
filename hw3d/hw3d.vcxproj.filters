@@ -94,6 +94,48 @@
     <Filter Include="Source Files\Dcb">
       <UniqueIdentifier>{1463410d-4a35-4503-bec2-7a8e74ede2e1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Header Files\Rgph">
+      <UniqueIdentifier>{2e1330d7-3ae9-4a24-a924-0ef2970378e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Rgph">
+      <UniqueIdentifier>{4f4ac11f-3be9-46f6-94d6-df3be8252b6c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Rgph\Pass">
+      <UniqueIdentifier>{3623f730-9a1e-414a-8b29-ecb28ca31964}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Rgph\Pass">
+      <UniqueIdentifier>{2bbd0060-c61e-43f9-be6e-cac9cb429217}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Rgph\Graph">
+      <UniqueIdentifier>{12727fee-e4b1-4d27-afcd-3db1d192a4c4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Rgph\Pass\Base">
+      <UniqueIdentifier>{082ef1bb-96ca-4f9d-ba16-d64f7ae7573e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Rgph\Graph">
+      <UniqueIdentifier>{69b8597f-2f64-4493-b557-66e163b5b716}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Rgph\Pass\Base">
+      <UniqueIdentifier>{6d7fdce2-fc44-41dc-8d28-efcd5701f651}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Probes">
+      <UniqueIdentifier>{cba68660-2110-49de-9765-8dca3e7cc2f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Probes\Model">
+      <UniqueIdentifier>{0d5ecb3b-2949-4b29-b09f-3b7467cf7df7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Probes\Technique">
+      <UniqueIdentifier>{3ee66490-27b8-4f3c-ac00-86d3deb43bb8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Probes">
+      <UniqueIdentifier>{5d58c43d-9d23-4fa6-876d-f64c6e6e09d5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Probes\Model">
+      <UniqueIdentifier>{abd6c16c-d04d-4073-bf1f-202d77d00fec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Probes\Technique">
+      <UniqueIdentifier>{88113568-30ec-4fd5-82e3-5f7b703fe5da}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="App.cpp">
@@ -270,22 +312,7 @@
     <ClCompile Include="NullPixelShader.cpp">
       <Filter>Source Files\Bind</Filter>
     </ClCompile>
-    <ClCompile Include="Step.cpp">
-      <Filter>Source Files\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="TechniqueProbe.cpp">
-      <Filter>Source Files\Renderer</Filter>
-    </ClCompile>
     <ClCompile Include="Technique.cpp">
-      <Filter>Source Files\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="FrameCommander.cpp">
-      <Filter>Source Files\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="Pass.cpp">
-      <Filter>Source Files\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="Job.cpp">
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
     <ClCompile Include="Material.cpp">
@@ -297,14 +324,89 @@
     <ClCompile Include="GraphicsResource.cpp">
       <Filter>Source Files\Renderer</Filter>
     </ClCompile>
+    <ClCompile Include="RenderGraphCompileException.cpp">
+      <Filter>Source Files\Rgph</Filter>
+    </ClCompile>
     <ClCompile Include="DepthStencil.cpp">
-      <Filter>Source Files\Renderer</Filter>
+      <Filter>Source Files\Bind</Filter>
     </ClCompile>
     <ClCompile Include="RenderTarget.cpp">
-      <Filter>Source Files\Renderer</Filter>
+      <Filter>Source Files\Bind</Filter>
     </ClCompile>
-    <ClCompile Include="BlurPack.cpp">
-      <Filter>Source Files\Renderer</Filter>
+    <ClCompile Include="Job.cpp">
+      <Filter>Source Files\Rgph</Filter>
+    </ClCompile>
+    <ClCompile Include="BlurOutlineDrawingPass.cpp">
+      <Filter>Source Files\Rgph\Pass</Filter>
+    </ClCompile>
+    <ClCompile Include="BlurOutlineRenderGraph.cpp">
+      <Filter>Source Files\Rgph\Graph</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderGraph.cpp">
+      <Filter>Source Files\Rgph\Graph</Filter>
+    </ClCompile>
+    <ClCompile Include="ScaleOutlineRenderGraph.cpp">
+      <Filter>Source Files\Rgph\Graph</Filter>
+    </ClCompile>
+    <ClCompile Include="BindingPass.cpp">
+      <Filter>Source Files\Rgph\Pass\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Sink.cpp">
+      <Filter>Source Files\Rgph\Pass\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Source.cpp">
+      <Filter>Source Files\Rgph\Pass\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="Pass.cpp">
+      <Filter>Source Files\Rgph\Pass\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="RenderQueuePass.cpp">
+      <Filter>Source Files\Rgph\Pass\Base</Filter>
+    </ClCompile>
+    <ClCompile Include="BufferClearPass.cpp">
+      <Filter>Source Files\Rgph\Pass</Filter>
+    </ClCompile>
+    <ClCompile Include="LambertianPass.cpp">
+      <Filter>Source Files\Rgph\Pass</Filter>
+    </ClCompile>
+    <ClCompile Include="OutlineMaskGenerationPass.cpp">
+      <Filter>Source Files\Rgph\Pass</Filter>
+    </ClCompile>
+    <ClCompile Include="OutlineDrawingPass.cpp">
+      <Filter>Source Files\Rgph\Pass</Filter>
+    </ClCompile>
+    <ClCompile Include="Step.cpp">
+      <Filter>Source Files\Rgph</Filter>
+    </ClCompile>
+    <ClCompile Include="TechniqueProbe.cpp">
+      <Filter>Source Files\Probes\Technique</Filter>
+    </ClCompile>
+    <ClCompile Include="StepLinkingProbe.cpp">
+      <Filter>Source Files\Probes\Technique</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshTechniqueProbe.cpp">
+      <Filter>Source Files\Probes\Technique</Filter>
+    </ClCompile>
+    <ClCompile Include="HierarchyModelProbe.cpp">
+      <Filter>Source Files\Probes\Model</Filter>
+    </ClCompile>
+    <ClCompile Include="TransformCBufScaling.cpp">
+      <Filter>Source Files\Bind</Filter>
+    </ClCompile>
+    <ClCompile Include="FullscreenPass.cpp">
+      <Filter>Source Files\Rgph\Pass</Filter>
+    </ClCompile>
+    <ClCompile Include="VerticalBlurPass.cpp">
+      <Filter>Source Files\Rgph\Pass</Filter>
+    </ClCompile>
+    <ClCompile Include="HorizontalBlurPass.cpp">
+      <Filter>Source Files\Rgph\Pass</Filter>
+    </ClCompile>
+    <ClCompile Include="DrawableObject.cpp">
+      <Filter>Source Files\Draw</Filter>
+    </ClCompile>
+    <ClCompile Include="DrawableProbe.cpp">
+      <Filter>Source Files\Probes\Model</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -560,22 +662,7 @@
     <ClInclude Include="PerfLog.h">
       <Filter>Header Files\Utils</Filter>
     </ClInclude>
-    <ClInclude Include="Job.h">
-      <Filter>Header Files\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="Step.h">
-      <Filter>Header Files\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="TechniqueProbe.h">
-      <Filter>Header Files\Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="Technique.h">
-      <Filter>Header Files\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="FrameCommander.h">
-      <Filter>Header Files\Renderer</Filter>
-    </ClInclude>
-    <ClInclude Include="Pass.h">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
     <ClInclude Include="Material.h">
@@ -584,20 +671,98 @@
     <ClInclude Include="ModelException.h">
       <Filter>Header Files\Entities</Filter>
     </ClInclude>
-    <ClInclude Include="ModelProbe.h">
-      <Filter>Header Files\Renderer</Filter>
-    </ClInclude>
     <ClInclude Include="GraphicsResouce.h">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="RenderGraphCompileException.h">
+      <Filter>Header Files\Rgph</Filter>
+    </ClInclude>
+    <ClInclude Include="BufferResource.h">
+      <Filter>Header Files\Bind</Filter>
+    </ClInclude>
     <ClInclude Include="DepthStencil.h">
-      <Filter>Header Files\Renderer</Filter>
+      <Filter>Header Files\Bind</Filter>
     </ClInclude>
     <ClInclude Include="RenderTarget.h">
-      <Filter>Header Files\Renderer</Filter>
+      <Filter>Header Files\Bind</Filter>
     </ClInclude>
-    <ClInclude Include="BlurPack.h">
-      <Filter>Header Files\Renderer</Filter>
+    <ClInclude Include="Job.h">
+      <Filter>Header Files\Rgph</Filter>
+    </ClInclude>
+    <ClInclude Include="BlurOutlineDrawingPass.h">
+      <Filter>Header Files\Rgph</Filter>
+    </ClInclude>
+    <ClInclude Include="BindingPass.h">
+      <Filter>Header Files\Rgph\Pass\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="BlurOutlineRenderGraph.h">
+      <Filter>Header Files\Rgph\Graph</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderGraph.h">
+      <Filter>Header Files\Rgph\Graph</Filter>
+    </ClInclude>
+    <ClInclude Include="ScaleOutlineRenderGraph.h">
+      <Filter>Header Files\Rgph\Graph</Filter>
+    </ClInclude>
+    <ClInclude Include="Pass.h">
+      <Filter>Header Files\Rgph\Pass\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Sink.h">
+      <Filter>Header Files\Rgph\Pass\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="Source.h">
+      <Filter>Header Files\Rgph\Pass\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderQueuePass.h">
+      <Filter>Header Files\Rgph\Pass\Base</Filter>
+    </ClInclude>
+    <ClInclude Include="BufferClearPass.h">
+      <Filter>Header Files\Rgph\Pass</Filter>
+    </ClInclude>
+    <ClInclude Include="LambertianPass.h">
+      <Filter>Header Files\Rgph\Pass</Filter>
+    </ClInclude>
+    <ClInclude Include="OutlineMaskGenerationPass.h">
+      <Filter>Header Files\Rgph\Pass</Filter>
+    </ClInclude>
+    <ClInclude Include="OutlineDrawingPass.h">
+      <Filter>Header Files\Rgph\Pass</Filter>
+    </ClInclude>
+    <ClInclude Include="Step.h">
+      <Filter>Header Files\Rgph</Filter>
+    </ClInclude>
+    <ClInclude Include="StepLinkingProbe.h">
+      <Filter>Header Files\Probes\Technique</Filter>
+    </ClInclude>
+    <ClInclude Include="TechniqueProbe.h">
+      <Filter>Header Files\Probes\Technique</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshTechniqueProbe.h">
+      <Filter>Header Files\Probes\Technique</Filter>
+    </ClInclude>
+    <ClInclude Include="ModelProbe.h">
+      <Filter>Header Files\Probes\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="HierarchyModelProbe.h">
+      <Filter>Header Files\Probes\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="TransformCBufScaling.h">
+      <Filter>Header Files\Bind</Filter>
+    </ClInclude>
+    <ClInclude Include="VerticalBlurPass.h">
+      <Filter>Header Files\Rgph\Pass</Filter>
+    </ClInclude>
+    <ClInclude Include="FullscreenPass.h">
+      <Filter>Header Files\Rgph\Pass</Filter>
+    </ClInclude>
+    <ClInclude Include="HorizontalBlurPass.h">
+      <Filter>Header Files\Rgph\Pass</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawableProbe.h">
+      <Filter>Header Files\Probes\Model</Filter>
+    </ClInclude>
+    <ClInclude Include="TransformParameters.h">
+      <Filter>Header Files\Probes</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

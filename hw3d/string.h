@@ -1,5 +1,6 @@
 #pragma once
 #include <codecvt>
+#include <algorithm>
 #pragma warning(push)
 #pragma warning(disable:4996)
 
@@ -65,6 +66,40 @@ namespace String
 			tokens.push_back(std::move(token));
 		}
 		return tokens;
+	}
+
+	template <class Iter>
+	void SplitIter(const std::string& s, const std::string& delim, Iter out)
+	{
+		if (delim.empty())
+		{
+			*out++ = s;
+		}
+		else
+		{
+			size_t a = 0, b = s.find(delim);
+			for (; b != std::string::npos;
+			       a = b + delim.length(), b = s.find(delim, a))
+			{
+				*out++ = std::move(s.substr(a, b - a));
+			}
+			*out++ = std::move(s.substr(a, s.length() - a));
+		}
+	}
+
+	static std::vector<std::string> Split(const std::string& s, const std::string& delim)
+	{
+		std::vector<std::string> strings;
+		SplitIter(s, delim, std::back_inserter(strings));
+		return strings;
+	}
+
+	static std::string ToLower(const std::string& s)
+	{
+		std::string output;
+		output.resize(s.size());
+		std::ranges::transform(s, output.begin(), [](unsigned char c) { return std::tolower(c); });
+		return output;
 	}
 }
 

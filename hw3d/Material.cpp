@@ -16,7 +16,7 @@ Material::Material(Graphics& gfx, const aiMaterial& material, const std::filesys
 	// phong technique
 	{
 		Technique phong{"Phong"};
-		Step step(0);
+		Rgph::Step step("lambertian");
 		std::string shaderCode = "Phong";
 		aiString texFileName;
 
@@ -47,7 +47,7 @@ Material::Material(Graphics& gfx, const aiMaterial& material, const std::filesys
 			{
 				pscLayout.Add<Dcb::Float3>("materialColor");
 			}
-			step.AddBindable(Bind::Rasterizer::Resolve(gfx, hasAlpha ? None : Back));
+			step.AddBindable(Bind::Rasterizer::Resolve(gfx, hasAlpha ? CullMode::None : CullMode::Back));
 		}
 		// specular
 		{
@@ -56,7 +56,7 @@ Material::Material(Graphics& gfx, const aiMaterial& material, const std::filesys
 				hasTexture = true;
 				shaderCode += "Spc";
 				layout.Append(Dvtx::VertexLayout::Texture2D);
-				auto tex = Bind::Texture::Resolve(gfx, rootPath + texFileName.C_Str(), 1);
+				auto tex = Bind::Texture::Resolve(gfx, rootPath + texFileName.C_Str(), 1u);
 				hasGlossAlpha = tex->HasAlpha();
 				step.AddBindable(std::move(tex));
 				pscLayout.Add<Dcb::Bool>("useGlossAlpha");
@@ -75,7 +75,7 @@ Material::Material(Graphics& gfx, const aiMaterial& material, const std::filesys
 				layout.Append(Dvtx::VertexLayout::Texture2D);
 				layout.Append(Dvtx::VertexLayout::Tangent);
 				layout.Append(Dvtx::VertexLayout::Bitangent);
-				step.AddBindable(Bind::Texture::Resolve(gfx, rootPath + texFileName.C_Str(), 2));
+				step.AddBindable(Bind::Texture::Resolve(gfx, rootPath + texFileName.C_Str(), 2u));
 				pscLayout.Add<Dcb::Bool>("useNormalMap");
 				pscLayout.Add<Dcb::Float>("normalMapWeight");
 			}
@@ -83,7 +83,6 @@ Material::Material(Graphics& gfx, const aiMaterial& material, const std::filesys
 		// common (post)
 		{
 			step.AddBindable(std::make_shared<Bind::TransformCBuf>(gfx, 0u));
-			step.AddBindable(Bind::Blender::Resolve(gfx, false));
 			auto pvs = Bind::VertexShader::Resolve(gfx, shaderCode + "_VS.cso");
 			auto pvsbc = pvs->GetBytecode();
 			step.AddBindable(std::move(pvs));
@@ -134,14 +133,10 @@ Material::Material(Graphics& gfx, const aiMaterial& material, const std::filesys
 	{
 		Technique outline("Outline", false);
 		{
-			Step mask(1);
-
-			auto pvs = Bind::VertexShader::Resolve(gfx, "Solid_VS.cso");
-			auto pvsbc = pvs->GetBytecode();
-			mask.AddBindable(std::move(pvs));
+			Rgph::Step mask("outlineMask");
 
 			// TODO: better sub-layout generation tech for future consideration maybe
-			mask.AddBindable(Bind::InputLayout::Resolve(gfx, layout, pvsbc));
+			mask.AddBindable(Bind::InputLayout::Resolve(gfx, layout, Bind::VertexShader::Resolve(gfx, "Solid_VS.cso")->GetBytecode()));
 
 			mask.AddBindable(std::make_shared<Bind::TransformCBuf>(gfx));
 
@@ -149,16 +144,7 @@ Material::Material(Graphics& gfx, const aiMaterial& material, const std::filesys
 			outline.AddStep(std::move(mask));
 		}
 		{
-			Step draw(2);
-
-			// these can be pass-constant (tricky due to layout issues)
-			auto pvs = Bind::VertexShader::Resolve(gfx, "Solid_VS.cso");
-			auto pvsbc = pvs->GetBytecode();
-			draw.AddBindable(std::move(pvs));
-
-			// this can be pass-constant
-			draw.AddBindable(Bind::PixelShader::Resolve(gfx, "Solid_PS.cso"));
-
+			Rgph::Step draw("outlineDraw");
 			{
 				Dcb::RawLayout lay;
 				lay.Add<Dcb::Float3>("materialColor");
@@ -168,7 +154,7 @@ Material::Material(Graphics& gfx, const aiMaterial& material, const std::filesys
 			}
 
 			// TODO: better sub-layout generation tech for future consideration maybe
-			draw.AddBindable(Bind::InputLayout::Resolve(gfx, layout, pvsbc));
+			draw.AddBindable(Bind::InputLayout::Resolve(gfx, layout, Bind::VertexShader::Resolve(gfx, "Solid_VS.cso")->GetBytecode()));
 
 			draw.AddBindable(std::make_shared<Bind::TransformCBuf>(gfx));
 

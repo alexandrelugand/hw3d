@@ -1,7 +1,7 @@
 #pragma once
 #include "Forwards.h"
 
-enum CullMode
+enum class CullMode
 {
 	None = 0,
 	Front,
@@ -64,8 +64,6 @@ public:
 	~Graphics() = default;
 
 	void BeginFrame(float red, float green, float blue) const noexcept;
-	void BindSwapBuffer() noexcept;
-	void BindSwapBuffer(const DepthStencil& ds) noexcept;
 	void EndFrame();
 
 	void DrawIndexed(UINT uint) noexcpt;
@@ -80,6 +78,7 @@ public:
 
 	UINT GetWidth() const noexcept;
 	UINT GetHeight() const noexcept;
+	std::shared_ptr<Bind::RenderTarget> GetTarget() const noexcept;
 
 	void EnableImGui() noexcept;
 	void DisableImGui() noexcept;
@@ -101,7 +100,7 @@ private:
 	ComPtr<ID3D11Device> pDevice = nullptr;
 	ComPtr<IDXGISwapChain> pSwapChain = nullptr;
 	ComPtr<ID3D11DeviceContext> pContext = nullptr;
-	ComPtr<ID3D11RenderTargetView> pTarget = nullptr;
+	std::shared_ptr<Bind::RenderTarget> pTarget;
 
 	ComPtr<ID3D11RasterizerState> m_wire_frame_state = nullptr;
 	ComPtr<ID3D11RasterizerState> m_cull_front_state = nullptr;

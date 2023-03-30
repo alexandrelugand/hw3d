@@ -11,7 +11,7 @@ namespace Bind
 			pVcbuf = std::make_unique<VertexConstantBuffer<Transforms>>(gfx, slot);
 	}
 
-	void TransformCBuf::Bind(Graphics& gfx) noexcept
+	void TransformCBuf::Bind(Graphics& gfx) noexcpt
 	{
 		UpdateBindImpl(gfx, GetTransforms(gfx));
 	}
@@ -26,13 +26,13 @@ namespace Bind
 		return std::make_unique<TransformCBuf>(*this);
 	}
 
-	void TransformCBuf::UpdateBindImpl(Graphics& gfx, const Transforms& tf) noexcept
+	void TransformCBuf::UpdateBindImpl(Graphics& gfx, const Transforms& tf) noexcpt
 	{
 		pVcbuf->Update(gfx, tf);
 		pVcbuf->Bind(gfx);
 	}
 
-	TransformCBuf::Transforms TransformCBuf::GetTransforms(Graphics& gfx) noexcept
+	TransformCBuf::Transforms TransformCBuf::GetTransforms(Graphics& gfx) noexcpt
 	{
 		assert(pParent != nullptr);
 		const auto modelView = pParent->GetTransform() * gfx.GetCamera();

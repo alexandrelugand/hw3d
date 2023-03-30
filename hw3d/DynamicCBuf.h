@@ -20,14 +20,14 @@ namespace Bind
 	{
 	public:
 		using DynamicCBuf::DynamicCBuf;
-		void Bind(Graphics& gfx) noexcept override;
+		void Bind(Graphics& gfx) noexcpt override;
 	};
 
 	class DynamicVertexCBuf : public DynamicCBuf
 	{
 	public:
 		using DynamicCBuf::DynamicCBuf;
-		void Bind(Graphics& gfx) noexcept override;
+		void Bind(Graphics& gfx) noexcpt override;
 	};
 
 	template <class T>
@@ -62,7 +62,7 @@ namespace Bind
 			dirty = true;
 		}
 
-		void Bind(Graphics& gfx) noexcept override
+		void Bind(Graphics& gfx) noexcpt override
 		{
 			if (dirty)
 			{
@@ -72,7 +72,7 @@ namespace Bind
 			T::Bind(gfx);
 		}
 
-		void Accept(TechniqueProbe& probe) override
+		void Accept(Probes::TechniqueProbe& probe) override
 		{
 			if (probe.VisitBuffer(buf))
 			{

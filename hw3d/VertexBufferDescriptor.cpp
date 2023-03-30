@@ -3,14 +3,14 @@
 
 namespace Dvtx
 {
-	VertexBufferDescriptor::VertexBufferDescriptor(const VertexLayout& layout, size_t size) noexcpt
-		: layout(std::move(layout))
+	VertexBufferDescriptor::VertexBufferDescriptor(const VertexLayout& layout_in, size_t size) noexcpt
+		: layout(std::move(layout_in))
 	{
 		Resize(size);
 	}
 
-	VertexBufferDescriptor::VertexBufferDescriptor(const VertexLayout& layout, const aiMesh& mesh)
-		: layout(std::move(layout))
+	VertexBufferDescriptor::VertexBufferDescriptor(const VertexLayout& layout_in, const aiMesh& mesh)
+		: layout(std::move(layout_in))
 	{
 		Resize(mesh.mNumVertices);
 		for (size_t i = 0, end = layout.GetElementCount(); i < end; i++)

@@ -43,13 +43,15 @@ namespace Bind
 		}
 	}
 
-	void DynamicPixelCBuf::Bind(Graphics& gfx) noexcept
+	void DynamicPixelCBuf::Bind(Graphics& gfx) noexcpt
 	{
-		GetContext(gfx)->PSSetConstantBuffers(slot, 1u, pConstantBuffer.GetAddressOf());
+		INFOMAN_NOHR(gfx);
+		GFX_THROW_INFO_ONLY(GetContext(gfx)->PSSetConstantBuffers(slot, 1u, pConstantBuffer.GetAddressOf()));
 	}
 
-	void DynamicVertexCBuf::Bind(Graphics& gfx) noexcept
+	void DynamicVertexCBuf::Bind(Graphics& gfx) noexcpt
 	{
-		GetContext(gfx)->VSSetConstantBuffers(slot, 1u, pConstantBuffer.GetAddressOf());
+		INFOMAN_NOHR(gfx);
+		GFX_THROW_INFO_ONLY(GetContext(gfx)->VSSetConstantBuffers(slot, 1u, pConstantBuffer.GetAddressOf()));
 	}
 }

@@ -13,10 +13,10 @@ namespace Entities
 		int GetId() const noexcept;
 		const std::string& GetName() const noexcept;
 
-		void Submit(FrameCommander& frame) const noexcpt;
+		void Submit() const noexcpt;
 		void SetRootTransform(FXMMATRIX tf) const noexcept;
-
-		void Accept(class ModelProbe& probe);
+		void Accept(Probes::ModelProbe& probe) const;
+		void LinkTechniques(Rgph::RenderGraph& rg) const;
 
 	private:
 		int id;

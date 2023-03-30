@@ -130,7 +130,7 @@ namespace Bind
 		bool AlphaLoaded() const noexcept;
 
 	private:
-		Surface(ScratchImage scratch) noexcept;
+		Surface(ScratchImage scratch_in) noexcept;
 		static constexpr DXGI_FORMAT format = DXGI_FORMAT_B8G8R8A8_UNORM;
 		ScratchImage scratch;
 	};

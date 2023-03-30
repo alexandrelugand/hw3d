@@ -1,60 +1,68 @@
 #include "stdafx.h"
 #include "Step.h"
 
-Step::Step(size_t targetPass_in)
-	: targetPass(targetPass_in)
+namespace Rgph
 {
-}
-
-Step::Step(const Step& src) noexcept
-	: targetPass(src.targetPass)
-{
-	bindables.reserve(src.bindables.size());
-	for (auto& pb : src.bindables)
+	Step::Step(std::string targetPassName)
+		: targetPassName(std::move(targetPassName))
 	{
-		if (auto* pCloning = dynamic_cast<const Bind::CloningBindable*>(pb.get()))
+	}
+
+	Step::Step(const Step& src) noexcept
+		: targetPassName(src.targetPassName)
+	{
+		bindables.reserve(src.bindables.size());
+		for (auto& pb : src.bindables)
 		{
-			bindables.push_back(pCloning->Clone());
+			if (auto* pCloning = dynamic_cast<const Bind::CloningBindable*>(pb.get()))
+			{
+				bindables.push_back(pCloning->Clone());
+			}
+			else
+			{
+				bindables.push_back(pb);
+			}
 		}
-		else
+	}
+
+	void Step::AddBindable(std::shared_ptr<Bind::Bindable> bind_in) noexcpt
+	{
+		bindables.push_back(std::move(bind_in));
+	}
+
+	void Step::Submit(const Draw::Drawable& drawable) const
+	{
+		pTargetPass->Accept(Job{this, &drawable});
+	}
+
+	void Step::Bind(Graphics& gfx) const
+	{
+		for (const auto& b : bindables)
 		{
-			bindables.push_back(pb);
+			b->Bind(gfx);
 		}
 	}
-}
 
-void Step::AddBindable(std::shared_ptr<Bind::Bindable> bind_in) noexcpt
-{
-	bindables.push_back(std::move(bind_in));
-}
-
-void Step::Submit(FrameCommander& frameCmder, const Draw::Drawable& drawable) const
-{
-	auto j = Job{this, &drawable};
-	frameCmder.Accept(j, targetPass);
-}
-
-void Step::Bind(Graphics& gfx) const
-{
-	for (const auto& b : bindables)
+	void Step::InitializeParentReferences(const Draw::Drawable& parent) const noexcept
 	{
-		b->Bind(gfx);
+		for (auto& b : bindables)
+		{
+			b->InitializeParentReferences(parent);
+		}
 	}
-}
 
-void Step::InitializeParentReferences(const Draw::Drawable& parent) noexcept
-{
-	for (auto& b : bindables)
+	void Step::Accept(Probes::TechniqueProbe& probe)
 	{
-		b->InitializeParentReferences(parent);
+		probe.SetStep(this);
+		for (const auto& b : bindables)
+		{
+			b->Accept(probe);
+		}
 	}
-}
 
-void Step::Accept(TechniqueProbe& probe)
-{
-	probe.SetStep(this);
-	for (const auto& b : bindables)
+	void Step::Link(RenderGraph& rg)
 	{
-		b->Accept(probe);
+		assert(pTargetPass == nullptr);
+		pTargetPass = &rg.GetRenderQueue(targetPassName);
 	}
 }

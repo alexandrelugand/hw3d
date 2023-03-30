@@ -4,8 +4,7 @@
 namespace Bind
 {
 	Blender::Blender(Graphics& gfx, bool blending, std::optional<float> factors_in)
-		:
-		blending(blending)
+		: blending(blending)
 	{
 		INFOMAN(gfx);
 
@@ -35,10 +34,11 @@ namespace Bind
 		GFX_THROW_INFO(GetDevice(gfx)->CreateBlendState(&blendDesc, &pBlender));
 	}
 
-	void Blender::Bind(Graphics& gfx) noexcept
+	void Blender::Bind(Graphics& gfx) noexcpt
 	{
+		INFOMAN_NOHR(gfx);
 		const float* data = factors ? factors->data() : nullptr;
-		GetContext(gfx)->OMSetBlendState(pBlender.Get(), data, 0xFFFFFFFFu);
+		GFX_THROW_INFO_ONLY(GetContext(gfx)->OMSetBlendState(pBlender.Get(), data, 0xFFFFFFFFu));
 	}
 
 	void Blender::SetFactor(float factor) noexcpt
@@ -60,7 +60,6 @@ namespace Bind
 
 	std::string Blender::GenerateUID(bool blending, std::optional<float> factor)
 	{
-		using namespace std::string_literals;
 		return typeid(Blender).name() + "#"s + (blending ? "b"s : "n"s) + (factor ? "#f"s + std::to_string(*factor) : "");
 	}
 
