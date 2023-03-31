@@ -15,7 +15,7 @@ Material::Material(Graphics& gfx, const aiMaterial& material, const std::filesys
 
 	// phong technique
 	{
-		Technique phong{"Phong"};
+		Rgph::Technique phong{"Phong"};
 		Rgph::Step step("lambertian");
 		std::string shaderCode = "Phong";
 		aiString texFileName;
@@ -130,7 +130,7 @@ Material::Material(Graphics& gfx, const aiMaterial& material, const std::filesys
 	}
 	// outline technique
 	{
-		Technique outline("Outline", false);
+		Rgph::Technique outline("Outline", false);
 		{
 			Rgph::Step mask("outlineMask");
 
@@ -206,7 +206,7 @@ std::shared_ptr<Bind::IndexBuffer> Material::MakeIndexBindable(Graphics& gfx, co
 }
 
 
-std::vector<Technique> Material::GetTechniques() const noexcept
+std::vector<Rgph::Technique> Material::GetTechniques() const noexcept
 {
 	return techniques;
 }

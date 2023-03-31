@@ -139,14 +139,23 @@ namespace Rgph
 			}
 			else // find source from within existing passes
 			{
+				bool bound = false;
 				for (auto& exisitingPass : passes)
 				{
 					if (exisitingPass->GetName() == inputSourcePassName)
 					{
 						auto& source = exisitingPass->GetSource(si->GetOutputName());
 						si->Bind(source);
+						bound = true;
 						break;
 					}
+				}
+
+				if (!bound)
+				{
+					std::ostringstream oss;
+					oss << "Pass names [" << si->GetOutputName() << "] not found";
+					throw RGC_EXCEPTION(oss.str());
 				}
 			}
 		}

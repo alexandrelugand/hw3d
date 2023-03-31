@@ -20,7 +20,7 @@ namespace Draw
 		auto tcb = std::make_shared<Bind::TransformCBuf>(gfx);
 
 		{
-			Technique shade("Shade");
+			Rgph::Technique shade("Shade");
 			{
 				Rgph::Step only("lambertian");
 
@@ -56,7 +56,7 @@ namespace Draw
 			AddTechnique(std::move(shade));
 		}
 
-		Technique outline("Outline", false);
+		Rgph::Technique outline("Outline", false);
 		{
 			Rgph::Step mask("outlineMask");
 			{

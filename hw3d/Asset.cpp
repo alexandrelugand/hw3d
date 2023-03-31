@@ -44,7 +44,7 @@ namespace Draw
 		pTopology = Bind::Topology::Resolve(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		{
-			Technique shade("Shade");
+			Rgph::Technique shade("Shade");
 			{
 				Rgph::Step only("lambertian");
 

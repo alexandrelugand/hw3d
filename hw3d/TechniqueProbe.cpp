@@ -3,7 +3,7 @@
 
 namespace Probes
 {
-	void TechniqueProbe::SetTechnique(Technique* pTech_in)
+	void TechniqueProbe::SetTechnique(Rgph::Technique* pTech_in)
 	{
 		pTech = pTech_in;
 		techIdx++;

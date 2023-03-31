@@ -166,6 +166,8 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="CameraContainer.cpp" />
+    <ClCompile Include="CameraIndicator.cpp" />
     <ClCompile Include="ColorCBuf.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
@@ -191,6 +193,7 @@
     </ClCompile>
     <ClCompile Include="DynamicConstant.cpp" />
     <ClCompile Include="DynamicCBuf.cpp" />
+    <ClCompile Include="Frustum.cpp" />
     <ClCompile Include="FullscreenPass.cpp" />
     <ClCompile Include="GDIPlusManager.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
@@ -228,6 +231,7 @@
     <ClCompile Include="OutlineDrawingPass.cpp" />
     <ClCompile Include="OutlineMaskGenerationPass.cpp" />
     <ClCompile Include="Pass.cpp" />
+    <ClCompile Include="Projection.cpp" />
     <ClCompile Include="Rasterizer.cpp" />
     <ClCompile Include="RenderGraph.cpp" />
     <ClCompile Include="RenderGraphCompileException.cpp" />
@@ -362,6 +366,7 @@
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Use</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Use</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="WireframePass.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="App.h" />
@@ -375,6 +380,8 @@
     <ClInclude Include="BufferClearPass.h" />
     <ClInclude Include="BufferResource.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="CameraContainer.h" />
+    <ClInclude Include="CameraIndicator.h" />
     <ClInclude Include="Codex.h" />
     <ClInclude Include="Color.h" />
     <ClInclude Include="ColorCBuf.h" />
@@ -391,6 +398,7 @@
     <ClInclude Include="DynamicConstant.h" />
     <ClInclude Include="DynamicCBuf.h" />
     <ClInclude Include="Forwards.h" />
+    <ClInclude Include="Frustum.h" />
     <ClInclude Include="FullscreenPass.h" />
     <ClInclude Include="GDIPlusManager.h" />
     <ClInclude Include="GraphicsResouce.h" />
@@ -410,6 +418,7 @@
     <ClInclude Include="OutlineMaskGenerationPass.h" />
     <ClInclude Include="Pass.h" />
     <ClInclude Include="PerfLog.h" />
+    <ClInclude Include="Projection.h" />
     <ClInclude Include="PsMaterialConstants.h" />
     <ClInclude Include="Rasterizer.h" />
     <ClInclude Include="RenderGraph.h" />
@@ -482,6 +491,7 @@
     <ClInclude Include="resource.h" />
     <ClInclude Include="Window.h" />
     <ClInclude Include="WindowsMessageMap.h" />
+    <ClInclude Include="WireframePass.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Hw3D.rc" />

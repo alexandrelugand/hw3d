@@ -97,6 +97,7 @@ namespace Gdiplus
 #include "TechniqueProbe.h"
 #include "ModelProbe.h"
 #include "Material.h"
+#include "Projection.h"
 
 //Windowing
 #include "Window.h"
@@ -153,9 +154,12 @@ namespace Gdiplus
 #include "Sheet.h"
 #include "SkinnedBox.h"
 #include "SolidSphere.h"
+#include "CameraIndicator.h"
+#include "Frustum.h"
 
 // Entities
 #include "Camera.h"
+#include "CameraContainer.h"
 #include "PointLight.h"
 #include "ModelException.h"
 #include "Model.h"
@@ -179,6 +183,7 @@ namespace Gdiplus
 #include "FullscreenPass.h"
 #include "HorizontalBlurPass.h"
 #include "VerticalBlurPass.h"
+#include "WireframePass.h"
 #include "BlurOutlineRenderGraph.h"
 #include "ScaleOutlineRenderGraph.h"
 

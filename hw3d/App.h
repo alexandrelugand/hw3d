@@ -18,7 +18,7 @@ private:
 
 	Rgph::BlurOutlineRenderGraph rg{wnd.Gfx()};
 
-	Entities::Camera camera{{-13.5f, 6.0f, 3.5f}, 0.0f, PI / 2.0f};
+	Entities::CameraContainer cameras;
 	Entities::PointLight light{wnd.Gfx()};
 
 	Draw::SkinnedBox cube{wnd.Gfx(), 6.0f, {0.0f, 4.0f, -7.5f}};

@@ -8,8 +8,6 @@ class ImguiManager;
 // Renderer
 class GraphicsResource;
 class Graphics;
-
-class Technique;
 class FrameCommander;
 class Material;
 class BlurPack;
@@ -62,6 +60,8 @@ namespace Draw
 	class Sheet;
 	class SkinnedBox;
 	class SolidSphere;
+	class CameraIndicator;
+	class Frustum;
 }
 
 // Inputs
@@ -112,6 +112,7 @@ namespace Rgph
 	class BindingPass;
 	class Job;
 	class Step;
+	class Technique;
 	class RenderQueuePass;
 	class RenderGraph;
 }

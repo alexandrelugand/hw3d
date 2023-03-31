@@ -1,63 +1,66 @@
 #include "stdafx.h"
 #include "Technique.h"
 
-Technique::Technique(std::string name, bool startActive) noexcept
-	: active(startActive), name(std::move(name))
+namespace Rgph
 {
-}
-
-void Technique::Submit(const Draw::Drawable& drawable) const noexcept
-{
-	if (active)
+	Technique::Technique(std::string name, bool startActive) noexcept
+		: active(startActive), name(std::move(name))
 	{
-		for (const auto& s : steps)
+	}
+
+	void Technique::Submit(const Draw::Drawable& drawable) const noexcept
+	{
+		if (active)
 		{
-			s.Submit(drawable);
+			for (const auto& s : steps)
+			{
+				s.Submit(drawable);
+			}
 		}
 	}
-}
 
-const std::string& Technique::GetName() const noexcept
-{
-	return name;
-}
-
-void Technique::AddStep(Rgph::Step step) noexcept
-{
-	steps.push_back(std::move(step));
-}
-
-bool Technique::IsActive() const noexcept
-{
-	return active;
-}
-
-void Technique::SetActive(bool active_in) noexcept
-{
-	active = active_in;
-}
-
-void Technique::InitializeParentReferences(const Draw::Drawable& drawable) const noexcept
-{
-	for (auto& s : steps)
+	const std::string& Technique::GetName() const noexcept
 	{
-		s.InitializeParentReferences(drawable);
+		return name;
 	}
-}
 
-void Technique::Accept(Probes::TechniqueProbe& probe)
-{
-	probe.SetTechnique(this);
-	for (auto& s : steps)
+	void Technique::AddStep(Step step) noexcept
 	{
-		s.Accept(probe);
+		steps.push_back(std::move(step));
 	}
-}
 
-void Technique::Link(Rgph::RenderGraph& rg)
-{
-	for (auto& step : steps)
+	bool Technique::IsActive() const noexcept
 	{
-		step.Link(rg);
+		return active;
+	}
+
+	void Technique::SetActive(bool active_in) noexcept
+	{
+		active = active_in;
+	}
+
+	void Technique::InitializeParentReferences(const Draw::Drawable& drawable) const noexcept
+	{
+		for (auto& s : steps)
+		{
+			s.InitializeParentReferences(drawable);
+		}
+	}
+
+	void Technique::Accept(Probes::TechniqueProbe& probe)
+	{
+		probe.SetTechnique(this);
+		for (auto& s : steps)
+		{
+			s.Accept(probe);
+		}
+	}
+
+	void Technique::Link(RenderGraph& rg)
+	{
+		for (auto& step : steps)
+		{
+			step.Link(rg);
+		}
 	}
 }

@@ -11,7 +11,7 @@ namespace Draw
 		Drawable(const Drawable&) = delete;
 		virtual ~Drawable();
 
-		void AddTechnique(Technique tech_in) noexcept;
+		void AddTechnique(Rgph::Technique tech_in) noexcept;
 		virtual XMMATRIX GetTransform() const noexcept = 0;
 		void Submit() const noexcept;
 		void Bind(Graphics& gfx) const noexcpt;
@@ -23,6 +23,6 @@ namespace Draw
 		std::shared_ptr<Bind::IndexBuffer> pIndices;
 		std::shared_ptr<Bind::VertexBuffer> pVertices;
 		std::shared_ptr<Bind::Topology> pTopology;
-		std::vector<Technique> techniques{};
+		std::vector<Rgph::Technique> techniques{};
 	};
 }

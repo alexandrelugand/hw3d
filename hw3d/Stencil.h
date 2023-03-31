@@ -9,7 +9,9 @@ namespace Bind
 		{
 			Off,
 			Write,
-			Mask
+			Mask,
+			DepthOff,
+			DepthReversed
 		};
 
 		Stencil(Graphics& gfx, Mode mode);

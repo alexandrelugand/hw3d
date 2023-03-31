@@ -19,7 +19,7 @@ namespace Draw
 	{
 	}
 
-	void Drawable::AddTechnique(Technique tech_in) noexcept
+	void Drawable::AddTechnique(Rgph::Technique tech_in) noexcept
 	{
 		tech_in.InitializeParentReferences(*this);
 		techniques.push_back(std::move(tech_in));

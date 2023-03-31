@@ -9,7 +9,7 @@ namespace Probes
 		TechniqueProbe() = default;
 		virtual ~TechniqueProbe() = default;
 
-		void SetTechnique(Technique* pTech_in);
+		void SetTechnique(Rgph::Technique* pTech_in);
 		void SetStep(Rgph::Step* pStep_in);
 
 		bool VisitBuffer(Dcb::Buffer& buf);
@@ -19,7 +19,7 @@ namespace Probes
 		virtual void OnSetStep();
 		virtual bool OnVisitBuffer(Dcb::Buffer& buffer);
 
-		Technique* pTech = nullptr;
+		Rgph::Technique* pTech = nullptr;
 		Rgph::Step* pStep = nullptr;
 		size_t techIdx = std::numeric_limits<size_t>::max();
 		size_t stepIdx = std::numeric_limits<size_t>::max();

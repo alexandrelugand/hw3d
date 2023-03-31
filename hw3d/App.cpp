@@ -7,6 +7,10 @@ App::App(const std::string& commandLine)
 	: wnd(1280u, 1024u, "DirectX Engine"),
 	  sc(String::TokenizeQuoted(commandLine))
 {
+	cameras.AddCamera(std::make_unique<Entities::Camera>(wnd.Gfx(), "A", XMFLOAT3{-13.5f, 6.0f, 3.5f}, 0.0f, PI / 2.0f));
+	cameras.AddCamera(std::make_unique<Entities::Camera>(wnd.Gfx(), "B", XMFLOAT3{-13.5f, 28.8f, -6.4f}, PI / 180.0f * 13.0f, PI / 180.0f * 61.0f));
+	cameras.LinkTechniques(rg);
+
 	light.LinkTechniques(rg);
 	cube.LinkTechniques(rg);
 	cube2.LinkTechniques(rg);
@@ -18,8 +22,6 @@ App::App(const std::string& commandLine)
 	goblin.LinkTechniques(rg);
 	sponza.LinkTechniques(rg);
 	nano.LinkTechniques(rg);
-
-	wnd.Gfx().SetProjection(XMMatrixPerspectiveLH(1.0f, 3.0f / 4.0f, 0.5f, 400.0f));
 }
 
 int App::Go()
@@ -85,27 +87,27 @@ void App::HandleInput(float dt)
 		}
 		if (wnd.kbd.KeyIsPressed('Z'))
 		{
-			camera.Translate({0.0f, 0.0f, dt});
+			cameras->Translate({0.0f, 0.0f, dt});
 		}
 		if (wnd.kbd.KeyIsPressed('S'))
 		{
-			camera.Translate({0.0f, 0.0f, -dt});
+			cameras->Translate({0.0f, 0.0f, -dt});
 		}
 		if (wnd.kbd.KeyIsPressed('Q'))
 		{
-			camera.Translate({-dt, 0.0f, 0.0f});
+			cameras->Translate({-dt, 0.0f, 0.0f});
 		}
 		if (wnd.kbd.KeyIsPressed('D'))
 		{
-			camera.Translate({dt, 0.0f, 0.0f});
+			cameras->Translate({dt, 0.0f, 0.0f});
 		}
 		if (wnd.kbd.KeyIsPressed(VK_SPACE))
 		{
-			camera.Translate({0.0f, dt, 0.0f});
+			cameras->Translate({0.0f, dt, 0.0f});
 		}
 		if (wnd.kbd.KeyIsPressed(VK_CONTROL))
 		{
-			camera.Translate({0.0f, -dt, 0.0f});
+			cameras->Translate({0.0f, -dt, 0.0f});
 		}
 	}
 
@@ -124,7 +126,7 @@ void App::HandleInput(float dt)
 	{
 		if (!wnd.CursorEnabled())
 		{
-			camera.Rotate(static_cast<float>(delta->x), static_cast<float>(delta->y));
+			cameras->Rotate(static_cast<float>(delta->x), static_cast<float>(delta->y));
 		}
 	}
 }
@@ -134,10 +136,12 @@ void App::DoFrame(float dt)
 	auto& gfx = wnd.Gfx();
 
 	gfx.BeginFrame(0.07f, 0.0f, 0.12f);
-	gfx.SetCamera(camera.GetMatrix());
-	light.Bind(wnd.Gfx(), camera.GetMatrix());
+	cameras.Bind(gfx);
+	cameras.Submit();
 
+	light.Bind(gfx, cameras->GetMatrix());
 	light.Submit();
+
 	cube.Submit();
 	cube2.Submit();
 	box.Submit();
@@ -155,7 +159,7 @@ void App::DoFrame(float dt)
 	{
 		//Camera / light windows
 		SpawnSimulationWindow();
-		camera.SpawnControlWindow();
+		cameras.SpawnWindow(gfx);
 		light.SpawnControlWindow();
 
 		drawableProbe.SpawnControl(cube);

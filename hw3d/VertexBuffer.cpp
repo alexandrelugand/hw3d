@@ -9,7 +9,7 @@ namespace Bind
 	}
 
 	VertexBuffer::VertexBuffer(Graphics& gfx, const std::string& tag, const Dvtx::VertexBufferDescriptor& vbd)
-		: tag(tag), stride(static_cast<UINT>(vbd.GetLayout().Size()))
+		: tag(tag), stride(static_cast<UINT>(vbd.GetLayout().Size())), layout(vbd.GetLayout())
 	{
 		INFOMAN(gfx);
 
