@@ -38,7 +38,7 @@ namespace Entities
 		ImGui::End();
 	}
 
-	void CameraContainer::Bind(Graphics& gfx) const noexcept(!true)
+	void CameraContainer::Bind(Graphics& gfx) const noexcpt
 	{
 		GetActiveCamera().BindToGraphics(gfx);
 	}
