@@ -408,6 +408,9 @@
     <ClCompile Include="DrawableProbe.cpp">
       <Filter>Source Files\Probes\Model</Filter>
     </ClCompile>
+    <ClCompile Include="string.cpp">
+      <Filter>Source Files\Utils</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -867,6 +870,12 @@
       <Filter>Shaders</Filter>
     </FxCompile>
     <FxCompile Include="Blur_PS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="PhongDifMskSpc_VS.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+    <FxCompile Include="PhongDifMskSpc_PS.hlsl">
       <Filter>Shaders</Filter>
     </FxCompile>
   </ItemGroup>

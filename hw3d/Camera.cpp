@@ -3,7 +3,10 @@
 
 namespace Entities
 {
-	Camera::Camera() noexcept
+	Camera::Camera(XMFLOAT3 homePos, float homePitch, float homeYaw) noexcept
+		: homePos(homePos),
+		  homePitch(homePitch),
+		  homeYaw(homeYaw)
 	{
 		Reset();
 	}
@@ -41,9 +44,9 @@ namespace Entities
 
 	void Camera::Reset() noexcept
 	{
-		pos = {-13.5f, 6.0f, 3.5f};
-		pitch = 0.0f;
-		yaw = PI / 2.0f;
+		pos = homePos;
+		pitch = homePitch;
+		yaw = homeYaw;
 	}
 
 	void Camera::Rotate(float dx, float dy) noexcept

@@ -35,7 +35,7 @@ namespace Rgph
 		pTargetPass->Accept(Job{this, &drawable});
 	}
 
-	void Step::Bind(Graphics& gfx) const
+	void Step::Bind(Graphics& gfx) const noexcpt
 	{
 		for (const auto& b : bindables)
 		{

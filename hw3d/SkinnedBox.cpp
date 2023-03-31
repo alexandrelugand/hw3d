@@ -29,7 +29,7 @@ namespace Draw
 				only.AddBindable(Bind::Sampler::Resolve(gfx));
 
 				auto pvs = Bind::VertexShader::Resolve(gfx, "PhongDifNrm_VS.cso");
-				auto pvsbc = pvs->GetBytecode();
+				only.AddBindable(Bind::InputLayout::Resolve(gfx, model.vertices.GetLayout(), *pvs));
 				only.AddBindable(std::move(pvs));
 
 				only.AddBindable(Bind::PixelShader::Resolve(gfx, "PhongDifNrm_PS.cso"));
@@ -48,7 +48,6 @@ namespace Draw
 				buf["normalMapWeight"] = 1.0f;
 				only.AddBindable(std::make_shared<Bind::CachingPixelCBuf>(gfx, buf, 1u));
 
-				only.AddBindable(Bind::InputLayout::Resolve(gfx, model.vertices.GetLayout(), pvsbc));
 				only.AddBindable(Bind::Rasterizer::Resolve(gfx, CullMode::Back));
 				only.AddBindable(tcb);
 
@@ -62,7 +61,7 @@ namespace Draw
 			Rgph::Step mask("outlineMask");
 			{
 				// TODO: better sub-layout generation tech for future consideration maybe
-				mask.AddBindable(Bind::InputLayout::Resolve(gfx, model.vertices.GetLayout(), Bind::VertexShader::Resolve(gfx, "Solid_VS.cso")->GetBytecode()));
+				mask.AddBindable(Bind::InputLayout::Resolve(gfx, model.vertices.GetLayout(), *Bind::VertexShader::Resolve(gfx, "Solid_VS.cso")));
 
 				mask.AddBindable(std::move(tcb));
 
@@ -79,7 +78,7 @@ namespace Draw
 				draw.AddBindable(std::make_shared<Bind::CachingPixelCBuf>(gfx, buf, 1u));
 
 				// TODO: better sub-layout generation tech for future consideration maybe
-				draw.AddBindable(Bind::InputLayout::Resolve(gfx, model.vertices.GetLayout(), Bind::VertexShader::Resolve(gfx, "Solid_VS.cso")->GetBytecode()));
+				draw.AddBindable(Bind::InputLayout::Resolve(gfx, model.vertices.GetLayout(), *Bind::VertexShader::Resolve(gfx, "Solid_VS.cso")));
 
 				draw.AddBindable(std::make_shared<Bind::TransformCBuf>(gfx));
 

@@ -30,6 +30,7 @@ namespace Bind
 	public:
 		ShaderInputRenderTarget(Graphics& gfx, UINT width, UINT height, UINT slot);
 		void Bind(Graphics& gfx) noexcpt override;
+		Surface ToSurface(Graphics& gfx) const;
 
 	private:
 		UINT slot;

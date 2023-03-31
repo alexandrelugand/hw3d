@@ -6,7 +6,7 @@ namespace Probes
 	class HierarchyModelProbe : ModelProbe
 	{
 	public:
-		void SpawnWindow(Entities::Model& model);
+		void SpawnWindow(const Entities::Model& model);
 
 	protected:
 		bool PushNode(Entities::Node& node) override;

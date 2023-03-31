@@ -22,12 +22,10 @@ namespace Draw
 			Rgph::Step only("lambertian");
 
 			auto pvs = Bind::VertexShader::Resolve(gfx, "Solid_VS.cso");
-			auto pvsbc = pvs->GetBytecode();
+			only.AddBindable(Bind::InputLayout::Resolve(gfx, model.vertices.GetLayout(), *pvs));
 			only.AddBindable(std::move(pvs));
 
 			only.AddBindable(Bind::PixelShader::Resolve(gfx, "Solid_PS.cso"));
-
-			only.AddBindable(Bind::InputLayout::Resolve(gfx, model.vertices.GetLayout(), pvsbc));
 
 			only.AddBindable(std::make_shared<Bind::TransformCBuf>(gfx));
 			only.AddBindable(std::make_shared<Bind::ColorCBuf>(gfx, *this, 1u));

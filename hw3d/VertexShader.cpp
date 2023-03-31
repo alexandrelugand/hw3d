@@ -8,7 +8,7 @@ namespace Bind
 	{
 		INFOMAN(gfx);
 
-		GFX_THROW_INFO(D3DReadFileToBlob(String::ToWide(path).c_str(), &pBlob));
+		GFX_THROW_INFO(D3DReadFileToBlob(String::ToWide("ShaderBins\\" + path).c_str(), &pBlob));
 		GFX_THROW_INFO(GetDevice(gfx)->CreateVertexShader(pBlob->GetBufferPointer(), pBlob->GetBufferSize(), nullptr, &pVertexShader));
 	}
 

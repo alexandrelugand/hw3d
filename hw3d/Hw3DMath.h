@@ -19,8 +19,9 @@ T wrap_angle(T theta) noexcept
 	if (mod > static_cast<T>(PI_D))
 		return mod - twoPi;
 
-	if (mod < static_cast<T>(PI_D))
+	if (mod < static_cast<T>(-PI_D))
 		return mod + twoPi;
+
 	return mod;
 }
 

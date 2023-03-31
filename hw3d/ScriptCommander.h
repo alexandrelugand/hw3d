@@ -16,4 +16,5 @@ public:
 	};
 
 	ScriptCommander(const std::vector<std::string>& args);
+	void Publish(std::string path) const;
 };

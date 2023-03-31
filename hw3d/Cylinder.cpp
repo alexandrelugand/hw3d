@@ -21,7 +21,7 @@ namespace Draw
 				Rgph::Step only("lambertian");
 
 				auto pvs = Bind::VertexShader::Resolve(gfx, "BlendedPhong_VS.cso");
-				auto pvsbc = pvs->GetBytecode();
+				only.AddBindable(std::make_unique<Bind::InputLayout>(gfx, model.vertices.GetLayout(), *pvs));
 				only.AddBindable(std::move(pvs));
 
 				only.AddBindable(Bind::PixelShader::Resolve(gfx, "BlendedPhong_PS.cso"));
@@ -36,7 +36,6 @@ namespace Draw
 				buf["specularPower"] = 20.0f;
 				only.AddBindable(std::make_shared<Bind::CachingPixelCBuf>(gfx, buf, 1u));
 
-				only.AddBindable(std::make_unique<Bind::InputLayout>(gfx, model.vertices.GetLayout(), pvsbc));
 				only.AddBindable(std::make_shared<Bind::TransformCBuf>(gfx));
 
 				shade.AddStep(std::move(only));

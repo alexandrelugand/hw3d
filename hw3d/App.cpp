@@ -17,6 +17,7 @@ App::App(const std::string& commandLine)
 	sheet.LinkTechniques(rg);
 	goblin.LinkTechniques(rg);
 	sponza.LinkTechniques(rg);
+	nano.LinkTechniques(rg);
 
 	wnd.Gfx().SetProjection(XMMatrixPerspectiveLH(1.0f, 3.0f / 4.0f, 0.5f, 400.0f));
 }
@@ -146,6 +147,7 @@ void App::DoFrame(float dt)
 	sheet.Submit();
 	goblin.Submit();
 	sponza.Submit();
+	nano.Submit();
 
 	rg.Execute(gfx);
 
@@ -165,6 +167,9 @@ void App::DoFrame(float dt)
 		drawableProbe.SpawnControl(sheet);
 		modelProbe.SpawnWindow(goblin);
 		modelProbe.SpawnWindow(sponza);
+		modelProbe.SpawnWindow(nano);
+
+		rg.RenderWidgets(gfx);
 	}
 
 	// Present

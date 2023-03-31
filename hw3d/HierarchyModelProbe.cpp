@@ -3,7 +3,7 @@
 
 namespace Probes
 {
-	void HierarchyModelProbe::SpawnWindow(Entities::Model& model)
+	void HierarchyModelProbe::SpawnWindow(const Entities::Model& model)
 	{
 		ImGui::Begin(model.GetName().c_str());
 		ImGui::Columns(2, nullptr, true);

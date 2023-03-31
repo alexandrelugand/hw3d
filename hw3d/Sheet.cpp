@@ -27,7 +27,7 @@ namespace Draw
 				only.AddBindable(Bind::Sampler::Resolve(gfx));
 
 				auto pvs = Bind::VertexShader::Resolve(gfx, "PhongDif_VS.cso");
-				auto pvsbc = pvs->GetBytecode();
+				only.AddBindable(std::make_unique<Bind::InputLayout>(gfx, model.vertices.GetLayout(), *pvs));
 				only.AddBindable(std::move(pvs));
 
 				only.AddBindable(Bind::PixelShader::Resolve(gfx, "PhongDifNrmNoTBN_PS.cso"));
@@ -46,7 +46,6 @@ namespace Draw
 				buf["normalMapWeight"] = 1.0f;
 				only.AddBindable(std::make_shared<Bind::CachingPixelCBuf>(gfx, buf, 1u));
 
-				only.AddBindable(std::make_unique<Bind::InputLayout>(gfx, model.vertices.GetLayout(), pvsbc));
 				only.AddBindable(std::make_shared<Bind::TransformAllCBuf>(gfx, 0u, 2u));
 				only.AddBindable(std::make_shared<Bind::Rasterizer>(gfx, CullMode::None));
 

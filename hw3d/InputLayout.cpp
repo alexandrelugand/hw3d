@@ -3,17 +3,19 @@
 
 namespace Bind
 {
-	InputLayout::InputLayout(Graphics& gfx, Dvtx::VertexLayout layout_in, ID3DBlob* pVertexShaderBytecode)
+	InputLayout::InputLayout(Graphics& gfx, Dvtx::VertexLayout layout_in, const VertexShader& vs)
 		: layout(std::move(layout_in))
 	{
 		INFOMAN(gfx);
 
+		vertexShaderUID = vs.GetUID();
 		const auto d3dlayout = layout.GetD3DLayout();
+		const auto pByteCode = vs.GetBytecode();
 
 		GFX_THROW_INFO(GetDevice(gfx)->CreateInputLayout(d3dlayout.data(),
 				static_cast<UINT>(d3dlayout.size()),
-				pVertexShaderBytecode->GetBufferPointer(),
-				pVertexShaderBytecode->GetBufferSize(),
+				pByteCode->GetBufferPointer(),
+				pByteCode->GetBufferSize(),
 				&pInputLayout)
 		);
 	}
@@ -29,18 +31,18 @@ namespace Bind
 		GFX_THROW_INFO_ONLY(GetContext(gfx)->IASetInputLayout(pInputLayout.Get()));
 	}
 
-	std::shared_ptr<InputLayout> InputLayout::Resolve(Graphics& gfx, const Dvtx::VertexLayout& layout, ID3DBlob* pVertexShaderBytecode)
+	std::shared_ptr<InputLayout> InputLayout::Resolve(Graphics& gfx, const Dvtx::VertexLayout& layout, const VertexShader& vs)
 	{
-		return Codex::Resolve<InputLayout>(gfx, layout, pVertexShaderBytecode);
+		return Codex::Resolve<InputLayout>(gfx, layout, vs);
 	}
 
-	std::string InputLayout::GenerateUID(const Dvtx::VertexLayout& layout, ID3DBlob* pVertexShaderBytecode)
+	std::string InputLayout::GenerateUID(const Dvtx::VertexLayout& layout, const VertexShader& vs)
 	{
-		return typeid(InputLayout).name() + "#"s + layout.GetCode();
+		return typeid(InputLayout).name() + "#"s + layout.GetCode() + "#"s + vs.GetUID();
 	}
 
 	std::string InputLayout::GetUID() const noexcept
 	{
-		return GenerateUID(layout);
+		return typeid(InputLayout).name() + "#"s + layout.GetCode() + "#"s + vertexShaderUID;
 	}
 }

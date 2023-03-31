@@ -10,7 +10,7 @@ namespace Rgph
 		RegisterSource(DirectBufferSource<Bind::BufferResource>::Make("buffer", buffer));
 	}
 
-	void BufferClearPass::Execute(Graphics& gfx) const noexcept(!true)
+	void BufferClearPass::Execute(Graphics& gfx) const noexcpt
 	{
 		buffer->Clear(gfx);
 	}
