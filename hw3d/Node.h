@@ -9,7 +9,7 @@ namespace Entities
 	public:
 		Node(int id, const std::string& name, std::vector<Mesh*> meshPtrs, const XMMATRIX& transform_in) noexcpt;
 
-		void Submit(FXMMATRIX accumulatedTransform) const noexcpt;
+		void Submit(size_t channelFilter, FXMMATRIX accumulatedTransform) const noexcpt;
 
 		const XMFLOAT4X4& GetAppliedTransform() const noexcept;
 		void SetAppliedTransform(FXMMATRIX transform) noexcpt;

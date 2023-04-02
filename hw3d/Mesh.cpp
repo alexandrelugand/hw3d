@@ -14,9 +14,9 @@ namespace Entities
 		return XMLoadFloat4x4(&transform);
 	}
 
-	void Mesh::Submit(FXMMATRIX accumulatedTransform) const noexcpt
+	void Mesh::Submit(size_t channelFilter, FXMMATRIX accumulatedTransform) const noexcpt
 	{
 		XMStoreFloat4x4(&transform, accumulatedTransform);
-		Drawable::Submit();
+		Drawable::Submit(channelFilter);
 	}
 }

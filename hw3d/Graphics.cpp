@@ -132,6 +132,11 @@ void Graphics::BeginFrame(float red, float green, float blue) const noexcept
 		pContext->RSSetState(m_wire_frame_state.Get());
 	else
 		pContext->RSSetState(m_cull_front_state.Get());
+
+	// clearing shader inputs to prevent simultaneous in/out bind carrier over from previous frame
+	ID3D11ShaderResourceView* const pNullTex = nullptr;
+	pContext->PSSetShaderResources(0, 1, &pNullTex); // fullscreen input texture
+	pContext->PSSetShaderResources(3, 1, &pNullTex); // shadow map texture
 }
 
 void Graphics::EndFrame()

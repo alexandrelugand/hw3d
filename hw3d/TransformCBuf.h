@@ -13,6 +13,7 @@ namespace Bind
 	protected:
 		struct Transforms
 		{
+			XMMATRIX model;
 			XMMATRIX modelView;
 			XMMATRIX modelViewProj;
 		};

@@ -7,8 +7,9 @@ App::App(const std::string& commandLine)
 	: wnd(1280u, 1024u, "DirectX Engine"),
 	  sc(String::TokenizeQuoted(commandLine))
 {
-	cameras.AddCamera(std::make_unique<Entities::Camera>(wnd.Gfx(), "A", XMFLOAT3{-13.5f, 6.0f, 3.5f}, 0.0f, PI / 2.0f));
+	cameras.AddCamera(std::make_unique<Entities::Camera>(wnd.Gfx(), "A", XMFLOAT3{-34.5f, 18.0f, 3.0f}, PI / 180.0f * 17.0f, PI / 2.0f));
 	cameras.AddCamera(std::make_unique<Entities::Camera>(wnd.Gfx(), "B", XMFLOAT3{-13.5f, 28.8f, -6.4f}, PI / 180.0f * 13.0f, PI / 180.0f * 61.0f));
+	cameras.AddCamera(light.ShareCamera());
 	cameras.LinkTechniques(rg);
 
 	light.LinkTechniques(rg);
@@ -22,6 +23,8 @@ App::App(const std::string& commandLine)
 	goblin.LinkTechniques(rg);
 	sponza.LinkTechniques(rg);
 	nano.LinkTechniques(rg);
+
+	rg.BindShadowCamera(*light.ShareCamera());
 }
 
 int App::Go()
@@ -54,28 +57,30 @@ void App::HandleInput(float dt)
 		if (!e->IsPress())
 			continue;
 
-		if (e->IsPress() && e->GetCode() == VK_F11)
+		switch (e->GetCode())
 		{
-			if (gfx.IsWireframeEnabled())
+		case VK_F11:
 			{
-				gfx.DisableWireframe();
+				if (gfx.IsWireframeEnabled())
+					gfx.DisableWireframe();
+				else
+					gfx.EnableWireframe();
+				break;
 			}
-			else
+		case VK_F12:
 			{
-				gfx.EnableWireframe();
+				if (gfx.IsImGuiEnabled())
+					gfx.DisableImGui();
+				else
+					gfx.EnableImGui();
+				break;
 			}
-		}
-
-		if (e->IsPress() && e->GetCode() == VK_F12)
-		{
-			if (gfx.IsImGuiEnabled())
+		case VK_RETURN:
 			{
-				gfx.DisableImGui();
+				savingDepth = true;
+				break;
 			}
-			else
-			{
-				gfx.EnableImGui();
-			}
+		default: ;
 		}
 	}
 
@@ -136,24 +141,34 @@ void App::DoFrame(float dt)
 	auto& gfx = wnd.Gfx();
 
 	gfx.BeginFrame(0.07f, 0.0f, 0.12f);
-	cameras.Bind(gfx);
-	cameras.Submit();
 
 	light.Bind(gfx, cameras->GetMatrix());
-	light.Submit();
+	light.Submit(Chan::main);
 
-	cube.Submit();
-	cube2.Submit();
-	box.Submit();
-	asset.Submit();
-	cylinder.Submit();
-	pyramid.Submit();
-	sheet.Submit();
-	goblin.Submit();
-	sponza.Submit();
-	nano.Submit();
+	rg.BindMainCamera(cameras.GetActiveCamera());
+	cameras.Submit(Chan::main);
+
+	for (const auto c : Chan::Channels)
+	{
+		sponza.Submit(c);
+		cube.Submit(c);
+		cube2.Submit(c);
+		box.Submit(c);
+		asset.Submit(c);
+		cylinder.Submit(c);
+		pyramid.Submit(c);
+		sheet.Submit(c);
+		goblin.Submit(c);
+		nano.Submit(c);
+	}
 
 	rg.Execute(gfx);
+
+	if (savingDepth)
+	{
+		rg.DumpShadowMap(gfx, "shadow.png");
+		savingDepth = false;
+	}
 
 	if (gfx.IsImGuiEnabled())
 	{

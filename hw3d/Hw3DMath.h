@@ -15,7 +15,7 @@ template <typename T>
 T wrap_angle(T theta) noexcept
 {
 	constexpr T twoPi = static_cast<T>(2) * static_cast<T>(PI_D);
-	const T mod = fmod(theta, twoPi);
+	const T mod = static_cast<T>(fmod(theta, twoPi));
 	if (mod > static_cast<T>(PI_D))
 		return mod - twoPi;
 

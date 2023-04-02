@@ -6,10 +6,10 @@ namespace Rgph
 	class Technique
 	{
 	public:
-		Technique() = default;
-		Technique(std::string name, bool startActive = true) noexcept;
+		Technique(size_t channels);
+		Technique(std::string name, size_t channels, bool startActive = true) noexcept;
 
-		void Submit(const Draw::Drawable& drawable) const noexcept;
+		void Submit(const Draw::Drawable& drawable, size_t channelFilter) const noexcept;
 
 		const std::string& GetName() const noexcept;
 		void AddStep(Step step) noexcept;
@@ -24,5 +24,6 @@ namespace Rgph
 		bool active = true;
 		std::vector<Step> steps{};
 		std::string name;
+		size_t channels;
 	};
 }

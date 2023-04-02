@@ -35,8 +35,10 @@ namespace Bind
 	TransformCBuf::Transforms TransformCBuf::GetTransforms(Graphics& gfx) noexcpt
 	{
 		assert(pParent != nullptr);
-		const auto modelView = pParent->GetTransform() * gfx.GetCamera();
+		const auto model = pParent->GetTransform();
+		const auto modelView = model * gfx.GetCamera();
 		return {
+			XMMatrixTranspose(model),
 			XMMatrixTranspose(modelView),
 			XMMatrixTranspose(
 				modelView *

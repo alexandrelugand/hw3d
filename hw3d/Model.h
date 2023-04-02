@@ -13,7 +13,7 @@ namespace Entities
 		int GetId() const noexcept;
 		const std::string& GetName() const noexcept;
 
-		void Submit() const noexcpt;
+		void Submit(size_t channelFilter) const noexcpt;
 		void SetRootTransform(FXMMATRIX tf) const noexcept;
 		void Accept(Probes::ModelProbe& probe) const;
 		void LinkTechniques(Rgph::RenderGraph& rg) const;

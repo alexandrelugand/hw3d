@@ -25,11 +25,11 @@ namespace Draw
 		techniques.push_back(std::move(tech_in));
 	}
 
-	void Drawable::Submit() const noexcept
+	void Drawable::Submit(size_t channelFilter) const noexcept
 	{
 		for (const auto& t : techniques)
 		{
-			t.Submit(*this);
+			t.Submit(*this, channelFilter);
 		}
 	}
 

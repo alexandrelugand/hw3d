@@ -66,7 +66,7 @@ namespace Draw
 		pTopology = Bind::Topology::Resolve(gfx, D3D10_PRIMITIVE_TOPOLOGY_LINELIST);
 
 		{
-			Rgph::Technique line;
+			Rgph::Technique line{Chan::main};
 			{
 				Rgph::Step only("lambertian");
 				{

@@ -3,21 +3,36 @@
 
 namespace Entities
 {
-	PointLight::PointLight(Graphics& gfx, float radius, XMFLOAT3 color)
+	PointLight::PointLight(Graphics& gfx, XMFLOAT3 pos, float pitch, float yaw, float radius, XMFLOAT3 color)
 		: mesh(gfx, radius, color),
 		  cbuf(gfx)
 	{
+		home = {
+			pos,
+			{0.05f, 0.05f, 0.05f},
+			{1.0f, 1.0f, 1.0f},
+			1.0f,
+			1.0f,
+			0.045f,
+			0.0075f,
+		};
 		Reset();
+		pCamera = std::make_shared<Camera>(gfx, "Light", cbData.pos, pitch, yaw, true);
 	}
 
 	void PointLight::SpawnControlWindow() noexcept
 	{
 		if (ImGui::Begin("Light"))
 		{
+			bool dirtyPos = false;
+			const auto dcheck = [&dirtyPos](bool dirty) { dirtyPos = dirtyPos || dirty; };
+
 			ImGui::Text("Position");
-			ImGui::SliderFloat("X", &cbData.pos.x, -100.0f, 100.0f, "%.1lf");
-			ImGui::SliderFloat("Y", &cbData.pos.y, -100.0f, 100.0f, "%.1lf");
-			ImGui::SliderFloat("Z", &cbData.pos.z, -100.0f, 100.0f, "%.1lf");
+			dcheck(ImGui::SliderFloat("X", &cbData.pos.x, -100.0f, 100.0f, "%.1lf"));
+			dcheck(ImGui::SliderFloat("Y", &cbData.pos.y, -100.0f, 100.0f, "%.1lf"));
+			dcheck(ImGui::SliderFloat("Z", &cbData.pos.z, -100.0f, 100.0f, "%.1lf"));
+			if (dirtyPos)
+				pCamera->SetPos(cbData.pos);
 
 			ImGui::Text("Intensity/Color");
 			ImGui::ColorEdit3("Diffuse Color", &cbData.diffuseColor.x);
@@ -36,22 +51,14 @@ namespace Entities
 
 	void PointLight::Reset() noexcept
 	{
-		cbData = {
-			{0.0f, 8.0f, 2.5f},
-			{0.05f, 0.05f, 0.05f},
-			{1.0f, 1.0f, 1.0f},
-			1.0f,
-			1.0f,
-			0.045f,
-			0.0075f
-		};
+		cbData = home;
 	}
 
-	void PointLight::Submit() const noexcpt
+	void PointLight::Submit(size_t channelFilter) const noexcpt
 	{
 		mesh.SetPos(cbData.pos);
 		mesh.SetColor(cbData.diffuseColor);
-		mesh.Submit();
+		mesh.Submit(channelFilter);
 	}
 
 	void PointLight::Bind(Graphics& gfx, FXMMATRIX view) const noexcept
@@ -66,5 +73,10 @@ namespace Entities
 	void PointLight::LinkTechniques(Rgph::RenderGraph& rg) const
 	{
 		mesh.LinkTechniques(rg);
+	}
+
+	std::shared_ptr<Camera> PointLight::ShareCamera() const noexcept
+	{
+		return pCamera;
 	}
 }

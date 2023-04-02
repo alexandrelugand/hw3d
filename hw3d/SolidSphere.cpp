@@ -18,7 +18,7 @@ namespace Draw
 		pTopology = Bind::Topology::Resolve(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 		{
-			Rgph::Technique solid;
+			Rgph::Technique solid{Chan::main};
 			Rgph::Step only("lambertian");
 
 			auto pvs = Bind::VertexShader::Resolve(gfx, "Solid_VS.cso");

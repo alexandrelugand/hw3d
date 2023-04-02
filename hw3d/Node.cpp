@@ -10,7 +10,7 @@ namespace Entities
 		XMStoreFloat4x4(&appliedTransform, XMMatrixIdentity());
 	}
 
-	void Node::Submit(FXMMATRIX accumulatedTransform) const noexcpt
+	void Node::Submit(size_t channelFilter, FXMMATRIX accumulatedTransform) const noexcpt
 	{
 		const auto built = XMLoadFloat4x4(&appliedTransform) *
 			XMLoadFloat4x4(&transform) *
@@ -18,12 +18,12 @@ namespace Entities
 
 		for (const auto pm : meshPtrs)
 		{
-			pm->Submit(built);
+			pm->Submit(channelFilter, built);
 		}
 
 		for (const auto& pc : childPtrs)
 		{
-			pc->Submit(built);
+			pc->Submit(channelFilter, built);
 		}
 	}
 

@@ -55,9 +55,9 @@ namespace Entities
 		return name;
 	}
 
-	void Model::Submit() const noexcpt
+	void Model::Submit(size_t channelFilter) const noexcpt
 	{
-		pRoot->Submit(XMMatrixIdentity());
+		pRoot->Submit(channelFilter, XMMatrixIdentity());
 	}
 
 	void Model::SetRootTransform(FXMMATRIX tf) const noexcept

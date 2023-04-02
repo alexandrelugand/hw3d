@@ -5,20 +5,26 @@ namespace Entities
 	class Camera
 	{
 	public:
-		Camera(Graphics& gfx, std::string name, XMFLOAT3 homePos = {0.0f, 0.0f, 0.0f}, float homePitch = 0.0f, float homeYaw = 0.0f) noexcept;
+		Camera(Graphics& gfx, std::string name, XMFLOAT3 homePos = {0.0f, 0.0f, 0.0f}, float homePitch = 0.0f, float homeYaw = 0.0f, bool tethered = false) noexcept;
 
 		void BindToGraphics(Graphics& gfx) const noexcpt;
 		XMMATRIX GetMatrix() const noexcept;
+		XMMATRIX GetProjection() const noexcept;
+
 		void SpawnControlWidgets(Graphics& gfx) noexcept;
+
 		void Reset(Graphics& gfx) noexcept;
 		void Rotate(float dx, float dy) noexcept;
 		void Translate(XMFLOAT3 translation) noexcept;
 		XMFLOAT3 GetPos() const noexcept;
+		void SetPos(XMFLOAT3 pos) noexcept;
 		const std::string& GetName() const noexcept;
+
 		void LinkTechniques(Rgph::RenderGraph& rg);
-		void Submit() const;
+		void Submit(size_t channelFilter) const;
 
 	private:
+		bool tethered;
 		std::string name;
 		XMFLOAT3 homePos;
 		float homePitch;

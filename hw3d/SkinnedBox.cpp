@@ -20,7 +20,7 @@ namespace Draw
 		auto tcb = std::make_shared<Bind::TransformCBuf>(gfx);
 
 		{
-			Rgph::Technique shade("Shade");
+			Rgph::Technique shade("Shade", Chan::main);
 			{
 				Rgph::Step only("lambertian");
 
@@ -28,11 +28,13 @@ namespace Draw
 				only.AddBindable(Bind::Texture::Resolve(gfx, "images\\brickwall_normal_obj.png", 2u));
 				only.AddBindable(Bind::Sampler::Resolve(gfx));
 
-				auto pvs = Bind::VertexShader::Resolve(gfx, "PhongDifNrm_VS.cso");
+				//auto pvs = Bind::VertexShader::Resolve(gfx, "PhongDifNrm_VS.cso");
+				auto pvs = Bind::VertexShader::Resolve(gfx, "ShadowTest_VS.cso");
 				only.AddBindable(Bind::InputLayout::Resolve(gfx, model.vertices.GetLayout(), *pvs));
 				only.AddBindable(std::move(pvs));
 
-				only.AddBindable(Bind::PixelShader::Resolve(gfx, "PhongDifNrm_PS.cso"));
+				//only.AddBindable(Bind::PixelShader::Resolve(gfx, "PhongDifNrm_PS.cso"));
+				only.AddBindable(Bind::PixelShader::Resolve(gfx, "ShadowTest_PS.cso"));
 
 				Dcb::RawLayout lay;
 				lay.Add<Dcb::Float3>("specularColor");
@@ -56,7 +58,7 @@ namespace Draw
 			AddTechnique(std::move(shade));
 		}
 
-		Rgph::Technique outline("Outline", false);
+		Rgph::Technique outline("Outline", Chan::main, false);
 		{
 			Rgph::Step mask("outlineMask");
 			{
@@ -86,6 +88,23 @@ namespace Draw
 				outline.AddStep(std::move(draw));
 			}
 			AddTechnique(std::move(outline));
+		}
+
+		// shadow map technique
+		Rgph::Technique map{"shadowMap", Chan::shadow, true};
+		{
+			Rgph::Step draw{"shadowMap"};
+			{
+				// TODO: better sub-layout generation tech for future consideration maybe
+				draw.AddBindable(Bind::InputLayout::Resolve(gfx, model.vertices.GetLayout(), *Bind::VertexShader::Resolve(gfx, "Solid_VS.cso")));
+
+				draw.AddBindable(std::make_shared<Bind::TransformCBuf>(gfx));
+
+				// TODO: might need to specify rasterizer when doubled-sided models start being used
+
+				map.AddStep(std::move(draw));
+			}
+			AddTechnique(std::move(map));
 		}
 	}
 }

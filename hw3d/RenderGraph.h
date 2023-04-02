@@ -11,6 +11,7 @@ namespace Rgph
 		void Execute(Graphics& gfx) noexcpt;
 		void Reset() noexcept;
 		RenderQueuePass& GetRenderQueue(const std::string& passName);
+		void StoreDepth(Graphics& gfx, const std::string& path) const;
 
 	protected:
 		void SetSinkTarget(const std::string& sinkName, const std::string& target);
@@ -18,6 +19,7 @@ namespace Rgph
 		void AddGlobalSink(std::unique_ptr<Sink> sink);
 		void Finalize();
 		void AppendPass(std::unique_ptr<Pass> pass);
+		Pass& FindPassByName(const std::string& name);
 
 	private:
 		void LinkSink(Pass& pass);

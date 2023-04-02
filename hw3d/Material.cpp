@@ -15,7 +15,7 @@ Material::Material(Graphics& gfx, const aiMaterial& material, const std::filesys
 
 	// phong technique
 	{
-		Rgph::Technique phong{"Phong"};
+		Rgph::Technique phong{"Phong", Chan::main};
 		Rgph::Step step("lambertian");
 		std::string shaderCode = "Phong";
 		aiString texFileName;
@@ -130,7 +130,7 @@ Material::Material(Graphics& gfx, const aiMaterial& material, const std::filesys
 	}
 	// outline technique
 	{
-		Rgph::Technique outline("Outline", false);
+		Rgph::Technique outline("Outline", Chan::main, false);
 		{
 			Rgph::Step mask("outlineMask");
 
@@ -162,6 +162,23 @@ Material::Material(Graphics& gfx, const aiMaterial& material, const std::filesys
 		}
 		techniques.push_back(std::move(outline));
 	}
+	//// shadow map technique
+	//{
+	//	Rgph::Technique map{"shadowMap", Chan::shadow, true};
+	//	{
+	//		Rgph::Step draw{"shadowMap"};
+	//		{
+	//			// TODO: better sub-layout generation tech for future consideration maybe
+	//			draw.AddBindable(Bind::InputLayout::Resolve(gfx, layout, *Bind::VertexShader::Resolve(gfx, "Solid_VS.cso")));
+
+	//			draw.AddBindable(std::make_shared<Bind::TransformCBuf>(gfx));
+
+	//			// TODO: might need to specify rasterizer when doubled-sided models start being used
+	//			map.AddStep(std::move(draw));
+	//		}
+	//		techniques.push_back(std::move(map));
+	//	}
+	//}
 }
 
 Dvtx::VertexBufferDescriptor Material::ExtractVertices(const aiMesh& mesh) const noexcept

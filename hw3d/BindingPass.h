@@ -7,7 +7,7 @@ namespace Rgph
 	protected:
 		BindingPass(std::string name, std::vector<std::shared_ptr<Bind::Bindable>> binds = {});
 		void AddBind(std::shared_ptr<Bind::Bindable> bind) noexcept;
-		void BindAll(Graphics& gfx) const noexcept;
+		void BindAll(Graphics& gfx) const noexcpt;
 		void Finalize() override;
 
 		template <class T>

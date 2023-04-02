@@ -15,14 +15,15 @@ private:
 
 	Hw3DTimer timer;
 	float speed_factor = 1.0f;
+	bool savingDepth{};
 
 	Rgph::BlurOutlineRenderGraph rg{wnd.Gfx()};
 
 	Entities::CameraContainer cameras;
-	Entities::PointLight light{wnd.Gfx()};
+	Entities::PointLight light{wnd.Gfx(), {-14.0f, 11.5f, -6.0f}, PI / 180.0f * 33.0f};
 
-	Draw::SkinnedBox cube{wnd.Gfx(), 6.0f, {0.0f, 4.0f, -7.5f}};
-	Draw::SkinnedBox cube2{wnd.Gfx(), 6.0f, {20.0f, 4.0f, -7.5f}};
+	Draw::SkinnedBox cube{wnd.Gfx(), 6.0f, {-14.0f, 4.0f, 0.0f}};
+	Draw::SkinnedBox cube2{wnd.Gfx(), 6.0f, {-14.0f, 4.0f, -7.5f}};
 	Draw::Box box{wnd.Gfx(), {1.0f, 0.4f, 0.4f}, 6.0f, {10.0f, 2.0f, 0.0f}};
 	Draw::Asset asset{wnd.Gfx(), {0.4f, 0.4f, 1.0f}, 1.0f, {15.0f, 2.0f, 0.0f}};
 	Draw::Cylinder cylinder{wnd.Gfx(), {0.4f, 1.0f, 0.4f}, 6.0f, {20.0f, 2.0f, 0.0f}};

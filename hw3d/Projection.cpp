@@ -46,9 +46,9 @@ void Projection::LinkTechniques(Rgph::RenderGraph& rg)
 	frustum.LinkTechniques(rg);
 }
 
-void Projection::Submit() const
+void Projection::Submit(size_t channelFilter) const
 {
-	frustum.Submit();
+	frustum.Submit(channelFilter);
 }
 
 void Projection::Reset(Graphics& gfx)

@@ -10,7 +10,7 @@ public:
 	void SetPos(XMFLOAT3 pos) noexcept;
 	void SetRot(XMFLOAT3 rot) noexcept;
 	void LinkTechniques(Rgph::RenderGraph& rg);
-	void Submit() const;
+	void Submit(size_t channelFilter) const;
 	void Reset(Graphics& gfx);
 
 private:

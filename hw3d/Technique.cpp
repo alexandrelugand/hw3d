@@ -3,14 +3,19 @@
 
 namespace Rgph
 {
-	Technique::Technique(std::string name, bool startActive) noexcept
-		: active(startActive), name(std::move(name))
+	Technique::Technique(size_t channels)
+		: channels(channels)
 	{
 	}
 
-	void Technique::Submit(const Draw::Drawable& drawable) const noexcept
+	Technique::Technique(std::string name, size_t channels, bool startActive) noexcept
+		: active(startActive), name(name), channels(channels)
 	{
-		if (active)
+	}
+
+	void Technique::Submit(const Draw::Drawable& drawable, size_t channelFilter) const noexcept
+	{
+		if (active && ((channels & channelFilter) != 0))
 		{
 			for (const auto& s : steps)
 			{

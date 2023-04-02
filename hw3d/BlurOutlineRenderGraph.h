@@ -8,6 +8,10 @@ namespace Rgph
 	public:
 		BlurOutlineRenderGraph(Graphics& gfx);
 		void RenderWidgets(Graphics& gfx);
+		void BindMainCamera(Entities::Camera& camera);
+		void BindShadowCamera(Entities::Camera& camera);
+
+		void DumpShadowMap(Graphics& gfx, const std::string& path);
 
 	private:
 		void SetKernelGauss(int radius, float sigma) noexcpt;

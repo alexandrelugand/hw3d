@@ -13,7 +13,7 @@ namespace Draw
 
 		void AddTechnique(Rgph::Technique tech_in) noexcept;
 		virtual XMMATRIX GetTransform() const noexcept = 0;
-		void Submit() const noexcept;
+		void Submit(size_t channelFilter) const noexcept;
 		void Bind(Graphics& gfx) const noexcpt;
 		void Accept(Probes::TechniqueProbe& probe);
 		UINT GetIndexCount() const noexcpt;

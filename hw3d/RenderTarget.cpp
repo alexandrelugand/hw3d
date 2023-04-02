@@ -132,7 +132,7 @@ namespace Bind
 	void ShaderInputRenderTarget::Bind(Graphics& gfx) noexcpt
 	{
 		INFOMAN_NOHR(gfx);
-		GFX_THROW_INFO_ONLY(GetContext(gfx)->PSSetShaderResources(slot, 1, pShaderResourceView.GetAddressOf()));
+		GFX_THROW_INFO_ONLY(GetContext(gfx)->PSSetShaderResources(slot, 1u, pShaderResourceView.GetAddressOf()));
 	}
 
 	Surface ShaderInputRenderTarget::ToSurface(Graphics& gfx) const

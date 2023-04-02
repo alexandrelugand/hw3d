@@ -368,3 +368,5 @@ FodyWeavers.xsd
 
 #ImGUI config file
 /hw3d/imgui.ini
+/hw3d/depth.png
+/hw3d/shadow.png

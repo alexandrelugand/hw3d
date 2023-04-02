@@ -130,6 +130,8 @@ namespace Gdiplus
 #include "NullPixelShader.h"
 #include "DepthStencil.h"
 #include "RenderTarget.h"
+#include "ShadowCameraCBuf.h"
+#include "ShadowSampler.h"
 
 // Dynamic Vertex layout
 #include "Color.h"
@@ -167,6 +169,7 @@ namespace Gdiplus
 #include "Mesh.h"
 
 // Render graph
+#include "Channels.h"
 #include "RenderGraphCompileException.h"
 #include "Pass.h"
 #include "Sink.h"
@@ -184,6 +187,7 @@ namespace Gdiplus
 #include "HorizontalBlurPass.h"
 #include "VerticalBlurPass.h"
 #include "WireframePass.h"
+#include "ShadowMappingPass.h"
 #include "BlurOutlineRenderGraph.h"
 #include "ScaleOutlineRenderGraph.h"
 

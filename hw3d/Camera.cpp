@@ -3,14 +3,21 @@
 
 namespace Entities
 {
-	Camera::Camera(Graphics& gfx, std::string name, XMFLOAT3 homePos, float homePitch, float homeYaw) noexcept
-		: name(std::move(name)),
+	Camera::Camera(Graphics& gfx, std::string name, XMFLOAT3 homePos, float homePitch, float homeYaw, bool tethered) noexcept
+		: tethered(tethered),
+		  name(std::move(name)),
 		  homePos(homePos),
 		  homePitch(homePitch),
 		  homeYaw(homeYaw),
 		  proj(gfx, 1.0f, 3.0f / 4.0f, 0.5f, 400.0f),
 		  indicator(gfx)
 	{
+		if (tethered)
+		{
+			pos = homePos;
+			indicator.SetPos(pos);
+			proj.SetPos(pos);
+		}
 		Reset(gfx);
 	}
 
@@ -33,17 +40,24 @@ namespace Entities
 		return XMMatrixLookAtLH(camPosition, camTarget, XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f));
 	}
 
+	XMMATRIX Camera::GetProjection() const noexcept
+	{
+		return proj.GetMatrix();
+	}
+
 	void Camera::SpawnControlWidgets(Graphics& gfx) noexcept
 	{
 		bool posDirty = false;
 		bool rotDirty = false;
 		const auto dcheck = [](bool d, bool& carry) { carry = carry || d; };
 
-		ImGui::Text("Position");
-		dcheck(ImGui::SliderFloat("X", &pos.x, -80.0f, 80.0f, "%.1f"), posDirty);
-		dcheck(ImGui::SliderFloat("Y", &pos.y, -80.0f, 80.0f, "%.1f"), posDirty);
-		dcheck(ImGui::SliderFloat("Z", &pos.z, -80.0f, 80.0f, "%.1f"), posDirty);
-
+		if (!tethered)
+		{
+			ImGui::Text("Position");
+			dcheck(ImGui::SliderFloat("X", &pos.x, -80.0f, 80.0f, "%.1f"), posDirty);
+			dcheck(ImGui::SliderFloat("Y", &pos.y, -80.0f, 80.0f, "%.1f"), posDirty);
+			dcheck(ImGui::SliderFloat("Z", &pos.z, -80.0f, 80.0f, "%.1f"), posDirty);
+		}
 		ImGui::Text("Rotation");
 		dcheck(ImGui::SliderAngle("Pitch", &pitch, 0.995f * -180.0f, 0.995f * 180.0f), rotDirty); //99.5% of angle, not 100% because camera +Y constraint can't be respected
 		dcheck(ImGui::SliderAngle("Yaw", &yaw, -180.0f, 180.0f), rotDirty);
@@ -72,16 +86,19 @@ namespace Entities
 
 	void Camera::Reset(Graphics& gfx) noexcept
 	{
-		pos = homePos;
+		if (!tethered)
+		{
+			pos = homePos;
+			indicator.SetPos(pos);
+			proj.SetPos(pos);
+		}
 		pitch = homePitch;
 		yaw = homeYaw;
 
-		indicator.SetPos(pos);
-		proj.SetPos(pos);
-
 		const XMFLOAT3 angles{pitch, yaw, 0.0f};
-		proj.SetRot(angles);
 		indicator.SetRot(angles);
+		proj.SetRot(angles);
+		proj.Reset(gfx);
 	}
 
 	void Camera::Rotate(float dx, float dy) noexcept
@@ -96,24 +113,34 @@ namespace Entities
 
 	void Camera::Translate(XMFLOAT3 translation) noexcept
 	{
-		XMStoreFloat3(&translation, XMVector3Transform(
-			              XMLoadFloat3(&translation),
-			              XMMatrixRotationRollPitchYaw(pitch, yaw, 0.0f) *
-			              XMMatrixScaling(travelSpeed, travelSpeed, travelSpeed)
-		              ));
+		if (!tethered)
+		{
+			XMStoreFloat3(&translation, XMVector3Transform(
+				              XMLoadFloat3(&translation),
+				              XMMatrixRotationRollPitchYaw(pitch, yaw, 0.0f) *
+				              XMMatrixScaling(travelSpeed, travelSpeed, travelSpeed)
+			              ));
 
-		pos = {
-			pos.x + translation.x,
-			pos.y + translation.y,
-			pos.z + translation.z
-		};
-		indicator.SetPos(pos);
-		proj.SetPos(pos);
+			pos = {
+				pos.x + translation.x,
+				pos.y + translation.y,
+				pos.z + translation.z
+			};
+			indicator.SetPos(pos);
+			proj.SetPos(pos);
+		}
 	}
 
 	XMFLOAT3 Camera::GetPos() const noexcept
 	{
 		return pos;
+	}
+
+	void Camera::SetPos(XMFLOAT3 pos) noexcept
+	{
+		this->pos = pos;
+		indicator.SetPos(pos);
+		proj.SetPos(pos);
 	}
 
 	const std::string& Camera::GetName() const noexcept
@@ -127,15 +154,15 @@ namespace Entities
 		proj.LinkTechniques(rg);
 	}
 
-	void Camera::Submit() const
+	void Camera::Submit(size_t channelFilter) const
 	{
 		if (enableCameraIndicator)
 		{
-			indicator.Submit();
+			indicator.Submit(channelFilter);
 		}
 		if (enableFrustumIndicator)
 		{
-			proj.Submit();
+			proj.Submit(channelFilter);
 		}
 	}
 }

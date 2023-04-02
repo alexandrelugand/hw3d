@@ -43,11 +43,10 @@ namespace Entities
 		GetActiveCamera().BindToGraphics(gfx);
 	}
 
-	void CameraContainer::AddCamera(std::unique_ptr<Camera> pCam)
+	void CameraContainer::AddCamera(std::shared_ptr<Camera> pCam)
 	{
 		cameras.push_back(std::move(pCam));
 	}
-
 
 	Camera* CameraContainer::operator->() const
 	{
@@ -62,12 +61,12 @@ namespace Entities
 		}
 	}
 
-	void CameraContainer::Submit() const
+	void CameraContainer::Submit(size_t channelFilter) const
 	{
 		for (int i = 0; i < cameras.size(); i++)
 		{
 			if (i != active)
-				cameras[i]->Submit();
+				cameras[i]->Submit(channelFilter);
 		}
 	}
 

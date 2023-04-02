@@ -54,6 +54,11 @@ namespace Rgph
 		throw RGC_EXCEPTION("In RenderGraph::GetRenderQueue, pass not found: " + passName);
 	}
 
+	void RenderGraph::StoreDepth(Graphics& gfx, const std::string& path) const
+	{
+		masterDepthStencil->ToSurface(gfx).Save(path);
+	}
+
 	void RenderGraph::SetSinkTarget(const std::string& sinkName, const std::string& target)
 	{
 		const auto finder = [&sinkName](const std::unique_ptr<Sink>& s)
@@ -110,11 +115,31 @@ namespace Rgph
 		passes.push_back(std::move(pass));
 	}
 
+	Pass& RenderGraph::FindPassByName(const std::string& name)
+	{
+		const auto i = std::find_if(passes.begin(), passes.end(), [&name](auto& p)
+		{
+			return p->GetName() == name;
+		});
+
+		if (i == passes.end())
+			throw std::runtime_error("Failed to find pass name");
+
+		return **i;
+	}
+
 	void RenderGraph::LinkSink(Pass& pass)
 	{
 		for (auto& si : pass.GetSinks())
 		{
 			const auto& inputSourcePassName = si->GetPassName();
+
+			if (inputSourcePassName.empty())
+			{
+				std::ostringstream oss;
+				oss << "In pass named [" << pass.GetName() << "] sink named [" << si->GetRegisteredName() << "] has no target source set.";
+				throw RGC_EXCEPTION(oss.str());
+			}
 
 			// check wether target source is global
 			if (inputSourcePassName == "$")
