@@ -27,8 +27,8 @@ namespace Draw
 
 			only.AddBindable(Bind::PixelShader::Resolve(gfx, "Solid_PS.cso"));
 
-			only.AddBindable(std::make_shared<Bind::TransformCBuf>(gfx));
-			only.AddBindable(std::make_shared<Bind::ColorCBuf>(gfx, *this, 1u));
+			only.AddBindable(std::make_shared<Bind::TransformCBuf>(gfx, Shaders::CBuf::Transform));
+			only.AddBindable(std::make_shared<Bind::ColorCBuf>(gfx, *this, Shaders::CBuf::Object));
 
 			only.AddBindable(Bind::Blender::Resolve(gfx, false));
 			only.AddBindable(Bind::Rasterizer::Resolve(gfx));

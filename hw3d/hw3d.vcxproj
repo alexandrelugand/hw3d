@@ -385,6 +385,7 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CameraContainer.h" />
     <ClInclude Include="CameraIndicator.h" />
+    <ClInclude Include="ShaderSlots.h" />
     <ClInclude Include="Channels.h" />
     <ClInclude Include="Codex.h" />
     <ClInclude Include="Color.h" />
@@ -514,10 +515,12 @@
       <FileType>Document</FileType>
     </CopyFileToFolders>
     <None Include="process.json" />
+    <None Include="PShadow.hlsli" />
     <None Include="Transform.hlsli" />
     <None Include="ShaderOps.hlsli" />
     <None Include="PointLight.hlsli" />
     <None Include="LightVectorData.hlsli" />
+    <None Include="VShadow.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="BlendedPhong_PS.hlsl">

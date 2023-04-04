@@ -5,7 +5,7 @@ namespace Bind
 {
 	std::unique_ptr<VertexConstantBuffer<TransformCBuf::Transforms>> TransformCBuf::pVcbuf;
 
-	TransformCBuf::TransformCBuf(Graphics& gfx, UINT slot)
+	TransformCBuf::TransformCBuf(Graphics& gfx, unsigned int slot)
 	{
 		if (!pVcbuf)
 			pVcbuf = std::make_unique<VertexConstantBuffer<Transforms>>(gfx, slot);

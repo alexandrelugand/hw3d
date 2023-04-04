@@ -76,15 +76,14 @@ namespace Draw
 
 					only.AddBindable(Bind::PixelShader::Resolve(gfx, "Solid_PS.cso"));
 
+					only.AddBindable(std::make_shared<Bind::TransformCBuf>(gfx, Shaders::CBuf::Transform));
 					struct PSColorConstant
 					{
 						XMFLOAT3 color{0.2f, 0.2f, 0.6f};
 						float padding{};
 					} colorConst;
 
-					only.AddBindable(Bind::PixelConstantBuffer<PSColorConstant>::Resolve(gfx, colorConst, 1u));
-
-					only.AddBindable(std::make_shared<Bind::TransformCBuf>(gfx));
+					only.AddBindable(Bind::PixelConstantBuffer<PSColorConstant>::Resolve(gfx, colorConst, Shaders::CBuf::Object));
 
 					only.AddBindable(Bind::Rasterizer::Resolve(gfx, CullMode::Back));
 				}

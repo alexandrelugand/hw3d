@@ -3,7 +3,7 @@
 
 namespace Bind
 {
-	ShadowCameraCBuf::ShadowCameraCBuf(Graphics& gfx, UINT slot)
+	ShadowCameraCBuf::ShadowCameraCBuf(Graphics& gfx, unsigned int slot)
 		: pVcbuf{std::make_unique<VertexConstantBuffer<Transform>>(gfx, slot)}
 	{
 	}

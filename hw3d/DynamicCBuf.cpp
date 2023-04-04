@@ -18,7 +18,7 @@ namespace Bind
 		GetContext(gfx)->Unmap(pConstantBuffer.Get(), 0u);
 	}
 
-	DynamicCBuf::DynamicCBuf(Graphics& gfx, const Dcb::LayoutElement& layoutRoot, UINT slot, const Dcb::Buffer* pBuf)
+	DynamicCBuf::DynamicCBuf(Graphics& gfx, const Dcb::LayoutElement& layoutRoot, unsigned int slot, const Dcb::Buffer* pBuf)
 		: slot(slot)
 	{
 		INFOMAN(gfx);
@@ -28,7 +28,7 @@ namespace Bind
 		cbd.Usage = D3D11_USAGE_DYNAMIC;
 		cbd.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
 		cbd.MiscFlags = 0u;
-		cbd.ByteWidth = static_cast<UINT>(layoutRoot.GetSizeInBytes());
+		cbd.ByteWidth = static_cast<unsigned int>(layoutRoot.GetSizeInBytes());
 		cbd.StructureByteStride = 0u;
 
 		if (pBuf != nullptr)

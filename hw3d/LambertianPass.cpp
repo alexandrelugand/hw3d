@@ -6,7 +6,7 @@ namespace Rgph
 	LambertianPass::LambertianPass(Graphics& gfx, std::string name)
 		: RenderQueuePass(std::move(name)),
 		  pShadowSampler{std::make_shared<Bind::ShadowSampler>(gfx)},
-		  pShadowCBuf{std::make_shared<Bind::ShadowCameraCBuf>(gfx)}
+		  pShadowCBuf{std::make_shared<Bind::ShadowCameraCBuf>(gfx, Shaders::CBuf::Shadow)}
 	{
 		AddBind(pShadowCBuf);
 		AddBind(pShadowSampler);
@@ -23,7 +23,7 @@ namespace Rgph
 		pMainCamera = &camera;
 	}
 
-	void LambertianPass::BindShadowCamera(Entities::Camera& camera) noexcept
+	void LambertianPass::BindShadowCamera(Entities::Camera& camera) const noexcept
 	{
 		pShadowCBuf->SetCamera(&camera);
 	}

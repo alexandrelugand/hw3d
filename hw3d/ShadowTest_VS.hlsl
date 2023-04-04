@@ -1,4 +1,5 @@
 #include "Transform.hlsli"
+#include "VShadow.hlsli"
 
 cbuffer ShadowTransform
 {
@@ -12,7 +13,7 @@ struct VSOut
     float3 viewTan : TANGENT;
     float3 viewBitan : BITANGENT;
     float2 tc : TEXCOORD;
-    float4 shadowCamPos : SHADOWPOSITION;
+    float4 shadowHomoPos : SHADOWPOSITION;
     float4 pos : SV_POSITION;
 };
 
@@ -25,8 +26,6 @@ VSOut main(float3 pos : POSITION, float3 n : NORMAL, float2 tc : TEXCOORD, float
     vso.viewBitan = mul(bitan, (float3x3) modelView);
     vso.pos = mul(float4(pos, 1.0f), modelViewProj);
     vso.tc = tc;
-    const float4 shadowCamera = mul(float4(pos, 1.0f), model);
-    const float4 shadowHomo = mul(shadowCamera, shadowView);
-    vso.shadowCamPos = shadowHomo * float4(0.5f, -0.5f, 1.0f, 1.0f) + (float4(0.5f, 0.5f, 0.0f, 0.0f) * shadowHomo.w);
+    vso.shadowHomoPos = ToShadowHomoSpace(pos, model);
     return vso;
 }

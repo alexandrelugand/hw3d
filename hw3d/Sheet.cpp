@@ -22,8 +22,8 @@ namespace Draw
 			{
 				Rgph::Step only("lambertian");
 
-				only.AddBindable(Bind::Texture::Resolve(gfx, "images\\brickwall.jpg"));
-				only.AddBindable(Bind::Texture::Resolve(gfx, "images\\brickwall_normal_obj.png", 2u));
+				only.AddBindable(Bind::Texture::Resolve(gfx, "images\\brickwall.jpg", Shaders::Texture::Diffuse));
+				only.AddBindable(Bind::Texture::Resolve(gfx, "images\\brickwall_normal_obj.png", Shaders::Texture::Normal));
 				only.AddBindable(Bind::Sampler::Resolve(gfx));
 
 				auto pvs = Bind::VertexShader::Resolve(gfx, "PhongDif_VS.cso");
@@ -44,9 +44,9 @@ namespace Draw
 				buf["specularGloss"] = 20.0f;
 				buf["useNormalMap"] = true;
 				buf["normalMapWeight"] = 1.0f;
-				only.AddBindable(std::make_shared<Bind::CachingPixelCBuf>(gfx, buf, 1u));
+				only.AddBindable(std::make_shared<Bind::CachingPixelCBuf>(gfx, buf, 2u));
 
-				only.AddBindable(std::make_shared<Bind::TransformAllCBuf>(gfx, 0u, 2u));
+				only.AddBindable(std::make_shared<Bind::TransformAllCBuf>(gfx, 0u, 1u));
 				only.AddBindable(std::make_shared<Bind::Rasterizer>(gfx, CullMode::None));
 
 				shade.AddStep(std::move(only));

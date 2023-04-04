@@ -2,7 +2,7 @@
 #include "LightVectorData.hlsli"
 #include "PointLight.hlsli"
 
-cbuffer ObjectCBuf
+cbuffer ObjectCBuf : register(b2)
 {
     float3 color;
     float specularIntensity;

@@ -26,6 +26,7 @@ namespace Draw
 
 				only.AddBindable(Bind::PixelShader::Resolve(gfx, "BlendedPhong_PS.cso"));
 
+				only.AddBindable(std::make_shared<Bind::TransformCBuf>(gfx, Shaders::CBuf::Transform));
 				Dcb::RawLayout lay;
 				lay.Add<Dcb::Float3>("color");
 				lay.Add<Dcb::Float>("specularIntensity");
@@ -34,9 +35,7 @@ namespace Draw
 				buf["color"] = material;
 				buf["specularIntensity"] = 0.1f;
 				buf["specularPower"] = 20.0f;
-				only.AddBindable(std::make_shared<Bind::CachingPixelCBuf>(gfx, buf, 1u));
-
-				only.AddBindable(std::make_shared<Bind::TransformCBuf>(gfx));
+				only.AddBindable(std::make_shared<Bind::CachingPixelCBuf>(gfx, buf, Shaders::CBuf::Object));
 
 				shade.AddStep(std::move(only));
 			}

@@ -10,10 +10,10 @@ namespace Bind
 		virtual const Dcb::LayoutElement& GetRootLayoutElement() const noexcept = 0;
 
 	protected:
-		DynamicCBuf(Graphics& gfx, const Dcb::LayoutElement& layoutRoot, UINT slot, const Dcb::Buffer* pBuf);
+		DynamicCBuf(Graphics& gfx, const Dcb::LayoutElement& layoutRoot, unsigned int slot, const Dcb::Buffer* pBuf);
 
 		ComPtr<ID3D11Buffer> pConstantBuffer;
-		UINT slot;
+		unsigned int slot;
 	};
 
 	class DynamicPixelCBuf : public DynamicCBuf
@@ -34,13 +34,13 @@ namespace Bind
 	class CachingDynamicCBuf : public T
 	{
 	public:
-		CachingDynamicCBuf(Graphics& gfx, const Dcb::CookedLayout& layout, UINT slot)
+		CachingDynamicCBuf(Graphics& gfx, const Dcb::CookedLayout& layout, unsigned int slot)
 			: T(gfx, *layout.ShareRoot(), slot, nullptr),
 			  buf(Dcb::Buffer(layout))
 		{
 		}
 
-		CachingDynamicCBuf(Graphics& gfx, const Dcb::Buffer& buf, UINT slot)
+		CachingDynamicCBuf(Graphics& gfx, const Dcb::Buffer& buf, unsigned int slot)
 			: T(gfx, buf.GetRootLayoutElement(), slot, &buf),
 			  buf(buf)
 		{

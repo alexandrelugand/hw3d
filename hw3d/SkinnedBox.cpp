@@ -17,15 +17,15 @@ namespace Draw
 		pIndices = Bind::IndexBuffer::Resolve(gfx, tag, model.indices);
 		pTopology = Bind::Topology::Resolve(gfx, D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		auto tcb = std::make_shared<Bind::TransformCBuf>(gfx);
+		auto tcb = std::make_shared<Bind::TransformCBuf>(gfx, Shaders::CBuf::Transform);
 
 		{
 			Rgph::Technique shade("Shade", Chan::main);
 			{
 				Rgph::Step only("lambertian");
 
-				only.AddBindable(Bind::Texture::Resolve(gfx, "Images\\brickwall.jpg"));
-				only.AddBindable(Bind::Texture::Resolve(gfx, "images\\brickwall_normal_obj.png", 2u));
+				only.AddBindable(Bind::Texture::Resolve(gfx, "Images\\brickwall.jpg", Shaders::Texture::Diffuse));
+				only.AddBindable(Bind::Texture::Resolve(gfx, "images\\brickwall_normal_obj.png", Shaders::Texture::Normal));
 				only.AddBindable(Bind::Sampler::Resolve(gfx));
 
 				//auto pvs = Bind::VertexShader::Resolve(gfx, "PhongDifNrm_VS.cso");
@@ -48,7 +48,7 @@ namespace Draw
 				buf["specularGloss"] = 20.0f;
 				buf["useNormalMap"] = true;
 				buf["normalMapWeight"] = 1.0f;
-				only.AddBindable(std::make_shared<Bind::CachingPixelCBuf>(gfx, buf, 1u));
+				only.AddBindable(std::make_shared<Bind::CachingPixelCBuf>(gfx, buf, 2u));
 
 				only.AddBindable(Bind::Rasterizer::Resolve(gfx, CullMode::Back));
 				only.AddBindable(tcb);
@@ -77,12 +77,12 @@ namespace Draw
 				lay.Add<Dcb::Float4>("color");
 				auto buf = Dcb::Buffer(std::move(lay));
 				buf["color"] = XMFLOAT4{1.0f, 0.4f, 0.4f, 1.0f};
-				draw.AddBindable(std::make_shared<Bind::CachingPixelCBuf>(gfx, buf, 1u));
+				draw.AddBindable(std::make_shared<Bind::CachingPixelCBuf>(gfx, buf, 2u));
 
 				// TODO: better sub-layout generation tech for future consideration maybe
 				draw.AddBindable(Bind::InputLayout::Resolve(gfx, model.vertices.GetLayout(), *Bind::VertexShader::Resolve(gfx, "Solid_VS.cso")));
 
-				draw.AddBindable(std::make_shared<Bind::TransformCBuf>(gfx));
+				draw.AddBindable(std::make_shared<Bind::TransformCBuf>(gfx, Shaders::CBuf::Transform));
 
 				// TODO: might need to specify rasterizer when doubled-sided models start being used
 				outline.AddStep(std::move(draw));
@@ -98,7 +98,7 @@ namespace Draw
 				// TODO: better sub-layout generation tech for future consideration maybe
 				draw.AddBindable(Bind::InputLayout::Resolve(gfx, model.vertices.GetLayout(), *Bind::VertexShader::Resolve(gfx, "Solid_VS.cso")));
 
-				draw.AddBindable(std::make_shared<Bind::TransformCBuf>(gfx));
+				draw.AddBindable(std::make_shared<Bind::TransformCBuf>(gfx, Shaders::CBuf::Transform));
 
 				// TODO: might need to specify rasterizer when doubled-sided models start being used
 

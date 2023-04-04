@@ -1,4 +1,5 @@
 #include "Transform.hlsli"
+#include "VShadow.hlsli"
 
 struct VSOut
 {
@@ -7,6 +8,7 @@ struct VSOut
     float3 viewTan : TANGENT;
     float3 viewBitan : BITANGENT;
     float2 tc : TEXCOORD;
+    float4 shadowHomoPos : SHADOWPOSITION;
     float4 pos : SV_POSITION;
 };
 
@@ -19,5 +21,6 @@ VSOut main(float3 pos : POSITION, float3 n : NORMAL, float2 tc : TEXCOORD, float
     vso.viewBitan = mul(bitan, (float3x3) modelView);
     vso.pos = mul(float4(pos, 1.0f), modelViewProj);
     vso.tc = tc;
+    vso.shadowHomoPos = ToShadowHomoSpace(pos, model);
     return vso;
 }

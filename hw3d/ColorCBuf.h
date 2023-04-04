@@ -11,7 +11,7 @@ namespace Bind
 		};
 
 	public:
-		ColorCBuf(Graphics& gfx, const Draw::ColorDrawable& parent, UINT slot = 0);
+		ColorCBuf(Graphics& gfx, const Draw::ColorDrawable& parent, unsigned int slot);
 		void Bind(Graphics& gfx) noexcpt override;
 
 	private:

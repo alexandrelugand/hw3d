@@ -5,7 +5,7 @@ namespace Bind
 {
 	std::unique_ptr<PixelConstantBuffer<ColorCBuf::ColorBuf>> ColorCBuf::pPcbuf;
 
-	ColorCBuf::ColorCBuf(Graphics& gfx, const Draw::ColorDrawable& parent, UINT slot)
+	ColorCBuf::ColorCBuf(Graphics& gfx, const Draw::ColorDrawable& parent, unsigned int slot)
 		: parent(parent)
 	{
 		if (!pPcbuf)

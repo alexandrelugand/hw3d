@@ -5,7 +5,7 @@ namespace Bind
 	class TransformAllCBuf : public TransformCBuf
 	{
 	public:
-		TransformAllCBuf(Graphics& gfx, UINT VS_slot = 0u, UINT PS_slot = 1u);
+		TransformAllCBuf(Graphics& gfx, unsigned int VS_slot, unsigned int PS_slot);
 		void Bind(Graphics& gfx) noexcpt override;
 		std::unique_ptr<CloningBindable> Clone() const noexcept override;
 

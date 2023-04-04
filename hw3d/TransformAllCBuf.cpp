@@ -5,7 +5,7 @@ namespace Bind
 {
 	std::unique_ptr<PixelConstantBuffer<TransformCBuf::Transforms>> TransformAllCBuf::pPcbuf;
 
-	TransformAllCBuf::TransformAllCBuf(Graphics& gfx, UINT VS_slot, UINT PS_slot)
+	TransformAllCBuf::TransformAllCBuf(Graphics& gfx, unsigned int VS_slot, unsigned int PS_slot)
 		: TransformCBuf(gfx, VS_slot)
 	{
 		if (!pPcbuf)

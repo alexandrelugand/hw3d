@@ -47,14 +47,14 @@ namespace Draw
 
 				unoccluded.AddBindable(Bind::PixelShader::Resolve(gfx, "Solid_PS.cso"));
 
+				unoccluded.AddBindable(std::make_shared<Bind::TransformCBuf>(gfx, Shaders::CBuf::Transform));
 				struct PSColorConstant
 				{
 					XMFLOAT3 color{0.6f, 0.2f, 0.2f};
 					float padding{};
 				} colorConst;
-				unoccluded.AddBindable(Bind::PixelConstantBuffer<PSColorConstant>::Resolve(gfx, colorConst, 1u));
+				unoccluded.AddBindable(Bind::PixelConstantBuffer<PSColorConstant>::Resolve(gfx, colorConst, Shaders::CBuf::Object));
 
-				unoccluded.AddBindable(std::make_shared<Bind::TransformCBuf>(gfx));
 				unoccluded.AddBindable(Bind::Rasterizer::Resolve(gfx, CullMode::Back));
 				line.AddStep(std::move(unoccluded));
 			}
@@ -67,14 +67,14 @@ namespace Draw
 
 				occluded.AddBindable(Bind::PixelShader::Resolve(gfx, "Solid_PS.cso"));
 
+				occluded.AddBindable(std::make_shared<Bind::TransformCBuf>(gfx, Shaders::CBuf::Transform));
 				struct PSColorConstant2
 				{
 					XMFLOAT3 color{0.25f, 0.08f, 0.08f};
 					float padding{};
 				} colorConst;
-				occluded.AddBindable(Bind::PixelConstantBuffer<PSColorConstant2>::Resolve(gfx, colorConst, 1u));
+				occluded.AddBindable(Bind::PixelConstantBuffer<PSColorConstant2>::Resolve(gfx, colorConst, Shaders::CBuf::Object));
 
-				occluded.AddBindable(std::make_shared<Bind::TransformCBuf>(gfx));
 				occluded.AddBindable(Bind::Rasterizer::Resolve(gfx, CullMode::Back));
 				line.AddStep(std::move(occluded));
 			}

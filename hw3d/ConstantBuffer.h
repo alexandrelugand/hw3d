@@ -8,7 +8,7 @@ namespace Bind
 	class ConstantBuffer : public Bindable
 	{
 	public:
-		ConstantBuffer(Graphics& gfx, UINT slot = 0u): slot(slot)
+		ConstantBuffer(Graphics& gfx, unsigned short slot): slot(slot)
 		{
 			INFOMAN(gfx);
 
@@ -24,7 +24,7 @@ namespace Bind
 			GFX_THROW_INFO(GetDevice(gfx)->CreateBuffer(&cbd, nullptr, &pConstantBuffer));
 		}
 
-		ConstantBuffer(Graphics& gfx, const C& constant, UINT slot = 0u): slot(slot)
+		ConstantBuffer(Graphics& gfx, const C& constant, unsigned int slot): slot(slot)
 		{
 			INFOMAN(gfx);
 
@@ -61,7 +61,7 @@ namespace Bind
 
 	protected:
 		ComPtr<ID3D11Buffer> pConstantBuffer;
-		UINT slot;
+		unsigned int slot;
 	};
 
 	template <typename C>
@@ -81,22 +81,22 @@ namespace Bind
 			GFX_THROW_INFO_ONLY(this->GetContext(gfx)->VSSetConstantBuffers(slot, 1u, pConstantBuffer.GetAddressOf()));
 		}
 
-		static std::shared_ptr<VertexConstantBuffer> Resolve(Graphics& gfx, const C& consts, UINT slot = 0)
+		static std::shared_ptr<VertexConstantBuffer> Resolve(Graphics& gfx, const C& consts, unsigned int slot)
 		{
 			return Codex::Resolve<VertexConstantBuffer>(gfx, consts, slot);
 		}
 
-		static std::shared_ptr<VertexConstantBuffer> Resolve(Graphics& gfx, UINT slot = 0)
+		static std::shared_ptr<VertexConstantBuffer> Resolve(Graphics& gfx, unsigned int slot)
 		{
 			return Codex::Resolve<VertexConstantBuffer>(gfx, slot);
 		}
 
-		static std::string GenerateUID(const C&, UINT slot)
+		static std::string GenerateUID(const C&, unsigned int slot)
 		{
 			return GenerateUID(slot);
 		}
 
-		static std::string GenerateUID(UINT slot = 0)
+		static std::string GenerateUID(unsigned int slot)
 		{
 			return typeid(VertexConstantBuffer).name() + "#"s + std::to_string(slot);
 		}
@@ -124,22 +124,22 @@ namespace Bind
 			GFX_THROW_INFO_ONLY(this->GetContext(gfx)->PSSetConstantBuffers(slot, 1u, pConstantBuffer.GetAddressOf()));
 		}
 
-		static std::shared_ptr<PixelConstantBuffer> Resolve(Graphics& gfx, const C& consts, UINT slot = 0)
+		static std::shared_ptr<PixelConstantBuffer> Resolve(Graphics& gfx, const C& consts, unsigned int slot)
 		{
 			return Codex::Resolve<PixelConstantBuffer>(gfx, consts, slot);
 		}
 
-		static std::shared_ptr<PixelConstantBuffer> Resolve(Graphics& gfx, UINT slot = 0)
+		static std::shared_ptr<PixelConstantBuffer> Resolve(Graphics& gfx, unsigned int slot)
 		{
 			return Codex::Resolve<PixelConstantBuffer>(gfx, slot);
 		}
 
-		static std::string GenerateUID(const C&, UINT slot)
+		static std::string GenerateUID(const C&, unsigned int slot)
 		{
 			return GenerateUID(slot);
 		}
 
-		static std::string GenerateUID(UINT slot = 0)
+		static std::string GenerateUID(unsigned int slot)
 		{
 			return typeid(PixelConstantBuffer).name() + "#"s + std::to_string(slot);
 		}

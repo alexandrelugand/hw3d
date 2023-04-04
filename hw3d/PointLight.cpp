@@ -5,7 +5,7 @@ namespace Entities
 {
 	PointLight::PointLight(Graphics& gfx, XMFLOAT3 pos, float pitch, float yaw, float radius, XMFLOAT3 color)
 		: mesh(gfx, radius, color),
-		  cbuf(gfx)
+		  cbuf(gfx, Shaders::CBuf::PointLight)
 	{
 		home = {
 			pos,

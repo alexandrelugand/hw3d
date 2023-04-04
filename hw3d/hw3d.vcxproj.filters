@@ -818,6 +818,9 @@
     <ClInclude Include="ShadowSampler.h">
       <Filter>Header Files\Bind</Filter>
     </ClInclude>
+    <ClInclude Include="ShaderSlots.h">
+      <Filter>Header Files\Renderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Hw3D.rc">
@@ -852,6 +855,12 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="process.json" />
+    <None Include="PShadow.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="VShadow.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="PhongDif_PS.hlsl">

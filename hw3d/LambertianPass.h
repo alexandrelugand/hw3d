@@ -7,7 +7,7 @@ namespace Rgph
 	public:
 		LambertianPass(Graphics& gfx, std::string name);
 		void BindMainCamera(Entities::Camera& camera) noexcept;
-		void BindShadowCamera(Entities::Camera& camera) noexcept;
+		void BindShadowCamera(Entities::Camera& camera) const noexcept;
 
 		void Execute(Graphics& gfx) const noexcpt override;
 

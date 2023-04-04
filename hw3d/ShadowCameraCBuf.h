@@ -11,7 +11,7 @@ namespace Bind
 		};
 
 	public:
-		ShadowCameraCBuf(Graphics& gfx, UINT slot = 1u);
+		ShadowCameraCBuf(Graphics& gfx, unsigned int slot);
 
 		void Bind(Graphics& gfx) noexcpt override;
 		void Update(Graphics& gfx) const;

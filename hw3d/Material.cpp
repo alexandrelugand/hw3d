@@ -35,7 +35,7 @@ Material::Material(Graphics& gfx, const aiMaterial& material, const std::filesys
 				hasTexture = true;
 				shaderCode += "Dif";
 				layout.Append(Dvtx::VertexLayout::Texture2D);
-				auto tex = Bind::Texture::Resolve(gfx, rootPath + texFileName.C_Str());
+				auto tex = Bind::Texture::Resolve(gfx, rootPath + texFileName.C_Str(), Shaders::Texture::Diffuse);
 				if (tex->HasAlpha())
 				{
 					hasAlpha = true;
@@ -56,7 +56,7 @@ Material::Material(Graphics& gfx, const aiMaterial& material, const std::filesys
 				hasTexture = true;
 				shaderCode += "Spc";
 				layout.Append(Dvtx::VertexLayout::Texture2D);
-				auto tex = Bind::Texture::Resolve(gfx, rootPath + texFileName.C_Str(), 1u);
+				auto tex = Bind::Texture::Resolve(gfx, rootPath + texFileName.C_Str(), Shaders::Texture::Specular);
 				hasGlossAlpha = tex->HasAlpha();
 				step.AddBindable(std::move(tex));
 				pscLayout.Add<Dcb::Bool>("useGlossAlpha");
@@ -75,7 +75,7 @@ Material::Material(Graphics& gfx, const aiMaterial& material, const std::filesys
 				layout.Append(Dvtx::VertexLayout::Texture2D);
 				layout.Append(Dvtx::VertexLayout::Tangent);
 				layout.Append(Dvtx::VertexLayout::Bitangent);
-				step.AddBindable(Bind::Texture::Resolve(gfx, rootPath + texFileName.C_Str(), 2u));
+				step.AddBindable(Bind::Texture::Resolve(gfx, rootPath + texFileName.C_Str(), Shaders::Texture::Normal));
 				pscLayout.Add<Dcb::Bool>("useNormalMap");
 				pscLayout.Add<Dcb::Float>("normalMapWeight");
 			}
@@ -123,7 +123,7 @@ Material::Material(Graphics& gfx, const aiMaterial& material, const std::filesys
 			buf["useNormalMap"].SetIfExists(true);
 			buf["normalMapWeight"].SetIfExists(1.0f);
 
-			step.AddBindable(std::make_unique<Bind::CachingPixelCBuf>(gfx, std::move(buf), 1u));
+			step.AddBindable(std::make_unique<Bind::CachingPixelCBuf>(gfx, std::move(buf), Shaders::CBuf::Object));
 		}
 		phong.AddStep(std::move(step));
 		techniques.push_back(std::move(phong));
@@ -137,7 +137,7 @@ Material::Material(Graphics& gfx, const aiMaterial& material, const std::filesys
 			// TODO: better sub-layout generation tech for future consideration maybe
 			mask.AddBindable(Bind::InputLayout::Resolve(gfx, layout, *Bind::VertexShader::Resolve(gfx, "Solid_VS.cso")));
 
-			mask.AddBindable(std::make_shared<Bind::TransformCBuf>(gfx));
+			mask.AddBindable(std::make_shared<Bind::TransformCBuf>(gfx, Shaders::CBuf::Transform));
 
 			// TODO: might need to specify rasterizer when doubled-sided models start being used
 			outline.AddStep(std::move(mask));
@@ -149,36 +149,36 @@ Material::Material(Graphics& gfx, const aiMaterial& material, const std::filesys
 				lay.Add<Dcb::Float3>("materialColor");
 				auto buf = Dcb::Buffer(std::move(lay));
 				buf["materialColor"] = XMFLOAT3{1.0f, 0.4f, 0.4f};
-				draw.AddBindable(std::make_shared<Bind::CachingPixelCBuf>(gfx, buf, 1u));
+				draw.AddBindable(std::make_shared<Bind::CachingPixelCBuf>(gfx, buf, 2u));
 			}
 
 			// TODO: better sub-layout generation tech for future consideration maybe
 			draw.AddBindable(Bind::InputLayout::Resolve(gfx, layout, *Bind::VertexShader::Resolve(gfx, "Solid_VS.cso")));
 
-			draw.AddBindable(std::make_shared<Bind::TransformCBuf>(gfx));
+			draw.AddBindable(std::make_shared<Bind::TransformCBuf>(gfx, Shaders::CBuf::Transform));
 
 			// TODO: might need to specify rasterizer when doubled-sided models start being used
 			outline.AddStep(std::move(draw));
 		}
 		techniques.push_back(std::move(outline));
 	}
-	//// shadow map technique
-	//{
-	//	Rgph::Technique map{"shadowMap", Chan::shadow, true};
-	//	{
-	//		Rgph::Step draw{"shadowMap"};
-	//		{
-	//			// TODO: better sub-layout generation tech for future consideration maybe
-	//			draw.AddBindable(Bind::InputLayout::Resolve(gfx, layout, *Bind::VertexShader::Resolve(gfx, "Solid_VS.cso")));
+	// shadow map technique
+	{
+		Rgph::Technique map{"shadowMap", Chan::shadow, true};
+		{
+			Rgph::Step draw{"shadowMap"};
+			{
+				// TODO: better sub-layout generation tech for future consideration maybe
+				draw.AddBindable(Bind::InputLayout::Resolve(gfx, layout, *Bind::VertexShader::Resolve(gfx, "Solid_VS.cso")));
 
-	//			draw.AddBindable(std::make_shared<Bind::TransformCBuf>(gfx));
+				draw.AddBindable(std::make_shared<Bind::TransformCBuf>(gfx, Shaders::CBuf::Transform));
 
-	//			// TODO: might need to specify rasterizer when doubled-sided models start being used
-	//			map.AddStep(std::move(draw));
-	//		}
-	//		techniques.push_back(std::move(map));
-	//	}
-	//}
+				// TODO: might need to specify rasterizer when doubled-sided models start being used
+				map.AddStep(std::move(draw));
+			}
+			techniques.push_back(std::move(map));
+		}
+	}
 }
 
 Dvtx::VertexBufferDescriptor Material::ExtractVertices(const aiMesh& mesh) const noexcept

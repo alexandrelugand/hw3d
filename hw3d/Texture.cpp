@@ -55,12 +55,12 @@ namespace Bind
 		GFX_THROW_INFO_ONLY(GetContext(gfx)->PSSetShaderResources(slot, 1u, pTextureView.GetAddressOf()));
 	}
 
-	std::shared_ptr<Texture> Texture::Resolve(Graphics& gfx, const std::string& path, UINT slot)
+	std::shared_ptr<Texture> Texture::Resolve(Graphics& gfx, const std::string& path, unsigned int slot)
 	{
 		return Codex::Resolve<Texture>(gfx, path, slot);
 	}
 
-	std::string Texture::GenerateUID(const std::string& path, UINT slot)
+	std::string Texture::GenerateUID(const std::string& path, unsigned int slot)
 	{
 		return typeid(Texture).name() + "#"s + path + "#" + std::to_string(slot);
 	}
@@ -75,10 +75,10 @@ namespace Bind
 		return hasAlpha;
 	}
 
-	UINT Texture::CalculateNumberOfMipLevels(UINT width, UINT height) noexcept
+	unsigned int Texture::CalculateNumberOfMipLevels(unsigned int width, unsigned int height) noexcept
 	{
 		const float xSteps = std::ceil(log2(static_cast<float>(width)));
 		const float ySteps = std::ceil(log2(static_cast<float>(height)));
-		return static_cast<UINT>(std::max(xSteps, ySteps));
+		return static_cast<unsigned int>(std::max(xSteps, ySteps));
 	}
 }

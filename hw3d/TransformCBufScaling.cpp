@@ -4,7 +4,7 @@
 namespace Bind
 {
 	TransformCBufScaling::TransformCBufScaling(Graphics& gfx, float scale)
-		: TransformCBuf(gfx), buf(MakeLayout())
+		: TransformCBuf(gfx, Shaders::CBuf::Scaling), buf(MakeLayout())
 	{
 		buf["scale"] = scale;
 	}
