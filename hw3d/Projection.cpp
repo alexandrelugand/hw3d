@@ -24,7 +24,7 @@ void Projection::RenderWidgets(Graphics& gfx)
 	ImGui::Text("Projection");
 	dcheck(ImGui::SliderFloat("Width", &width, 0.01f, 4.0f, "%.2f"));
 	dcheck(ImGui::SliderFloat("Height", &height, 0.01f, 4.0f, "%.2f"));
-	dcheck(ImGui::SliderFloat("Near Z", &nearZ, 0.01f, farZ - 0.01f, "%.2f"));
+	dcheck(ImGui::SliderFloat("Near Z", &nearZ, 0.01f, std::min(5.0f, farZ - 0.01f), "%.2f"));
 	dcheck(ImGui::SliderFloat("Far Z", &farZ, 0.01f, 400.0f, "%.2f"));
 
 	if (dirty)

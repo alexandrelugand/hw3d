@@ -63,6 +63,7 @@ float4 main(float3 viewFragPos : POSITION, float3 viewNormal : NORMAL, float2 tc
 
         // scale by shadow level
         diffuse *= shadowLevel;
+        specularReflected *= shadowLevel;
     }
     else
     {
