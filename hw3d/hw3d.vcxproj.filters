@@ -435,6 +435,9 @@
     <ClCompile Include="ShadowSampler.cpp">
       <Filter>Source Files\Bind</Filter>
     </ClCompile>
+    <ClCompile Include="ShadowRasterizer.cpp">
+      <Filter>Source Files\Bind</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="resource.h">
@@ -821,6 +824,9 @@
     <ClInclude Include="ShaderSlots.h">
       <Filter>Header Files\Renderer</Filter>
     </ClInclude>
+    <ClInclude Include="ShadowRasterizer.h">
+      <Filter>Header Files\Bind</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="Hw3D.rc">
@@ -859,6 +865,12 @@
       <Filter>Shaders</Filter>
     </None>
     <None Include="VShadow.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="_PShadow_Static.hlsli">
+      <Filter>Shaders</Filter>
+    </None>
+    <None Include="_PShadow_Dynamic.hlsli">
       <Filter>Shaders</Filter>
     </None>
   </ItemGroup>

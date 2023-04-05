@@ -188,7 +188,7 @@ void App::DoFrame(float dt)
 		modelProbe.SpawnWindow(sponza);
 		modelProbe.SpawnWindow(nano);
 
-		rg.RenderWidgets(gfx);
+		rg.RenderWindows(gfx);
 	}
 
 	// Present

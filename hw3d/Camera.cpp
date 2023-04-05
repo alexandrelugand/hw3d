@@ -8,8 +8,9 @@ namespace Entities
 		  name(std::move(name)),
 		  homePos(homePos),
 		  homePitch(homePitch),
+
 		  homeYaw(homeYaw),
-		  proj(gfx, 1.0f, 3.0f / 4.0f, 0.5f, 400.0f),
+		  proj(gfx, 1.0f, 3.0f / 4.0f, tethered ? 0.25f : 0.5f, 400.0f),
 		  indicator(gfx)
 	{
 		if (tethered)

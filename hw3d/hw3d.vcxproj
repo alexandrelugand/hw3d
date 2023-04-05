@@ -241,6 +241,7 @@
     <ClCompile Include="ScriptCommander.cpp" />
     <ClCompile Include="ShadowCameraCBuf.cpp" />
     <ClCompile Include="ShadowMappingPass.cpp" />
+    <ClCompile Include="ShadowRasterizer.cpp" />
     <ClCompile Include="ShadowSampler.cpp" />
     <ClCompile Include="Sink.cpp" />
     <ClCompile Include="Source.cpp" />
@@ -434,6 +435,7 @@
     <ClInclude Include="ScriptCommander.h" />
     <ClInclude Include="ShadowCameraCBuf.h" />
     <ClInclude Include="ShadowMappingPass.h" />
+    <ClInclude Include="ShadowRasterizer.h" />
     <ClInclude Include="ShadowSampler.h" />
     <ClInclude Include="Sink.h" />
     <ClInclude Include="Source.h" />
@@ -521,6 +523,8 @@
     <None Include="PointLight.hlsli" />
     <None Include="LightVectorData.hlsli" />
     <None Include="VShadow.hlsli" />
+    <None Include="_PShadow_Dynamic.hlsli" />
+    <None Include="_PShadow_Static.hlsli" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="BlendedPhong_PS.hlsl">

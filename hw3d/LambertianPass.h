@@ -13,7 +13,6 @@ namespace Rgph
 
 	private:
 		Entities::Camera* pMainCamera = nullptr;
-		std::shared_ptr<Bind::ShadowSampler> pShadowSampler;
 		std::shared_ptr<Bind::ShadowCameraCBuf> pShadowCBuf;
 	};
 }

@@ -7,13 +7,15 @@ namespace Rgph
 	{
 	public:
 		BlurOutlineRenderGraph(Graphics& gfx);
-		void RenderWidgets(Graphics& gfx);
+		void RenderWindows(Graphics& gfx);
 		void BindMainCamera(Entities::Camera& camera);
 		void BindShadowCamera(Entities::Camera& camera);
 
 		void DumpShadowMap(Graphics& gfx, const std::string& path);
 
 	private:
+		void RenderShadowWindow(Graphics& gfx);
+		void RenderKernelWindow(Graphics& gfx);
 		void SetKernelGauss(int radius, float sigma) noexcpt;
 		void SetKernelBox(int radius) noexcpt;
 
@@ -28,5 +30,8 @@ namespace Rgph
 		float sigma = 2.0f;
 		std::shared_ptr<Bind::CachingPixelCBuf> blurKernel;
 		std::shared_ptr<Bind::CachingPixelCBuf> blurDirection;
+		std::shared_ptr<Bind::CachingPixelCBuf> shadowControl;
+		std::shared_ptr<Bind::ShadowSampler> shadowSampler;
+		std::shared_ptr<Bind::ShadowRasterizer> shadowRasterizer;
 	};
 }

@@ -11,6 +11,7 @@ namespace Rgph
 		AddBind(Bind::NullPixelShader::Resolve(gfx));
 		AddBind(Bind::Stencil::Resolve(gfx, Bind::Stencil::Mode::Off));
 		AddBind(Bind::Blender::Resolve(gfx, false));
+		AddBindSink<Bind::Bindable>("shadowRasterizer");
 		RegisterSource(DirectBindableSource<Bind::DepthStencil>::Make("map", depthStencil));
 	}
 

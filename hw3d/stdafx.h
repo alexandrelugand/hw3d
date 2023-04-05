@@ -133,6 +133,7 @@ namespace Gdiplus
 #include "RenderTarget.h"
 #include "ShadowCameraCBuf.h"
 #include "ShadowSampler.h"
+#include "ShadowRasterizer.h"
 
 // Dynamic Vertex layout
 #include "Color.h"

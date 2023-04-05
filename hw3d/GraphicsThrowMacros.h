@@ -23,6 +23,6 @@
 #define INFOMAN(gfx) HRESULT hr
 #define INFOMAN_NOHR(gfx)
 #else
-#define INFOMAN(gfx) HRESULT hr; DxgiInfoManager& infoManager = this->GetInfoManager((gfx))
-#define INFOMAN_NOHR(gfx) DxgiInfoManager& infoManager = this->GetInfoManager((gfx))
+#define INFOMAN(gfx) HRESULT hr; DxgiInfoManager& infoManager = GetInfoManager((gfx))
+#define INFOMAN_NOHR(gfx) DxgiInfoManager& infoManager = GetInfoManager((gfx))
 #endif

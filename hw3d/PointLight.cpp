@@ -9,12 +9,12 @@ namespace Entities
 	{
 		home = {
 			pos,
-			{0.05f, 0.05f, 0.05f},
+			{0.18f, 0.18f, 0.18f},
 			{1.0f, 1.0f, 1.0f},
 			1.0f,
 			1.0f,
-			0.045f,
-			0.0075f,
+			0.011f, //0.045f,
+			0.0005f //0.0075f,
 		};
 		Reset();
 		pCamera = std::make_shared<Camera>(gfx, "Light", cbData.pos, pitch, yaw, true);
