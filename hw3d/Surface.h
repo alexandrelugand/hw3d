@@ -125,6 +125,7 @@ namespace Bind
 		Color* GetBufferPtr() noexcept;
 		const Color* GetBufferPtr() const noexcept;
 		const Color* GetBufferPtrConst() const noexcept;
+		unsigned int GetBytePitch() const noexcept;
 		static Surface FromFile(const std::string& name);
 		void Save(const std::string& filename) const;
 		bool AlphaLoaded() const noexcept;

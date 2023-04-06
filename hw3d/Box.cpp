@@ -9,7 +9,7 @@ namespace Draw
 	{
 		name = "Box";
 		const auto tag = std::format("${}.{}", String::ToLower(name).c_str(), std::to_string(id));
-		auto model = Geometry::Cube::Make();
+		auto model = Geometry::Cube::MakeIndependent();
 		model.SetNormalsIndependentFlat();
 
 		pVertices = Bind::VertexBuffer::Resolve(gfx, tag, model.vertices);

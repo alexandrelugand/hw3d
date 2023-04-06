@@ -60,8 +60,14 @@ namespace Rgph
 			AppendPass(std::move(pass));
 		}
 		{
-			auto pass = std::make_unique<OutlineMaskGenerationPass>(gfx, "outlineMask");
+			auto pass = std::make_unique<SkyboxPass>(gfx, "skybox");
+			pass->SetSinkLinkage("renderTarget", "lambertian.renderTarget");
 			pass->SetSinkLinkage("depthStencil", "lambertian.depthStencil");
+			AppendPass(std::move(pass));
+		}
+		{
+			auto pass = std::make_unique<OutlineMaskGenerationPass>(gfx, "outlineMask");
+			pass->SetSinkLinkage("depthStencil", "skybox.depthStencil");
 			AppendPass(std::move(pass));
 		}
 
@@ -99,7 +105,7 @@ namespace Rgph
 		}
 		{
 			auto pass = std::make_unique<VerticalBlurPass>(gfx, "vertical");
-			pass->SetSinkLinkage("renderTarget", "lambertian.renderTarget");
+			pass->SetSinkLinkage("renderTarget", "skybox.renderTarget");
 			pass->SetSinkLinkage("depthStencil", "outlineMask.depthStencil");
 			pass->SetSinkLinkage("scratchIn", "horizontal.scratchOut");
 			pass->SetSinkLinkage("kernel", "$.blurKernel");
@@ -158,6 +164,7 @@ namespace Rgph
 	{
 		RenderShadowWindow(gfx);
 		RenderKernelWindow(gfx);
+		dynamic_cast<SkyboxPass&>(FindPassByName("skybox")).RenderWindow();
 	}
 
 	void BlurOutlineRenderGraph::RenderShadowWindow(Graphics& gfx)
@@ -251,6 +258,7 @@ namespace Rgph
 	void BlurOutlineRenderGraph::BindMainCamera(Entities::Camera& camera)
 	{
 		dynamic_cast<LambertianPass&>(FindPassByName("lambertian")).BindMainCamera(camera);
+		dynamic_cast<SkyboxPass&>(FindPassByName("skybox")).BindMainCamera(camera);
 	}
 
 	void BlurOutlineRenderGraph::BindShadowCamera(Entities::Camera& camera)

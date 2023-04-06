@@ -11,7 +11,9 @@ namespace Bind
 			Write,
 			Mask,
 			DepthOff,
-			DepthReversed
+			DepthReversed,
+			// for skybox render
+			DepthFirst,
 		};
 
 		Stencil(Graphics& gfx, Mode mode);

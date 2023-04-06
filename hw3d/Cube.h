@@ -10,10 +10,40 @@ namespace Geometry
 	public:
 		static IndexedTriangleList Make()
 		{
-			return MakeIndependent(std::move(Dvtx::VertexLayout{}
-			                                 .Append(ElementType::Position3D)
-			                                 .Append(ElementType::Normal)
-			));
+			Dvtx::VertexLayout layout{};
+			layout.Append(ElementType::Position3D);
+
+			constexpr float side = 1.0f / 2.0f;
+
+			Dvtx::VertexBufferDescriptor vbd(std::move(layout), 8u);
+			vbd[0].Attr<ElementType::Position3D>() = {-side, -side, -side};
+			vbd[1].Attr<ElementType::Position3D>() = {side, -side, -side};
+			vbd[2].Attr<ElementType::Position3D>() = {-side, side, -side};
+			vbd[3].Attr<ElementType::Position3D>() = {side, side, -side};
+			vbd[4].Attr<ElementType::Position3D>() = {-side, -side, side};
+			vbd[5].Attr<ElementType::Position3D>() = {side, -side, side};
+			vbd[6].Attr<ElementType::Position3D>() = {-side, side, side};
+			vbd[7].Attr<ElementType::Position3D>() = {side, side, side};
+
+			return {
+				std::move(vbd), {
+					0, 2, 1, 2, 3, 1,
+					1, 3, 5, 3, 7, 5,
+					2, 6, 3, 3, 6, 7,
+					4, 5, 7, 4, 7, 6,
+					0, 4, 2, 2, 4, 6,
+					0, 1, 4, 1, 5, 4
+				}
+			};
+		}
+
+		static IndexedTriangleList MakeIndependent()
+		{
+			Dvtx::VertexLayout layout{};
+			layout.Append(ElementType::Position3D)
+			      .Append(ElementType::Normal);
+
+			return MakeIndependent(std::move(layout));
 		}
 
 		static IndexedTriangleList MakeIndependent(Dvtx::VertexLayout layout)

@@ -67,6 +67,12 @@ namespace Bind
 		return const_cast<Surface*>(this)->GetBufferPtr();
 	}
 
+	unsigned int Surface::GetBytePitch() const noexcept
+	{
+		return static_cast<unsigned int>(scratch.GetImage(0, 0, 0)->rowPitch);
+	}
+
+
 	Surface Surface::FromFile(const std::string& name)
 	{
 		ScratchImage scratch;

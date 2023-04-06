@@ -134,6 +134,8 @@ namespace Gdiplus
 #include "ShadowCameraCBuf.h"
 #include "ShadowSampler.h"
 #include "ShadowRasterizer.h"
+#include "CubeTexture.h"
+#include "SkyboxTransformCBuf.h"
 
 // Dynamic Vertex layout
 #include "Color.h"
@@ -148,6 +150,8 @@ namespace Gdiplus
 
 // Geometry
 #include "IndexedTriangleList.h"
+#include "Cube.h"
+#include "Sphere.h"
 
 // Draw
 #include "DrawableObject.h"
@@ -190,6 +194,7 @@ namespace Gdiplus
 #include "VerticalBlurPass.h"
 #include "WireframePass.h"
 #include "ShadowMappingPass.h"
+#include "SkyboxPass.h"
 #include "BlurOutlineRenderGraph.h"
 #include "ScaleOutlineRenderGraph.h"
 

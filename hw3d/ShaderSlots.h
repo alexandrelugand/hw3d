@@ -9,6 +9,7 @@ namespace Shaders
 		inline constexpr unsigned int Object = 2u;
 		inline constexpr unsigned int Shadow = 3u;
 		inline constexpr unsigned int Scaling = 4u;
+		inline constexpr unsigned int Skybox = 4u;
 	};
 
 	namespace Texture
@@ -17,6 +18,7 @@ namespace Shaders
 		inline constexpr unsigned int Specular = 1u;
 		inline constexpr unsigned int Normal = 2u;
 		inline constexpr unsigned int ShadowMap = 3u;
+		inline constexpr unsigned int Skybox = 4u;
 	};
 
 	namespace Sampler

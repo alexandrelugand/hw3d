@@ -21,7 +21,7 @@ namespace Bind
 	std::string Rasterizer::GenerateUID(CullMode cull)
 	{
 		using namespace std::string_literals;
-		return typeid(Rasterizer).name() + "#"s + (cull == CullMode::None ? "2s" : "1s");
+		return typeid(Rasterizer).name() + "#"s + (cull == CullMode::None ? "2s" : (cull == CullMode::Front ? "1f" : "1b"));
 	}
 
 	std::string Rasterizer::GetUID() const noexcept

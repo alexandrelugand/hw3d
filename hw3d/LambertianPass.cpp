@@ -16,6 +16,7 @@ namespace Rgph
 		RegisterSource(DirectBufferSource<Bind::RenderTarget>::Make("renderTarget", renderTarget));
 		RegisterSource(DirectBufferSource<Bind::DepthStencil>::Make("depthStencil", depthStencil));
 		AddBind(Bind::Stencil::Resolve(gfx, Bind::Stencil::Mode::Off));
+		AddBind(Bind::Rasterizer::Resolve(gfx, CullMode::Back));
 	}
 
 	void LambertianPass::BindMainCamera(Entities::Camera& camera) noexcept

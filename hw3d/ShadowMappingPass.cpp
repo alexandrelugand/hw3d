@@ -20,7 +20,7 @@ namespace Rgph
 		pShadowCamera = &camera;
 	}
 
-	void ShadowMappingPass::Execute(Graphics& gfx) const noexcept(!true)
+	void ShadowMappingPass::Execute(Graphics& gfx) const noexcpt
 	{
 		assert(pShadowCamera);
 		depthStencil->Clear(gfx);
