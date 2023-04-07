@@ -9,7 +9,8 @@ namespace Rgph
 	{
 		RegisterSink(DirectBufferSink<Bind::RenderTarget>::Make("renderTarget", renderTarget));
 		RegisterSink(DirectBufferSink<Bind::DepthStencil>::Make("depthStencil", depthStencil));
-		AddBind(std::make_shared<Bind::CubeTexture>(gfx, "Images\\SpaceBox", Shaders::Texture::Skybox));
+		//AddBind(std::make_shared<Bind::CubeTexture>(gfx, "Images\\SpaceBox", Shaders::Texture::Skybox));
+		AddBind(std::make_shared<Bind::CubeTexture>(gfx, "Images\\Skybox", Shaders::Texture::Skybox));
 		AddBind(Bind::Stencil::Resolve(gfx, Bind::Stencil::Mode::DepthFirst));
 		AddBind(Bind::Sampler::Resolve(gfx, Bind::Sampler::Type::Bilinear));
 		AddBind(Bind::Rasterizer::Resolve(gfx, CullMode::Front));

@@ -26,7 +26,7 @@ namespace Rgph
 
 		{
 			auto pass = std::make_unique<ShadowMappingPass>(gfx, "shadowMap");
-			pass->SetSinkLinkage("shadowRasterizer", "$.shadowRasterizer");
+			//pass->SetSinkLinkage("shadowRasterizer", "$.shadowRasterizer");
 			AppendPass(std::move(pass));
 		}
 
@@ -169,7 +169,16 @@ namespace Rgph
 
 	void BlurOutlineRenderGraph::RenderShadowWindow(Graphics& gfx)
 	{
-		if (ImGui::Begin("Shadows"))
+		if (ImGui::Begin("Shadow"))
+		{
+			if (ImGui::Button("Dump Cubemap"))
+			{
+				DumpShadowMap(gfx, "Dumps\\shadow_");
+			}
+		}
+		ImGui::End();
+
+		/*if (ImGui::Begin("Shadows"))
 		{
 			auto ctrl = shadowControl->GetBuffer();
 			bool bilin = shadowSampler->GetBilinear();
@@ -200,7 +209,7 @@ namespace Rgph
 					shadowRasterizer->ChangeDepthBiasParameters(gfx, bias, slope, clamp);
 			}
 		}
-		ImGui::End();
+		ImGui::End();*/
 	}
 
 	void BlurOutlineRenderGraph::RenderKernelWindow(Graphics& gfx)

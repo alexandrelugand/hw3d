@@ -52,10 +52,6 @@ namespace Gdiplus
 #include <imgui/imgui.h>
 #include <imgui/imgui_impl_dx11.h>
 #include <imgui/imgui_impl_win32.h>
-#ifdef IM_DEBUG_BREAK
-#undef IM_DEBUG_BREAK()
-#def IM_DEBUG_BREAK()
-#endif
 
 // Assimp
 #include <assimp/Importer.hpp>
@@ -136,6 +132,8 @@ namespace Gdiplus
 #include "ShadowRasterizer.h"
 #include "CubeTexture.h"
 #include "SkyboxTransformCBuf.h"
+#include "DepthCubeTexture.h"
+#include "Viewport.h"
 
 // Dynamic Vertex layout
 #include "Color.h"

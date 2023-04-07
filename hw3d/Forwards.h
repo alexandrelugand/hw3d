@@ -45,6 +45,7 @@ namespace Bind
 	class DynamicCBuf;
 	class DepthStencil;
 	class RenderTarget;
+	class DepthCubeTexture;
 }
 
 // Draw

@@ -370,3 +370,11 @@ FodyWeavers.xsd
 /hw3d/imgui.ini
 /hw3d/depth.png
 /hw3d/shadow.png
+/hw3d/Dumps
+/hw3d/images/Skybox/top.jpg
+/hw3d/images/Skybox/Skybox.png
+/hw3d/images/Skybox/right.jpg
+/hw3d/images/Skybox/left.jpg
+/hw3d/images/Skybox/front.jpg
+/hw3d/images/Skybox/bottom.jpg
+/hw3d/images/Skybox/back.jpg
