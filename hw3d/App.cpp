@@ -15,11 +15,6 @@ App::App(const std::string& commandLine)
 	light.LinkTechniques(rg);
 	cube.LinkTechniques(rg);
 	cube2.LinkTechniques(rg);
-	box.LinkTechniques(rg);
-	asset.LinkTechniques(rg);
-	cylinder.LinkTechniques(rg);
-	pyramid.LinkTechniques(rg);
-	sheet.LinkTechniques(rg);
 	goblin.LinkTechniques(rg);
 	sponza.LinkTechniques(rg);
 	nano.LinkTechniques(rg);
@@ -153,11 +148,6 @@ void App::DoFrame(float dt)
 		sponza.Submit(c);
 		cube.Submit(c);
 		cube2.Submit(c);
-		box.Submit(c);
-		asset.Submit(c);
-		cylinder.Submit(c);
-		pyramid.Submit(c);
-		sheet.Submit(c);
 		goblin.Submit(c);
 		nano.Submit(c);
 	}
@@ -179,11 +169,6 @@ void App::DoFrame(float dt)
 
 		drawableProbe.SpawnControl(cube);
 		drawableProbe.SpawnControl(cube2);
-		drawableProbe.SpawnControl(box);
-		drawableProbe.SpawnControl(asset);
-		drawableProbe.SpawnControl(cylinder);
-		drawableProbe.SpawnControl(pyramid);
-		drawableProbe.SpawnControl(sheet);
 		modelProbe.SpawnWindow(goblin);
 		modelProbe.SpawnWindow(sponza);
 		modelProbe.SpawnWindow(nano);

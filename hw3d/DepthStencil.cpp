@@ -65,7 +65,7 @@ namespace Bind
 		GFX_THROW_INFO_ONLY(GetContext(gfx)->ClearDepthStencilView(pDepthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0f, 0u));
 	}
 
-	Surface DepthStencil::ToSurface(Graphics& gfx, bool linearlize) const
+	std::pair<ComPtr<ID3D11Texture2D>, D3D11_TEXTURE2D_DESC> DepthStencil::MakeStaging(Graphics& gfx) const
 	{
 		INFOMAN(gfx);
 
@@ -103,9 +103,19 @@ namespace Bind
 			GFX_THROW_INFO_ONLY(GetContext(gfx)->CopyResource(pTexTemp.Get(), pTexSource.Get()));
 		}
 
+		return {std::move(pTexTemp), srcTextureDesc};
+	}
+
+	Surface DepthStencil::ToSurface(Graphics& gfx, bool linearlize) const
+	{
+		INFOMAN(gfx);
+		// copy from resource to staging
+		auto [pTexTemp, srcTextureDesc] = MakeStaging(gfx);
+
 		// create Surface and copy from temp texture to it
 		const auto width = GetWidth();
 		const auto height = GetHeight();
+
 		Surface s{width, height};
 		D3D11_MAPPED_SUBRESOURCE msr{};
 		GFX_THROW_INFO(GetContext(gfx)->Map(pTexTemp.Get(), 0, D3D11_MAP_READ, 0, &msr));
@@ -158,6 +168,39 @@ namespace Bind
 		}
 		GFX_THROW_INFO_ONLY(GetContext(gfx)->Unmap(pTexTemp.Get(), 0));
 		return s;
+	}
+
+	void DepthStencil::Dumpy(Graphics& gfx, const std::string& path) const
+	{
+		INFOMAN(gfx);
+		// copy from resource to staging
+		auto [pTexTemp, srcTextureDesc] = MakeStaging(gfx);
+
+		// create Surface and copy from temp texture to it
+		const auto width = GetWidth();
+		const auto height = GetHeight();
+		std::vector<float> arr;
+		arr.reserve(width * height);
+		D3D11_MAPPED_SUBRESOURCE msr = {};
+		GFX_THROW_INFO(GetContext(gfx)->Map(pTexTemp.Get(), 0, D3D11_MAP::D3D11_MAP_READ, 0, &msr));
+		const auto pSrcBytes = static_cast<const char*>(msr.pData);
+
+		if (srcTextureDesc.Format != DXGI_FORMAT_R32_TYPELESS)
+			throw std::runtime_error{"Bad format in Depth Stencil for dumpy"};
+
+		// flatten texture elements
+		for (unsigned int y = 0; y < height; y++)
+		{
+			const auto pSrcRow = reinterpret_cast<const float*>(pSrcBytes + msr.RowPitch * static_cast<size_t>(y));
+			for (unsigned int x = 0; x < width; x++)
+			{
+				arr.push_back(pSrcRow[x]);
+			}
+		}
+		GFX_THROW_INFO_ONLY(GetContext(gfx)->Unmap(pTexTemp.Get(), 0));
+
+		// dump to numpy array
+		cnpy::npy_save(path, arr.data(), {height, width});
 	}
 
 	unsigned DepthStencil::GetWidth() const

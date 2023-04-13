@@ -18,7 +18,7 @@ namespace Bind
 		vp.TopLeftY = 0.0f;
 	}
 
-	void Viewport::Bind(Graphics& gfx) noexcept(!true)
+	void Viewport::Bind(Graphics& gfx) noexcpt
 	{
 		INFOMAN_NOHR(gfx);
 		GetContext(gfx)->RSSetViewports(1u, &vp);

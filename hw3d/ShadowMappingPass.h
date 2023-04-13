@@ -19,7 +19,7 @@ namespace Rgph
 
 		Entities::Camera* pShadowCamera = nullptr;
 		std::shared_ptr<Bind::DepthCubeTexture> pDepthCube;
-		XMFLOAT4X4 projection;
+		XMFLOAT4X4 projection{};
 		std::vector<XMFLOAT3> cameraDirections{6};
 		std::vector<XMFLOAT3> cameraUps{6};
 	};

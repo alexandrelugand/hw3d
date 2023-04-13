@@ -3,8 +3,8 @@
 
 namespace Bind
 {
-	Sampler::Sampler(Graphics& gfx, Type type, bool reflect)
-		: type(type), reflect(reflect)
+	Sampler::Sampler(Graphics& gfx, Type type, bool reflect, unsigned int slot)
+		: type(type), reflect(reflect), slot(slot)
 	{
 		INFOMAN(gfx);
 
@@ -31,21 +31,21 @@ namespace Bind
 	void Sampler::Bind(Graphics& gfx) noexcpt
 	{
 		INFOMAN_NOHR(gfx);
-		GFX_THROW_INFO_ONLY(GetContext(gfx)->PSSetSamplers(0, 1, pSampler.GetAddressOf()));
+		GFX_THROW_INFO_ONLY(GetContext(gfx)->PSSetSamplers(slot, 1, pSampler.GetAddressOf()));
 	}
 
-	std::shared_ptr<Sampler> Sampler::Resolve(Graphics& gfx, Type type, bool reflect)
+	std::shared_ptr<Sampler> Sampler::Resolve(Graphics& gfx, Type type, bool reflect, unsigned int slot)
 	{
-		return Codex::Resolve<Sampler>(gfx, type, reflect);
+		return Codex::Resolve<Sampler>(gfx, type, reflect, slot);
 	}
 
-	std::string Sampler::GenerateUID(Type type, bool reflect)
+	std::string Sampler::GenerateUID(Type type, bool reflect, unsigned int slot)
 	{
-		return typeid(Sampler).name() + "#"s + std::to_string(static_cast<int>(type)) + (reflect ? "R"s : "W"s);
+		return typeid(Sampler).name() + "#"s + std::to_string(static_cast<int>(type)) + (reflect ? "R"s : "W"s) + "@"s + std::to_string(slot);
 	}
 
 	std::string Sampler::GetUID() const noexcept
 	{
-		return GenerateUID(type, reflect);
+		return GenerateUID(type, reflect, slot);
 	}
 }

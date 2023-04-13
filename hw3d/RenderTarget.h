@@ -14,8 +14,11 @@ namespace Bind
 		UINT GetWidth() const noexcept;
 		UINT GetHeight() const noexcept;
 
+		Surface ToSurface(Graphics& gfx) const;
+		void Dumpy(Graphics& gfx, const std::string& path) const;
+
 	protected:
-		RenderTarget(Graphics& gfx, ID3D11Texture2D* pTexture);
+		RenderTarget(Graphics& gfx, ID3D11Texture2D* pTexture, std::optional<unsigned int> face);
 		RenderTarget(Graphics& gfx, UINT width, UINT height);
 		UINT width;
 		UINT height;
@@ -23,6 +26,7 @@ namespace Bind
 
 	private:
 		void BindAsBuffer(Graphics& gfx, ID3D11DepthStencilView* pDepthStencilView) noexcpt;
+		std::pair<ComPtr<ID3D11Texture2D>, D3D11_TEXTURE2D_DESC> MakeStaging(Graphics& gfx) const;
 	};
 
 	class ShaderInputRenderTarget : public RenderTarget
@@ -30,7 +34,6 @@ namespace Bind
 	public:
 		ShaderInputRenderTarget(Graphics& gfx, UINT width, UINT height, UINT slot);
 		void Bind(Graphics& gfx) noexcpt override;
-		Surface ToSurface(Graphics& gfx) const;
 
 	private:
 		UINT slot;
@@ -42,9 +45,7 @@ namespace Bind
 		friend class Graphics;
 
 	public:
+		OutputOnlyRenderTarget(Graphics& gfx, ID3D11Texture2D* pTexture, std::optional<unsigned int> face = {});
 		void Bind(Graphics& gfx) noexcpt override;
-
-	private:
-		OutputOnlyRenderTarget(Graphics& gfx, ID3D11Texture2D* pTexture);
 	};
 }

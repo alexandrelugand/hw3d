@@ -19,6 +19,7 @@ namespace Bind
 		void BindAsBuffer(Graphics& gfx, RenderTarget* rt) noexcpt;
 		void Clear(Graphics& gfx) noexcpt override;
 		Surface ToSurface(Graphics& gfx, bool linearlize = true) const;
+		void Dumpy(Graphics& gfx, const std::string& path) const;
 		unsigned int GetWidth() const;
 		unsigned int GetHeight() const;
 
@@ -28,6 +29,9 @@ namespace Bind
 		ComPtr<ID3D11DepthStencilView> pDepthStencilView;
 		unsigned int width;
 		unsigned int height;
+
+	private:
+		std::pair<ComPtr<ID3D11Texture2D>, D3D11_TEXTURE2D_DESC> MakeStaging(Graphics& gfx) const;
 	};
 
 	class ShaderInputDepthStencil : public DepthStencil

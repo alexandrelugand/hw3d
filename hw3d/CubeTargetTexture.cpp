@@ -1,24 +1,24 @@
 #include "stdafx.h"
-#include "DepthCubeTexture.h"
+#include "CubeTargetTexture.h"
 
 namespace Bind
 {
-	DepthCubeTexture::DepthCubeTexture(Graphics& gfx, unsigned int size, unsigned int slot)
+	CubeTargetTexture::CubeTargetTexture(Graphics& gfx, unsigned width, unsigned height, unsigned slot, DXGI_FORMAT format)
 		: slot(slot)
 	{
 		INFOMAN(gfx);
 
 		// texture descriptor
 		D3D11_TEXTURE2D_DESC textureDesc = {};
-		textureDesc.Width = size;
-		textureDesc.Height = size;
+		textureDesc.Width = width;
+		textureDesc.Height = height;
 		textureDesc.MipLevels = 1;
 		textureDesc.ArraySize = 6;
-		textureDesc.Format = DXGI_FORMAT_R32_TYPELESS;
+		textureDesc.Format = format;
 		textureDesc.SampleDesc.Count = 1;
 		textureDesc.SampleDesc.Quality = 0;
 		textureDesc.Usage = D3D11_USAGE_DEFAULT;
-		textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_DEPTH_STENCIL;
+		textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE | D3D11_BIND_RENDER_TARGET;
 		textureDesc.CPUAccessFlags = 0;
 		textureDesc.MiscFlags = D3D11_RESOURCE_MISC_TEXTURECUBE;
 
@@ -30,7 +30,7 @@ namespace Bind
 
 		// create the resource view on the texture
 		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-		srvDesc.Format = DXGI_FORMAT_R32_FLOAT;
+		srvDesc.Format = textureDesc.Format;
 		srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURECUBE;
 		srvDesc.Texture2D.MostDetailedMip = 0;
 		srvDesc.Texture2D.MipLevels = 1;
@@ -38,21 +38,21 @@ namespace Bind
 			pTexture.Get(), &srvDesc, &pTextureView
 		));
 
-		// make depth buffer resources for capturing shadow map
+		// make render target resources for capturing shadow map
 		for (UINT face = 0; face < 6; face++)
 		{
-			depthBuffers.push_back(std::make_shared<OutputOnlyDepthStencil>(gfx, pTexture, face));
+			renderTargets.push_back(std::make_shared<OutputOnlyRenderTarget>(gfx, pTexture.Get(), face));
 		}
 	}
 
-	void DepthCubeTexture::Bind(Graphics& gfx) noexcpt
+	void CubeTargetTexture::Bind(Graphics& gfx) noexcpt
 	{
 		INFOMAN_NOHR(gfx);
 		GFX_THROW_INFO_ONLY(GetContext(gfx)->PSSetShaderResources(slot, 1u, pTextureView.GetAddressOf()));
 	}
 
-	std::shared_ptr<OutputOnlyDepthStencil> DepthCubeTexture::GetDepthBuffer(size_t index) const
+	std::shared_ptr<OutputOnlyRenderTarget> CubeTargetTexture::GetRenderTarget(size_t index) const
 	{
-		return depthBuffers[index];
+		return renderTargets[index];
 	}
 }

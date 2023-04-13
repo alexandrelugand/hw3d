@@ -46,6 +46,7 @@ namespace Bind
 	class DepthStencil;
 	class RenderTarget;
 	class DepthCubeTexture;
+	class CubeTargetTexture;
 }
 
 // Draw

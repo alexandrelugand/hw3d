@@ -74,6 +74,7 @@ namespace Gdiplus
 #include "GraphicsThrowMacros.h"
 #include "TexturePreprocessor.h"
 #include "ScriptCommander.h"
+#include "cnpy.h"
 
 // Managers
 #include "WindowsMessageMap.h"
@@ -134,6 +135,7 @@ namespace Gdiplus
 #include "SkyboxTransformCBuf.h"
 #include "DepthCubeTexture.h"
 #include "Viewport.h"
+#include "CubeTargetTexture.h"
 
 // Dynamic Vertex layout
 #include "Color.h"

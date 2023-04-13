@@ -11,8 +11,8 @@ namespace Rgph
 		RegisterSink(DirectBufferSink<Bind::RenderTarget>::Make("renderTarget", renderTarget));
 		RegisterSink(DirectBufferSink<Bind::DepthStencil>::Make("depthStencil", depthStencil));
 		AddBindSink<Bind::Bindable>("shadowMap");
-		AddBindSink<Bind::Bindable>("shadowControl");
-		AddBindSink<Bind::Bindable>("shadowSampler");
+		AddBind(std::make_shared<Bind::ShadowSampler>(gfx));
+		AddBind(std::make_shared<Bind::Sampler>(gfx, Bind::Sampler::Type::Anisotropic, false, 2));
 		RegisterSource(DirectBufferSource<Bind::RenderTarget>::Make("renderTarget", renderTarget));
 		RegisterSource(DirectBufferSource<Bind::DepthStencil>::Make("depthStencil", depthStencil));
 		AddBind(Bind::Stencil::Resolve(gfx, Bind::Stencil::Mode::Off));
